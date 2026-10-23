@@ -938,8 +938,8 @@ def stage_graph() -> dict:
     STORE_DIR.parent.mkdir(parents=True, exist_ok=True)
     st = ox.Store(str(STORE_DIR))
     st.bulk_extend(g.quads)
-    for key, info in vocab.sources.items():
-        st.bulk_load(path=info["path"], format=ox.RdfFormat.TURTLE, to_graph=N(f"{C.BASE}graph/vocab/{key}"))
+    for key, path in vocab.paths.items():
+        st.bulk_load(path=str(path), format=ox.RdfFormat.TURTLE, to_graph=N(f"{C.BASE}graph/vocab/{key}"))
     st.flush()
     stats = {"quads_dataset": len(g.quads), "quads_store_total": len(st),
              "per_graph": {k: sum(1 for q in g.quads if q.graph_name.value == v) for k, v in GRAPHS.items()},

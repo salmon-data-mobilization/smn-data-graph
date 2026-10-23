@@ -174,12 +174,14 @@ class VocabIndex:
     def __init__(self) -> None:
         self.store = ox.Store()
         self.sources = {}
+        self.paths = {}  # local files to load; sources[...]["path"] is the portable form
         for key, (url, path) in VOCAB_FILES.items():
             if not path.exists() and url:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 subprocess.run(["curl", "-L", "--fail", "-sS", "-o", str(path), url], check=True)
             self.store.load(path=str(path), format=ox.RdfFormat.TURTLE)
             self.sources[key] = {"url": url, "path": portable_path(path), "sha256": sha256(path)}
+            self.paths[key] = path
         self._subjects = {q.subject.value for q in self.store if isinstance(q.subject, ox.NamedNode)}
 
     def exists(self, iri: str) -> bool:
@@ -255,10 +257,13 @@ class G:
         store = ox.Store()
         store.bulk_extend(self.quads)
         path.parent.mkdir(parents=True, exist_ok=True)
-        data = store.dump(format=ox.RdfFormat.TRIG, prefixes={k: v for k, v in NS.items()})
+        # The store normalises literals and de-duplicates; sorting its quads makes the
+        # bytes reproducible, because Store.dump order varies between processes.
+        quads = sorted(store, key=lambda q: (str(q.graph_name), str(q.subject), str(q.predicate), str(q.object)))
+        data = ox.serialize(quads, format=ox.RdfFormat.TRIG, prefixes={k: v for k, v in NS.items()})
         if len(data) > gzip_over_mb * 1e6:
             path = path.with_suffix(path.suffix + ".gz")
-            with gzip.open(path, "wb", compresslevel=6) as fh:
+            with gzip.GzipFile(path, "wb", compresslevel=6, mtime=0) as fh:  # mtime=0: same bytes every build
                 fh.write(data)
             stale = path.with_suffix("")
         else:

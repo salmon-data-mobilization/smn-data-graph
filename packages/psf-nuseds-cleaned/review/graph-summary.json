@@ -1,9 +1,9 @@
 {
-  "quads_dataset": 326766,
-  "quads_store_total": 329727,
+  "quads_dataset": 326769,
+  "quads_store_total": 329730,
   "per_graph": {
     "metadata": 1184,
-    "mappings": 1646,
+    "mappings": 1649,
     "identity": 114765,
     "cube": 209158,
     "provenance": 13
@@ -14,6 +14,6 @@
   "populations": 6184,
   "cube_observations": 26141,
   "graph_file": "graph/psf-nuseds-cleaned.trig",
-  "graph_file_bytes": 16875195,
-  "parquet_bytes": 6587748
+  "graph_file_bytes": 16808648,
+  "parquet_bytes": 6581214
 }

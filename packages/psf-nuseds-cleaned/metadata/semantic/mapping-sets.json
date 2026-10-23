@@ -4,7 +4,7 @@
   "mapping_sets": [
     {
       "path": "metadata/semantic/psf-nuseds-cleaned-enumeration-method.sssom.tsv",
-      "sha256": "8cdc50b52a47c2868db381a97b713a41a1cadeb641fac608f3522b8390e0d24f",
+      "sha256": "1803c54c0096b15d3c3bd610fab43f57a4a8959636dbf838554a34110274e871",
       "row_count": 23,
       "mapping_set_id": "https://w3id.org/salmon-demo-corpus/mapping/psf-nuseds-cleaned/enumeration-method",
       "mapping_set_version": "2026-10-22",
