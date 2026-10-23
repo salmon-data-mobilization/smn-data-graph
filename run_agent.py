@@ -58,6 +58,14 @@ ALLOWED_HOSTS = [
     "codeload.github.com",
     "raw.githubusercontent.com",
     "objects.githubusercontent.com",
+    # Data sources of the next datasets (prompts/<slug>.md names each one).
+    "psc.org",                          # psc-fraser-sr
+    "www.psc.org",                      # psc-fraser-sr
+    "open.canada.ca",                   # dfo-rs-productivity metadata
+    "api-proxy.edh-cde.dfo-mpo.gc.ca",  # dfo-rs-productivity files
+    "waves-vagues.dfo-mpo.gc.ca",       # dfo-rs-productivity report PDF
+    "cn.dataone.org",                   # sasap-sockeye-brood files
+    "knb.ecoinformatics.org",           # sasap-sockeye-brood EML and landing page
 ]
 
 
@@ -79,9 +87,14 @@ async def keep_writes_in_project(input_data, tool_use_id, context):
 def build_prompt(dataset: str, budget: float) -> str:
     common = (PROJECT / "prompts" / "common.md").read_text()
     task = (PROJECT / "prompts" / f"{dataset}.md").read_text()
+    # The corpus contract keeps identity and measure semantics identical across
+    # datasets, so every run gets it between the shared rules and the task.
+    contract_path = PROJECT / "prompts" / "corpus-contract.md"
+    contract = contract_path.read_text() + "\n\n" if contract_path.exists() else ""
     return (
         common.replace("{BUDGET_USD}", f"{budget:.2f}").replace("{PROJECT}", str(PROJECT))
         + "\n\n"
+        + contract.replace("{PROJECT}", str(PROJECT))
         + task.replace("{PROJECT}", str(PROJECT))
     )
 
