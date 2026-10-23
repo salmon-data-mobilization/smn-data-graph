@@ -1,0 +1,18 @@
+{
+  "rows": 315501,
+  "columns": 90,
+  "years": [
+    1920,
+    2024
+  ],
+  "rows_with_max_estimate": 157573,
+  "distinct": {
+    "POP_ID": 6184,
+    "GFE_ID": 2377,
+    "cuid": 393,
+    "streamid": 6988,
+    "IndexId": 7026
+  },
+  "unique_key_IndexId_GFE_ID_Year": true,
+  "rows_without_cuid": 2085
+}

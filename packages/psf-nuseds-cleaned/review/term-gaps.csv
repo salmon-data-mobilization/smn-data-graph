@@ -1,0 +1,34 @@
+table_id,column_name,gap_kind,label,rationale
+nuseds_cuid_streamid,ADULT_BROODSTOCK_REMOVALS,measurement variable,Adult broodstock removals,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,JACK_BROODSTOCK_REMOVALS,measurement variable,Jack broodstock removals,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,TOTAL_BROODSTOCK_REMOVALS,measurement variable,Total broodstock removals,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,OTHER_REMOVALS,measurement variable,Other removals,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,TOTAL_RETURN_TO_RIVER,measurement variable,Total return to river,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,NATURAL_ADULT_FEMALES,measurement variable,Natural adult females,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,NATURAL_ADULT_MALES,measurement variable,Natural adult males,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,EFFECTIVE_FEMALES,measurement variable,Effective females,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,WEIGHTED_PCT_SPAWN,measurement variable,Weighted percent spawn,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,NO_INSPECTIONS_USED,measurement variable,Number of inspections used,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,Returns,measurement variable,Returns (PSF),No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,Broodstock,measurement variable,Broodstock (PSF),No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,Removals,measurement variable,Removals (PSF),No smn/gcdfo variable concept found.
+cu_year_spawners,n_sites,measurement variable,Number of stream sites,No smn/gcdfo variable concept found.
+nuseds_cuid_streamid,NATURAL_ADULT_SPAWNERS,I-ADOPT constraint,adult life stage,No smn/gcdfo concept found for 'adult life stage'.
+nuseds_cuid_streamid,NATURAL_ADULT_SPAWNERS,I-ADOPT constraint,"natural (in-river) spawning, excludes broodstock removals","No smn/gcdfo concept found for 'natural (in-river) spawning, excludes broodstock removals'."
+nuseds_cuid_streamid,NATURAL_JACK_SPAWNERS,I-ADOPT constraint,jack (precocious male) life stage,No smn/gcdfo concept found for 'jack (precocious male) life stage'.
+nuseds_cuid_streamid,NATURAL_JACK_SPAWNERS,I-ADOPT constraint,"natural (in-river) spawning, excludes broodstock removals","No smn/gcdfo concept found for 'natural (in-river) spawning, excludes broodstock removals'."
+nuseds_cuid_streamid,NATURAL_SPAWNERS_TOTAL,I-ADOPT constraint,"natural (in-river) spawning, excludes broodstock removals","No smn/gcdfo concept found for 'natural (in-river) spawning, excludes broodstock removals'."
+nuseds_cuid_streamid,Spawners,I-ADOPT constraint,PSF-derived: NATURAL_SPAWNERS_TOTAL or sum of components,No smn/gcdfo concept found for 'PSF-derived: NATURAL_SPAWNERS_TOTAL or sum of components'.
+nuseds_cuid_streamid,MAX_ESTIMATE,I-ADOPT statistical_modifier,maximum across alternative escapement fields,"MAX_ESTIMATE is the maximum over 8 NuSEDS fields (spawners, broodstock removals, other removals, total return to river), not a statistic over a sample; smn:MaximumStatisticalModifier would misstate it."
+nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,code value,NO SURVEY,"[corpus addition] Value in data (50 rows), absent from crosswalk; treated like 'NO SURVEY THIS YEAR'."
+nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,code value,NO SURVEY THIS YEAR,"Absence-of-observation marker, not an estimate type: no survey happened, so no Hyatt classification applies. Deliberately unmapped."
+nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,code value,UNKNOWN,Administrative unknown label. Treat as classification-unknown unless documented elsewhere.
+nuseds_cuid_streamid,ESTIMATE_METHOD,code value,Aerial Survey,"[corpus addition] Value in data (6 rows), absent from crosswalk; gcdfo:AerialSurveyCount is an enumeration (field) method, not an estimate method, so left unmapped."
+nuseds_cuid_streamid,ESTIMATE_METHOD,code value,Expert Opinion,
+nuseds_cuid_streamid,ESTIMATE_METHOD,code value,Not Applicable,
+nuseds_cuid_streamid,ESTIMATE_METHOD,code value,Other Estimate Method,
+nuseds_cuid_streamid,ESTIMATE_METHOD,code value,Unknown Estimate Method,
+nuseds_cuid_streamid,primary_enumeration_method,code value,Biologist/Working Group,Not a method. Treat as method-unknown unless a specific field/analysis method is documented elsewhere.
+nuseds_cuid_streamid,primary_enumeration_method,code value,Other,Treat as method-unknown unless a specific field/analysis method is documented elsewhere.
+cu_year_spawners,ESTIMATE_CLASSIFICATION,code value,NO SURVEY THIS YEAR,"Absence-of-observation marker, not an estimate type: no survey happened, so no Hyatt classification applies. Deliberately unmapped."
+cu_year_spawners,ESTIMATE_CLASSIFICATION,code value,UNKNOWN,Administrative unknown label. Treat as classification-unknown unless documented elsewhere.

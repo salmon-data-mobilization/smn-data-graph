@@ -1,0 +1,20 @@
+# CQ4: Which columns still lack ontology terms, and which parts of their variables are gaps?
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX csvw: <http://www.w3.org/ns/csvw#>
+PREFIX smn: <https://w3id.org/smn/>
+PREFIX gcdfo: <https://w3id.org/gcdfo/salmon#>
+PREFIX def: <https://w3id.org/salmon-demo-corpus/def/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?table ?column ?role ?status (GROUP_CONCAT(DISTINCT ?gap_label; separator=" | ") AS ?gaps)
+WHERE {
+  ?t csvw:column ?col . ?t csvw:url ?table .
+  ?col csvw:name ?column ; def:columnRole ?role ; def:semanticStatus ?status .
+  FILTER(?status IN ("gap", "partial"))
+  OPTIONAL { { ?col def:hasGap ?g } UNION { ?col def:variable/def:hasGap ?g } ?g rdfs:label ?gap_label }
+}
+GROUP BY ?table ?column ?role ?status
+ORDER BY ?status ?table ?column

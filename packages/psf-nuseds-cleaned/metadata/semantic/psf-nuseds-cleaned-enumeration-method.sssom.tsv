@@ -1,0 +1,37 @@
+#sssom_version: "1.1"
+#curie_map:
+#  gcdfo: https://w3id.org/gcdfo/salmon#
+#  nusedsEM: https://w3id.org/salmon-demo-corpus/code/nuseds/enumeration-method/
+#  smn: https://w3id.org/smn/
+#mapping_set_id: https://w3id.org/salmon-demo-corpus/mapping/psf-nuseds-cleaned/enumeration-method
+#mapping_set_version: 2026-10-22
+#mapping_set_description: NuSEDS primary_enumeration_method values in psf-nuseds-cleaned mapped to gcdfo concepts; from metasalmonpy 0.6.0 crosswalks plus corpus corrections.
+#license: https://creativecommons.org/licenses/by/4.0/
+#subject_source: https://w3id.org/salmon-demo-corpus/code/nuseds/enumeration-method/
+#subject_source_version: psf-nuseds-cleaned 2026-02-20
+#object_source: https://w3id.org/gcdfo/salmon
+#object_source_version: main sha256:31e7c28cd06a14c4
+subject_id	subject_label	predicate_id	object_id	object_label	mapping_justification	mapping_cardinality	mapping_tool	comment
+nusedsEM:bank-walk	Bank Walk	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:based-on-angling-catch	Based on Angling Catch	skos:broadMatch	smn:EnumerationMethod		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Catch-based index; treat as a CPUE-style index unless more detail is provided. [corpus fix: gcdfo:EnumerationMethod -> smn:EnumerationMethod; the former does not exist] Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:biologist-working-group	Biologist/Working Group	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Not a method. Treat as method-unknown unless a specific field/analysis method is documented elsewhere. Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:boat	Boat	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:broodstock-removal	Broodstock Removal	skos:broadMatch	gcdfo:FixedSiteCensusManual		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:dead-pitch	Dead Pitch	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Carcass-based visual surveys; often paired with peak/cumulative dead estimation methods. Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:electroshocking	Electroshocking	skos:broadMatch	gcdfo:ElectrofishingCount		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:enumeration-by-hatchery	Enumeration by Hatchery	skos:broadMatch	gcdfo:FixedSiteCensusManual		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:fence	Fence	skos:broadMatch	gcdfo:FixedSiteCensusManual		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:fixed-wing-aircraft	Fixed Wing Aircraft	skos:broadMatch	gcdfo:AerialSurveyCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:float	Float	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:helicopter	Helicopter	skos:broadMatch	gcdfo:AerialSurveyCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:hydroacoustic-station	Hydroacoustic Station	skos:broadMatch	gcdfo:HydroacousticSonarCount		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:other	Other	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Treat as method-unknown unless a specific field/analysis method is documented elsewhere. Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:peak-live-and-dead-count	Peak Live and Dead Count	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Value is analysis-like; prefer capturing peak/cumulative variants under ESTIMATE_METHOD. Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:redd-counts	Redd Counts	skos:broadMatch	gcdfo:ReddCount		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:snorkel	Snorkel	skos:broadMatch	gcdfo:VisualSnorkelCount		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:spot-checks	Spot Checks	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:stream-walk	Stream Walk	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:strip-counts	Strip Counts	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:tag-recovery	Tag Recovery	skos:broadMatch	gcdfo:MarkRecaptureFieldProgram		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:trap	Trap	skos:broadMatch	gcdfo:TrapCount		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	If trap is non-spanning or efficiency-corrected, use T; fully constraining traps may behave more like fixed-site counting. Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:walk	Walk	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.

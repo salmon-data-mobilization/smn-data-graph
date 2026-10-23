@@ -1,0 +1,47 @@
+table,column,role,status,gaps
+data/cu_year_spawners.csv,SPECIES_QUALIFIED,categorical,gap,
+data/cu_year_spawners.csv,n_sites,measurement,gap,variable: Number of stream sites
+data/cu_year_spawners.csv,region,categorical,gap,
+data/nuseds_cuid_streamid.csv,ACCURACY,categorical,gap,
+data/nuseds_cuid_streamid.csv,ADULT_BROODSTOCK_REMOVALS,measurement,gap,variable: Adult broodstock removals
+data/nuseds_cuid_streamid.csv,ADULT_PRESENCE,categorical,gap,
+data/nuseds_cuid_streamid.csv,Broodstock,measurement,gap,variable: Broodstock (PSF)
+data/nuseds_cuid_streamid.csv,BroodstockSource,categorical,gap,
+data/nuseds_cuid_streamid.csv,CU_TYPE,categorical,gap,
+data/nuseds_cuid_streamid.csv,EFFECTIVE_FEMALES,measurement,gap,variable: Effective females
+data/nuseds_cuid_streamid.csv,ESTIMATE_STAGE,categorical,gap,
+data/nuseds_cuid_streamid.csv,FAZ_ACRO,categorical,gap,
+data/nuseds_cuid_streamid.csv,GFE_TYPE,categorical,gap,
+data/nuseds_cuid_streamid.csv,INDEX_YN,categorical,gap,
+data/nuseds_cuid_streamid.csv,IS_INDICATOR,categorical,gap,
+data/nuseds_cuid_streamid.csv,JACK_BROODSTOCK_REMOVALS,measurement,gap,variable: Jack broodstock removals
+data/nuseds_cuid_streamid.csv,JACK_PRESENCE,categorical,gap,
+data/nuseds_cuid_streamid.csv,JAZ_ACRO,categorical,gap,
+data/nuseds_cuid_streamid.csv,MAZ_ACRO,categorical,gap,
+data/nuseds_cuid_streamid.csv,NATURAL_ADULT_FEMALES,measurement,gap,variable: Natural adult females
+data/nuseds_cuid_streamid.csv,NATURAL_ADULT_MALES,measurement,gap,variable: Natural adult males
+data/nuseds_cuid_streamid.csv,NO_INSPECTIONS_USED,measurement,gap,variable: Number of inspections used
+data/nuseds_cuid_streamid.csv,OTHER_REMOVALS,measurement,gap,variable: Other removals
+data/nuseds_cuid_streamid.csv,PRECISION,categorical,gap,
+data/nuseds_cuid_streamid.csv,RELIABILITY,categorical,gap,
+data/nuseds_cuid_streamid.csv,RUN_TYPE,categorical,gap,
+data/nuseds_cuid_streamid.csv,Removals,measurement,gap,variable: Removals (PSF)
+data/nuseds_cuid_streamid.csv,RemovalsSource,categorical,gap,
+data/nuseds_cuid_streamid.csv,Returns,measurement,gap,variable: Returns (PSF)
+data/nuseds_cuid_streamid.csv,SPECIES_QUALIFIED,categorical,gap,
+data/nuseds_cuid_streamid.csv,Source,categorical,gap,
+data/nuseds_cuid_streamid.csv,SpawnersSource,categorical,gap,
+data/nuseds_cuid_streamid.csv,TOTAL_BROODSTOCK_REMOVALS,measurement,gap,variable: Total broodstock removals
+data/nuseds_cuid_streamid.csv,TOTAL_RETURN_TO_RIVER,measurement,gap,variable: Total return to river
+data/nuseds_cuid_streamid.csv,WEIGHTED_PCT_SPAWN,measurement,gap,variable: Weighted percent spawn
+data/nuseds_cuid_streamid.csv,region,categorical,gap,
+data/nuseds_cuid_streamid.csv,stream_survey_quality,categorical,gap,
+data/cu_year_spawners.csv,ESTIMATE_CLASSIFICATION,categorical,partial,
+data/nuseds_cuid_streamid.csv,ESTIMATE_CLASSIFICATION,categorical,partial,
+data/nuseds_cuid_streamid.csv,ESTIMATE_METHOD,categorical,partial,
+data/nuseds_cuid_streamid.csv,MAX_ESTIMATE,measurement,partial,maximum across alternative escapement fields
+data/nuseds_cuid_streamid.csv,NATURAL_ADULT_SPAWNERS,measurement,partial,"natural (in-river) spawning, excludes broodstock removals | adult life stage"
+data/nuseds_cuid_streamid.csv,NATURAL_JACK_SPAWNERS,measurement,partial,"natural (in-river) spawning, excludes broodstock removals | jack (precocious male) life stage"
+data/nuseds_cuid_streamid.csv,NATURAL_SPAWNERS_TOTAL,measurement,partial,"natural (in-river) spawning, excludes broodstock removals"
+data/nuseds_cuid_streamid.csv,Spawners,measurement,partial,PSF-derived: NATURAL_SPAWNERS_TOTAL or sum of components
+data/nuseds_cuid_streamid.csv,primary_enumeration_method,categorical,partial,

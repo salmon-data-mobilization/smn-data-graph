@@ -1,0 +1,20 @@
+# CQ7: What maps NuSEDS method/classification codes to gcdfo concepts, and on what evidence?
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX csvw: <http://www.w3.org/ns/csvw#>
+PREFIX smn: <https://w3id.org/smn/>
+PREFIX gcdfo: <https://w3id.org/gcdfo/salmon#>
+PREFIX def: <https://w3id.org/salmon-demo-corpus/def/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?scheme_label ?nuseds_value ?predicate ?gcdfo_label ?gcdfo_concept ?mapping_set ?note
+WHERE {
+  ?code skos:inScheme ?scheme ; skos:prefLabel ?nuseds_value ; dcterms:source ?mapping_set .
+  ?scheme rdfs:label ?scheme_label .
+  OPTIONAL { ?code ?predicate ?gcdfo_concept . FILTER(?predicate IN (skos:exactMatch, skos:broadMatch, skos:closeMatch))
+             OPTIONAL { ?gcdfo_concept skos:prefLabel ?gcdfo_label } }
+  OPTIONAL { ?code skos:editorialNote ?note }
+}
+ORDER BY ?scheme_label ?nuseds_value

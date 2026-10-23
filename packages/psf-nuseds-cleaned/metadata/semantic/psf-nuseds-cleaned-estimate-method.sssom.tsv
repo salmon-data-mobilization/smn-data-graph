@@ -1,0 +1,38 @@
+#sssom_version: "1.1"
+#curie_map:
+#  gcdfo: https://w3id.org/gcdfo/salmon#
+#  nusedsEM: https://w3id.org/salmon-demo-corpus/code/nuseds/estimate-method/
+#mapping_set_id: https://w3id.org/salmon-demo-corpus/mapping/psf-nuseds-cleaned/estimate-method
+#mapping_set_version: 2026-10-22
+#mapping_set_description: NuSEDS ESTIMATE_METHOD values in psf-nuseds-cleaned mapped to gcdfo concepts; from metasalmonpy 0.6.0 crosswalks plus corpus corrections.
+#license: https://creativecommons.org/licenses/by/4.0/
+#subject_source: https://w3id.org/salmon-demo-corpus/code/nuseds/estimate-method/
+#subject_source_version: psf-nuseds-cleaned 2026-02-20
+#object_source: https://w3id.org/gcdfo/salmon
+#object_source_version: main sha256:31e7c28cd06a14c4
+subject_id	subject_label	predicate_id	object_id	object_label	mapping_justification	mapping_cardinality	mapping_tool	comment
+nusedsEM:addition-subtraction	Addition/Subtraction	skos:broadMatch	gcdfo:ExpansionMathematicalOperations		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Use explicit companion logic when combining methods; requires base-method context. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:aerial-survey	Aerial Survey	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	[corpus addition] Value in data (6 rows), absent from crosswalk; gcdfo:AerialSurveyCount is an enumeration (field) method, not an estimate method, so left unmapped. Source: corpus agent.
+nusedsEM:area-under-the-curve	Area Under the Curve	skos:broadMatch	gcdfo:AreaUnderTheCurve		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:calibrated-time-series	Calibrated Time Series	skos:broadMatch	gcdfo:CalibratedTimeSeries		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Record calibration source years, diagnostics, and revision history. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:combined-methods	Combined Methods	skos:broadMatch	gcdfo:EstimateMethod		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Decompose into components (e.g., sonar + visual apportionment) and apply conservative classification. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:cumulative-new	Cumulative New	skos:broadMatch	gcdfo:PeakCountAnalysis		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Legacy dictionary label; mapping is provisional pending local confirmation. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:expert-opinion	Expert Opinion	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:fence-count	Fence Count	skos:broadMatch	gcdfo:FixedStationTally		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	[corpus addition, needs review] Value in data, absent from crosswalk; treated like 'Fixed Site Census'. Source: corpus agent.
+nusedsEM:lake-expansion	Lake Expansion	skos:broadMatch	gcdfo:ExpansionMathematicalOperations		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Use explicit companion logic when combining methods; requires base-method context. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:mark-recapture-bayesian	Mark & Recapture: Bayesian	skos:broadMatch	gcdfo:MarkRecaptureAnalysis		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:mark-recapture-open-model	Mark & Recapture: Open Model	skos:broadMatch	gcdfo:MarkRecaptureAnalysis		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:mark-recapture-petersen	Mark & Recapture: Petersen	skos:broadMatch	gcdfo:MarkRecaptureAnalysis		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:multiplication-division	Multiplication/Division	skos:broadMatch	gcdfo:ExpansionMathematicalOperations		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Use explicit companion logic when combining methods; requires base-method context. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:not-applicable	Not Applicable	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:other-estimate-method	Other Estimate Method	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:peak-live-cum-dead-expansion	(Peak Live+Cum Dead)*Expansion	skos:broadMatch	gcdfo:ExpansionMathematicalOperations		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Legacy label with known ambiguity in operator precedence; confirm component order before interpretation. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:peak-live-cumulative-dead	Peak Live + Cumulative Dead	skos:broadMatch	gcdfo:PeakCountAnalysis		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:peak-live-dead	Peak Live + Dead	skos:broadMatch	gcdfo:PeakCountAnalysis		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:peak-live-expansion	Peak Live * Expansion	skos:broadMatch	gcdfo:ExpansionMathematicalOperations		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Legacy label with known ambiguity in operator precedence; confirm component order before interpretation. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:redd-count	Redd Count	skos:broadMatch	gcdfo:ReddExpansionAnalysis		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:resistivity-counter	Resistivity Counter	skos:broadMatch	gcdfo:FixedStationTally		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Enumerated as a device/mode; ensure bypass/coverage/QA metadata are captured. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:sonar-aris	Sonar-ARIS	skos:broadMatch	gcdfo:HydroacousticModelling		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:sonar-didson	Sonar-DIDSON	skos:broadMatch	gcdfo:HydroacousticModelling		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:unknown-estimate-method	Unknown Estimate Method	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.
+nusedsEM:video-counter	Video Counter	skos:broadMatch	gcdfo:FixedStationTally		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Enumerated as a device/mode; ensure QA review rate and uptime/coverage metadata are captured. Source: metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk.

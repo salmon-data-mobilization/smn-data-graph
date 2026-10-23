@@ -1,0 +1,21 @@
+dataset_id,table_id,observation_structure_id,structure_label,structure_description
+psf_nuseds_cleaned,cu_year_spawners,cu_year_spawners__n_sites,n_sites by cuid x Year x ESTIMATE_CLASSIFICATION,One n_sites value per cuid x Year x ESTIMATE_CLASSIFICATION.
+psf_nuseds_cleaned,cu_year_spawners,cu_year_spawners__spawner_abundance,spawner_abundance by cuid x Year x ESTIMATE_CLASSIFICATION,One spawner_abundance value per cuid x Year x ESTIMATE_CLASSIFICATION.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__ADULT_BROODSTOCK_REMOVALS,ADULT_BROODSTOCK_REMOVALS by IndexId x GFE_ID x Year,One ADULT_BROODSTOCK_REMOVALS value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__Broodstock,Broodstock by IndexId x GFE_ID x Year,One Broodstock value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__EFFECTIVE_FEMALES,EFFECTIVE_FEMALES by IndexId x GFE_ID x Year,One EFFECTIVE_FEMALES value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__JACK_BROODSTOCK_REMOVALS,JACK_BROODSTOCK_REMOVALS by IndexId x GFE_ID x Year,One JACK_BROODSTOCK_REMOVALS value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__MAX_ESTIMATE,MAX_ESTIMATE by IndexId x GFE_ID x Year,One MAX_ESTIMATE value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__NATURAL_ADULT_FEMALES,NATURAL_ADULT_FEMALES by IndexId x GFE_ID x Year,One NATURAL_ADULT_FEMALES value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__NATURAL_ADULT_MALES,NATURAL_ADULT_MALES by IndexId x GFE_ID x Year,One NATURAL_ADULT_MALES value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__NATURAL_ADULT_SPAWNERS,NATURAL_ADULT_SPAWNERS by IndexId x GFE_ID x Year,One NATURAL_ADULT_SPAWNERS value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__NATURAL_JACK_SPAWNERS,NATURAL_JACK_SPAWNERS by IndexId x GFE_ID x Year,One NATURAL_JACK_SPAWNERS value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__NATURAL_SPAWNERS_TOTAL,NATURAL_SPAWNERS_TOTAL by IndexId x GFE_ID x Year,One NATURAL_SPAWNERS_TOTAL value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__NO_INSPECTIONS_USED,NO_INSPECTIONS_USED by IndexId x GFE_ID x Year,One NO_INSPECTIONS_USED value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__OTHER_REMOVALS,OTHER_REMOVALS by IndexId x GFE_ID x Year,One OTHER_REMOVALS value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__Removals,Removals by IndexId x GFE_ID x Year,One Removals value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__Returns,Returns by IndexId x GFE_ID x Year,One Returns value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__Spawners,Spawners by IndexId x GFE_ID x Year,One Spawners value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__TOTAL_BROODSTOCK_REMOVALS,TOTAL_BROODSTOCK_REMOVALS by IndexId x GFE_ID x Year,One TOTAL_BROODSTOCK_REMOVALS value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__TOTAL_RETURN_TO_RIVER,TOTAL_RETURN_TO_RIVER by IndexId x GFE_ID x Year,One TOTAL_RETURN_TO_RIVER value per IndexId x GFE_ID x Year.
+psf_nuseds_cleaned,nuseds_cuid_streamid,nuseds_cuid_streamid__WEIGHTED_PCT_SPAWN,WEIGHTED_PCT_SPAWN by IndexId x GFE_ID x Year,One WEIGHTED_PCT_SPAWN value per IndexId x GFE_ID x Year.

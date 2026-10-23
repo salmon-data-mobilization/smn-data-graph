@@ -1,0 +1,809 @@
+{
+  "profile": "https://salmon-data-mobilization.github.io/smn-data-pkg/profiles/salmon-data-package/v0.3/profile.json",
+  "name": "psf_nuseds_cleaned",
+  "id": "psf_nuseds_cleaned",
+  "title": "Cleaned NuSEDS spawner survey data linked to Conservation Units (PSF, 2026-02-20)",
+  "description": "DFO NuSEDS escapement (spawner survey) records cleaned by the Pacific Salmon Foundation and matched to Conservation Units (cuid) and PSE stream IDs (streamid). One row per population x stream x year. Repackaged as a Salmon Data Package by the salmon-demo-corpus pipeline; values are unchanged from the source CSV apart from the derived column primary_enumeration_method. Table cu_year_spawners is a corpus-derived aggregate (sum of MAX_ESTIMATE by CU, year and estimate classification).",
+  "sdp": {
+    "specVersion": "sdp-0.3.2",
+    "profile": "https://salmon-data-mobilization.github.io/smn-data-pkg/profiles/salmon-data-package/v0.3/profile.json",
+    "rules": "https://salmon-data-mobilization.github.io/smn-data-pkg/schema/sdp.rules.yaml",
+    "metadata": {
+      "dataset": "metadata/dataset.csv",
+      "tables": "metadata/tables.csv",
+      "columnDictionary": "metadata/column_dictionary.csv",
+      "codes": "metadata/codes.csv",
+      "observationStructures": "metadata/structure/observation_structures.csv",
+      "observationComponents": "metadata/structure/observation_components.csv"
+    }
+  },
+  "resources": [
+    {
+      "profile": "tabular-data-resource",
+      "name": "sdp_dataset",
+      "path": "metadata/dataset.csv",
+      "title": "SDP dataset metadata",
+      "description": "Dataset-level metadata.",
+      "schema": "https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/dataset.schema.json"
+    },
+    {
+      "profile": "tabular-data-resource",
+      "name": "sdp_tables",
+      "path": "metadata/tables.csv",
+      "title": "SDP tables metadata",
+      "description": "Table-level metadata.",
+      "schema": "https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/tables.schema.json"
+    },
+    {
+      "profile": "tabular-data-resource",
+      "name": "sdp_column_dictionary",
+      "path": "metadata/column_dictionary.csv",
+      "title": "SDP column dictionary metadata",
+      "description": "Column-level metadata.",
+      "schema": "https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/column_dictionary.schema.json"
+    },
+    {
+      "profile": "tabular-data-resource",
+      "name": "sdp_codes",
+      "path": "metadata/codes.csv",
+      "title": "SDP codes metadata",
+      "description": "Controlled code list metadata.",
+      "schema": "https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/codes.schema.json"
+    },
+    {
+      "name": "nuseds_cuid_streamid",
+      "path": "data/nuseds_cuid_streamid.csv",
+      "profile": "tabular-data-resource",
+      "schema": {
+        "fields": [
+          {
+            "name": "SPECIES",
+            "title": "Species",
+            "type": "string",
+            "description": "Species of Fish.",
+            "term_iri": "http://rs.tdwg.org/dwc/terms/scientificName",
+            "term_type": "property"
+          },
+          {
+            "name": "WATERSHED_CDE",
+            "title": "DFO watershed code",
+            "type": "string",
+            "description": "[agent] DFO legacy watershed code of the waterbody."
+          },
+          {
+            "name": "FWA_WATERSHED_CDE",
+            "title": "BC FWA watershed code",
+            "type": "string",
+            "description": "[agent] BC Freshwater Atlas watershed code of the waterbody."
+          },
+          {
+            "name": "POP_ID",
+            "title": "NuSEDS population ID",
+            "type": "integer",
+            "description": "Population ID.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "GFE_ID",
+            "title": "NuSEDS stream ID (GFE_ID)",
+            "type": "integer",
+            "description": "Stream ID (Geo_Feature ID).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "FULL_CU_IN",
+            "title": "DFO CU index",
+            "type": "string",
+            "description": "The full index of the CU including the species qualifier, e.g. CK-01"
+          },
+          {
+            "name": "IndexId",
+            "title": "Species-qualified population ID",
+            "type": "string",
+            "description": "Combination of SPECIES_QUALIFIED and POP_ID",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "cuid",
+            "title": "PSE CU ID",
+            "type": "integer",
+            "description": "The unique numeric identifier for the CU, as used in the PSE's databases"
+          },
+          {
+            "name": "cu_name_pse",
+            "title": "CU name (PSE)",
+            "type": "string",
+            "description": "The display name of the CU as shown in the PSE"
+          },
+          {
+            "name": "CU_NAME",
+            "title": "CU name (DFO census sites)",
+            "type": "string",
+            "description": "See Conservation Unit Name description above"
+          },
+          {
+            "name": "AREA",
+            "title": "Subdistrict",
+            "type": "string",
+            "description": "This is the subdistrict. In most cases subdistricts are the same as statistical areas. They mainly differ for streams that eventually drain into the Fraser and for large areas that have been split up and thus have a/b/c... designations. E.g. Statistical area 03 has two subdistricts 3A and 3B."
+          },
+          {
+            "name": "WATERBODY",
+            "title": "Waterbody",
+            "type": "string",
+            "description": "This is the name of the waterbody or portion of a waterbody that bounds the population as shown on any given SEN."
+          },
+          {
+            "name": "GAZETTED_NAME",
+            "title": "Gazetted name",
+            "type": "string",
+            "description": "Provincially recognized name for the waterbody."
+          },
+          {
+            "name": "LOCAL_NAME_1",
+            "title": "Local name 1",
+            "type": "string",
+            "description": "Commonly known name for the waterbody."
+          },
+          {
+            "name": "LOCAL_NAME_2",
+            "title": "Local name 2",
+            "type": "string",
+            "description": "Second most commonly known name for the waterbody."
+          },
+          {
+            "name": "Year",
+            "title": "Analysis year",
+            "type": "integer",
+            "description": "Same as ANALYSIS_YR in all_areas_nuseds",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "NATURAL_ADULT_SPAWNERS",
+            "title": "Natural adult spawners",
+            "type": "number",
+            "description": "[agent] NuSEDS count/estimate of adult salmon spawning naturally (excluding broodstock removals).",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV",
+            "term_iri": "https://w3id.org/gcdfo/salmon#SpawnerAbundance",
+            "term_type": "owl_class",
+            "property_iri": "https://w3id.org/smn/Abundance",
+            "entity_iri": "https://w3id.org/smn/SalmonIndividual",
+            "constraint_iri": "https://w3id.org/smn/SpawnerStageContext"
+          },
+          {
+            "name": "NATURAL_JACK_SPAWNERS",
+            "title": "Natural jack spawners",
+            "type": "integer",
+            "description": "[agent] NuSEDS count/estimate of jacks (precocious males) spawning naturally.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV",
+            "term_iri": "https://w3id.org/gcdfo/salmon#SpawnerAbundance",
+            "term_type": "owl_class",
+            "property_iri": "https://w3id.org/smn/Abundance",
+            "entity_iri": "https://w3id.org/smn/SalmonIndividual",
+            "constraint_iri": "https://w3id.org/smn/SpawnerStageContext"
+          },
+          {
+            "name": "NATURAL_SPAWNERS_TOTAL",
+            "title": "Natural spawners total",
+            "type": "integer",
+            "description": "[agent] NuSEDS total natural spawners (adults + jacks).",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV",
+            "term_iri": "https://w3id.org/gcdfo/salmon#SpawnerAbundance",
+            "term_type": "owl_class",
+            "property_iri": "https://w3id.org/smn/Abundance",
+            "entity_iri": "https://w3id.org/smn/SalmonIndividual",
+            "constraint_iri": "https://w3id.org/smn/SpawnerStageContext"
+          },
+          {
+            "name": "ADULT_BROODSTOCK_REMOVALS",
+            "title": "Adult broodstock removals",
+            "type": "integer",
+            "description": "[agent] Adults removed for hatchery broodstock.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "JACK_BROODSTOCK_REMOVALS",
+            "title": "Jack broodstock removals",
+            "type": "integer",
+            "description": "[agent] Jacks removed for hatchery broodstock.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "TOTAL_BROODSTOCK_REMOVALS",
+            "title": "Total broodstock removals",
+            "type": "integer",
+            "description": "[agent] All fish removed for hatchery broodstock.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "OTHER_REMOVALS",
+            "title": "Other removals",
+            "type": "integer",
+            "description": "[agent] Other in-river removals (e.g. fisheries, mortalities).",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "TOTAL_RETURN_TO_RIVER",
+            "title": "Total return to river",
+            "type": "number",
+            "description": "[agent] Total fish returning to the river (spawners + removals).",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "ENUMERATION_METHODS",
+            "title": "Enumeration methods (list)",
+            "type": "string",
+            "description": "The enumeration method used to observe fish. The first method listed is the primary method. Values are: Bank Walk, Based on Angling Catch, Biologist/Working Group, Boat, Broodstock Removal, Dead Pitch, Electronic Counters, Electroshocking, Enumeration by Hatchery, Fence, Fixed Wing Aircraft, Float, Helicopter, Hydroacoustic Station, Other, Peak Live and Dead Count, Redd Counts, Snorkel, Spot Checks, Stream Walk, Strip Counts, Tag Recovery, Trap, Walk."
+          },
+          {
+            "name": "ADULT_PRESENCE",
+            "title": "Adult presence",
+            "type": "string",
+            "description": "Values are present if adults were observed, none observed if no adults were observed during the stream inspections, not inspected if adults were not looked for, unknown if it is not known whether adults were observed during inspections or not."
+          },
+          {
+            "name": "JACK_PRESENCE",
+            "title": "Jack presence",
+            "type": "string",
+            "description": "Values are present if jacks were observed, none observed if no jacks were observed during the stream inspections, not inspected if jacks were not looked for, unknown if it is not known whether jacks were observed during inspections or not."
+          },
+          {
+            "name": "START_DTT",
+            "title": "Survey start date",
+            "type": "string",
+            "description": "[agent] Date the first inspection was made; format DD-MON-YY (two-digit year; century ambiguous)."
+          },
+          {
+            "name": "END_DTT",
+            "title": "Survey end date",
+            "type": "string",
+            "description": "[agent] Date of the last inspection; format DD-MON-YY."
+          },
+          {
+            "name": "NATURAL_ADULT_FEMALES",
+            "title": "Natural adult females",
+            "type": "integer",
+            "description": "[agent] Natural adult female spawners.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "NATURAL_ADULT_MALES",
+            "title": "Natural adult males",
+            "type": "integer",
+            "description": "[agent] Natural adult male spawners.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "EFFECTIVE_FEMALES",
+            "title": "Effective females",
+            "type": "integer",
+            "description": "[agent] Females that spawned, adjusted for pre-spawn mortality.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "WEIGHTED_PCT_SPAWN",
+            "title": "Weighted percent spawn",
+            "type": "number",
+            "description": "[agent] Weighted percentage of eggs spawned by females.",
+            "unit_iri": "http://qudt.org/vocab/unit/PERCENT"
+          },
+          {
+            "name": "WATERBODY_ID",
+            "title": "Waterbody ID",
+            "type": "string",
+            "description": "[agent] NuSEDS waterbody identifier."
+          },
+          {
+            "name": "POPULATION",
+            "title": "Population name",
+            "type": "string",
+            "description": "Default naming originates from previous databases as a concatenation of stream name, subdistrict, species and run type. This is the most important piece of data that all the other SEN data fields refers to."
+          },
+          {
+            "name": "RUN_TYPE",
+            "title": "Run type",
+            "type": "string",
+            "description": "[agent] Run timing type (e.g. FALL, SUMMER); numeric values 1/2 also occur."
+          },
+          {
+            "name": "STREAM_ARRIVAL_DT_FROM",
+            "title": "Stream arrival date from",
+            "type": "string",
+            "description": "[agent] Earliest stream arrival date, DD-MON-YY."
+          },
+          {
+            "name": "STREAM_ARRIVAL_DT_TO",
+            "title": "Stream arrival date to",
+            "type": "string",
+            "description": "[agent] Latest stream arrival date, DD-MON-YY."
+          },
+          {
+            "name": "START_SPAWN_DT_FROM",
+            "title": "Start spawn date from",
+            "type": "string",
+            "description": "[agent] DD-MON-YY."
+          },
+          {
+            "name": "START_SPAWN_DT_TO",
+            "title": "Start spawn date to",
+            "type": "string",
+            "description": "[agent] DD-MON-YY."
+          },
+          {
+            "name": "PEAK_SPAWN_DT_FROM",
+            "title": "Peak spawn date from",
+            "type": "string",
+            "description": "[agent] DD-MON-YY."
+          },
+          {
+            "name": "PEAK_SPAWN_DT_TO",
+            "title": "Peak spawn date to",
+            "type": "string",
+            "description": "[agent] DD-MON-YY."
+          },
+          {
+            "name": "END_SPAWN_DT_FROM",
+            "title": "End spawn date from",
+            "type": "string",
+            "description": "[agent] DD-MON-YY."
+          },
+          {
+            "name": "END_SPAWN_DT_TO",
+            "title": "End spawn date to",
+            "type": "string",
+            "description": "[agent] DD-MON-YY."
+          },
+          {
+            "name": "ACCURACY",
+            "title": "Accuracy",
+            "type": "string",
+            "description": "[agent] Qualitative accuracy rating (HIGH/MED/LOW/UNK)."
+          },
+          {
+            "name": "PRECISION",
+            "title": "Precision",
+            "type": "string",
+            "description": "[agent] Qualitative precision rating (HIGH/MED/LOW/UNK)."
+          },
+          {
+            "name": "INDEX_YN",
+            "title": "Index flag",
+            "type": "string",
+            "description": "[agent] Y/N/U flag; meaning not documented in PSF metadata."
+          },
+          {
+            "name": "RELIABILITY",
+            "title": "Reliability",
+            "type": "string",
+            "description": "[agent] Qualitative reliability rating."
+          },
+          {
+            "name": "ESTIMATE_STAGE",
+            "title": "Estimate stage",
+            "type": "string",
+            "description": "[agent] FINAL, NEAR FINAL or PRELIMINARY."
+          },
+          {
+            "name": "ESTIMATE_CLASSIFICATION",
+            "title": "Estimate classification",
+            "type": "string",
+            "description": "This categorizes estimates based on their levels of accuracy and precision (Type-1 are the most accurate, Type-6 the least accurate). There are three other classifications that belong to SENs whose source data were migrated from the regional MSAccess SILBC16 database (definitions extracted from that user manual).RELATIVE: CONSTANT MULTI-YEAR METHODS andRELATIVE: VARYING MULTI-YEAR METHODS: 'This is the case with survey methods restricted to a fraction of the spawning habitat and/or a fraction of the spawning period. There are various types of relative abundance estimates depending on the survey method, the level of standardization of the methods, and the sampling effort.  For our purpose we have retained one type based on between-year consistency of the method where there are two levels.'NO SURVEY THIS YEAR: 'stream was not inspected for that species this year' "
+          },
+          {
+            "name": "NO_INSPECTIONS_USED",
+            "title": "Number of inspections used",
+            "type": "integer",
+            "description": "[agent] Number of stream inspections used for the estimate.",
+            "unit_iri": "http://qudt.org/vocab/unit/NUM"
+          },
+          {
+            "name": "ESTIMATE_METHOD",
+            "title": "Estimate method",
+            "type": "string",
+            "description": "There are several standard methods to chose from.Addition/Subtraction - simple addition or subtraction to provide an estimate. Should be used in conjunction with activity types Adjustment/Calibration and Summary observations. E.g. a population aggregate, the sum of two or more populations, would require the linking of two or more SENs and straight summation of the estimates.Multiplication/Division - simple multiplication or division to summary estimates. This method should be used in conjunction with activity type Adjustment/Calibration. E.g. E.g. An annual estimate that was arrived at by Peak Live Plus Dead analysis can be adjusted by some factor to make it equivalent to a Time Series estimate that uses AUC calculations.Area Under the Curve - Combining a series of point estimates for abundance to create an estimate for the annual abundance. This is done by determining the total area under a curve of abundance by time then dividing by the survey life (the average length of time that an individual is available to be observed alive i.e. is still within the survey area and is not dead).Peak Live Plus Dead - Examine point estimates for abundance, determine the survey when the maximum live count observed; sum the live and dead counts for that survey to create the annual estimate. Peak Live Plus Cumulative Dead - Examine point estimates for abundance, determine the survey when the maximum live count observed. Sum the live count for that survey with the cumulative total of the dead counts prior to and including that survey to create the annual estimate.Fixed Site Census - Combining one or more raw observations into a single estimate (e.g. add all daily fence observation SIL to create a single annual estimate).Mark and Recapture - Petersen - Use capture and re-capture SIL data to determine an abundance estimate with the Petersen calculation.Mark and Recapture - Jolly-Seber - Use capture and re-capture SIL data to determine an abundance estimate with the Jolly-Seber calculation.Redd Count - Using counts of redds from SILs and multiplied by a factor such as 2.Lake Expansion - expanding the dead recoveries by the recovery effortCumulative New - N/A"
+          },
+          {
+            "name": "CREATED_DTT",
+            "title": "Record created date",
+            "type": "string",
+            "description": "[agent] DD-MON-YY."
+          },
+          {
+            "name": "UPDATED_DTT",
+            "title": "Record updated date",
+            "type": "string",
+            "description": "[agent] DD-MON-YY."
+          },
+          {
+            "name": "ACT_ID",
+            "title": "NuSEDS activity ID",
+            "type": "integer",
+            "description": "[agent] NuSEDS activity (row) identifier; unique per row.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "Returns",
+            "title": "Returns (PSF)",
+            "type": "number",
+            "description": "[agent] PSF-derived returns value; Source names the NuSEDS field(s) used.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "Source",
+            "title": "Returns source",
+            "type": "string",
+            "description": "[agent] NuSEDS field(s) PSF used for Returns."
+          },
+          {
+            "name": "Spawners",
+            "title": "Spawners (PSF)",
+            "type": "integer",
+            "description": "[agent] PSF-derived spawners value.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV",
+            "term_iri": "https://w3id.org/gcdfo/salmon#SpawnerAbundance",
+            "term_type": "owl_class",
+            "property_iri": "https://w3id.org/smn/Abundance",
+            "entity_iri": "https://w3id.org/smn/SalmonIndividual",
+            "constraint_iri": "https://w3id.org/smn/SpawnerStageContext"
+          },
+          {
+            "name": "SpawnersSource",
+            "title": "Spawners source",
+            "type": "string",
+            "description": "[agent] NuSEDS field used for Spawners."
+          },
+          {
+            "name": "Broodstock",
+            "title": "Broodstock (PSF)",
+            "type": "integer",
+            "description": "[agent] PSF-derived broodstock removals.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "BroodstockSource",
+            "title": "Broodstock source",
+            "type": "string",
+            "description": "[agent] NuSEDS field used for Broodstock."
+          },
+          {
+            "name": "Removals",
+            "title": "Removals (PSF)",
+            "type": "integer",
+            "description": "[agent] PSF-derived other removals.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV"
+          },
+          {
+            "name": "RemovalsSource",
+            "title": "Removals source",
+            "type": "string",
+            "description": "[agent] NuSEDS field used for Removals."
+          },
+          {
+            "name": "MAX_ESTIMATE",
+            "title": "Maximum estimate",
+            "type": "number",
+            "description": "Calculated by PSF and previously present in NuSEDS: The maximum value (excluding NAs) among the following fields in NuSEDS: NATURAL_ADULT_SPAWNERS, NATURAL_JACK_SPAWNERS, NATURAL_SPAWNERS_TOTAL, ADULT_BROODSTOCK_REMOVALS, JACK_BROODSTOCK_REMOVALS, TOTAL_BROODSTOCK_REMOVALS, OTHER_REMOVALS, TOTAL_RETURN_TO_RIVER",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV",
+            "term_iri": "https://w3id.org/gcdfo/salmon#SpawnerAbundance",
+            "term_type": "owl_class",
+            "property_iri": "https://w3id.org/smn/Abundance",
+            "entity_iri": "https://w3id.org/smn/SalmonIndividual",
+            "constraint_iri": "https://w3id.org/smn/SpawnerStageContext"
+          },
+          {
+            "name": "CENSUS_SITE",
+            "title": "Census site",
+            "type": "string",
+            "description": "Previously SYSTEM_SITE. The name of the waterbody. Originally from NUSEDS but not necessarily the same. Name priority was BC gazette > BC provincial alias > DFO alias1 > DFO alias2. Same as Waterbody Name above"
+          },
+          {
+            "name": "GFE_TYPE",
+            "title": "Stream feature type",
+            "type": "string",
+            "description": "[agent] Geographic feature type of GFE_ID (Stream, Lake, ...)."
+          },
+          {
+            "name": "SPECIES_QUALIFIED",
+            "title": "Species qualifier",
+            "type": "string",
+            "description": "This is an Conservation Unit acronym used to describe the species of salmon for which the escapement estimate is for, eg:  CK - Chinook Salmon CM - Chum Salmon CO - Coho Salmon PKE - Even Year Pink Salmon PKO - Odd Year Pink Salmon SEL - Lake Type Sockeye Salmon SER - River or Ocean Type Sockeye Salmon  "
+          },
+          {
+            "name": "Y_LAT",
+            "title": "Latitude",
+            "type": "number",
+            "description": "Location of the mouth of the waterbody if flowing, or the centroid if not."
+          },
+          {
+            "name": "X_LONGT",
+            "title": "Longitude",
+            "type": "number",
+            "description": "Location of the mouth of the waterbody if flowing, or the centroid if not."
+          },
+          {
+            "name": "FAZ_ACRO",
+            "title": "Freshwater adaptive zone",
+            "type": "string",
+            "description": "Acronym of the freshwater adaptive zone"
+          },
+          {
+            "name": "MAZ_ACRO",
+            "title": "Marine adaptive zone",
+            "type": "string",
+            "description": "Acronym of the marine adaptive zone"
+          },
+          {
+            "name": "JAZ_ACRO",
+            "title": "Joint adaptive zone",
+            "type": "string",
+            "description": "Acronym of the joint adaptive zone"
+          },
+          {
+            "name": "CU_ACRO",
+            "title": "CU acronym",
+            "type": "string",
+            "description": "[agent] DFO CU acronym."
+          },
+          {
+            "name": "CU_LAT",
+            "title": "CU centroid latitude",
+            "type": "number",
+            "description": "Centroid of the CU"
+          },
+          {
+            "name": "CU_LONGT",
+            "title": "CU centroid longitude",
+            "type": "number",
+            "description": "Centroid of the CU"
+          },
+          {
+            "name": "CU_TYPE",
+            "title": "CU type",
+            "type": "string",
+            "description": "See Conservation Unit Type description above"
+          },
+          {
+            "name": "CU_INDEX",
+            "title": "CU index",
+            "type": "string",
+            "description": "[agent] CU index number within species."
+          },
+          {
+            "name": "SBJ_ID",
+            "title": "Species subject ID",
+            "type": "integer",
+            "description": "[agent] Numeric species code (1 Sockeye, 2 Coho, 3 Pink, 4 Chum, 5 Chinook in these data)."
+          },
+          {
+            "name": "IS_INDICATOR",
+            "title": "Indicator population",
+            "type": "string",
+            "description": "Is 'Y' if this POP_ID has been identified by Area experts as an 'indicator' population."
+          },
+          {
+            "name": "CMNTS",
+            "title": "Comments",
+            "type": "string",
+            "description": "[agent] Free-text comments from DFO census-site table."
+          },
+          {
+            "name": "EFFECTIVE_DT",
+            "title": "Effective date",
+            "type": "string",
+            "description": "[agent] Effective date of census-site record, D-Mon-YY."
+          },
+          {
+            "name": "coordinates_changed",
+            "title": "Coordinates changed",
+            "type": "boolean",
+            "description": "If the coordinates were manually changed (i.e., 'Y_LAT' and 'X_LONGT' != 'latitude' and 'longitude)"
+          },
+          {
+            "name": "StatArea",
+            "title": "Statistical area",
+            "type": "string",
+            "description": "Pacific Fishery Management Areas"
+          },
+          {
+            "name": "FULL_CU_IN_PSE",
+            "title": "CU index (PSE)",
+            "type": "string",
+            "description": "The updated NuSEDS field 'FULL_CU_IN' according to PSF's definition of Cus"
+          },
+          {
+            "name": "stream_survey_quality",
+            "title": "Stream survey quality",
+            "type": "string",
+            "description": "The quality of the survey based on ESTIMATE_CLASSIFICATION"
+          },
+          {
+            "name": "cu_name_dfo",
+            "title": "CU name (DFO)",
+            "type": "string",
+            "description": "The name of the CU used by DFO"
+          },
+          {
+            "name": "region",
+            "title": "PSE region",
+            "type": "string",
+            "description": "The broad-scale region that the CU is part of in the PSE"
+          },
+          {
+            "name": "regionid",
+            "title": "PSE region ID",
+            "type": "integer",
+            "description": "The unique numeric identifier for the region"
+          },
+          {
+            "name": "sys_nm",
+            "title": "Site name (PSE)",
+            "type": "string",
+            "description": "The site name as diaplyed in the PSE (derived from SYSTEM_SITE and/or WATERBODY)"
+          },
+          {
+            "name": "streamid",
+            "title": "PSE stream ID",
+            "type": "integer",
+            "description": "The numeric identifier of a population = a unique cuid & location (i.e. GFE_ID) combination"
+          },
+          {
+            "name": "primary_enumeration_method",
+            "title": "Primary enumeration method (derived)",
+            "type": "string",
+            "description": "[derived by corpus pipeline] First entry of ENUMERATION_METHODS (PSF metadata: 'The first method listed is the primary method')."
+          }
+        ],
+        "primaryKey": "ACT_ID"
+      },
+      "title": "NuSEDS spawner survey records with CU and stream IDs",
+      "description": "One row per NuSEDS population (IndexId) x stream (GFE_ID) x analysis year; all 90 source columns plus primary_enumeration_method."
+    },
+    {
+      "name": "cu_year_spawners",
+      "path": "data/cu_year_spawners.csv",
+      "profile": "tabular-data-resource",
+      "schema": {
+        "fields": [
+          {
+            "name": "cuid",
+            "title": "PSE CU ID",
+            "type": "integer",
+            "description": "The unique numeric identifier for the CU, as used in the PSE's databases",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "FULL_CU_IN_PSE",
+            "title": "CU index (PSE)",
+            "type": "string",
+            "description": "The updated NuSEDS field 'FULL_CU_IN' according to PSF's definition of Cus"
+          },
+          {
+            "name": "cu_name_pse",
+            "title": "CU name (PSE)",
+            "type": "string",
+            "description": "The display name of the CU as shown in the PSE"
+          },
+          {
+            "name": "SPECIES",
+            "title": "Species",
+            "type": "string",
+            "description": "Species of Fish."
+          },
+          {
+            "name": "SPECIES_QUALIFIED",
+            "title": "Species qualifier",
+            "type": "string",
+            "description": "This is an Conservation Unit acronym used to describe the species of salmon for which the escapement estimate is for, eg:  CK - Chinook Salmon CM - Chum Salmon CO - Coho Salmon PKE - Even Year Pink Salmon PKO - Odd Year Pink Salmon SEL - Lake Type Sockeye Salmon SER - River or Ocean Type Sockeye Salmon  "
+          },
+          {
+            "name": "regionid",
+            "title": "PSE region ID",
+            "type": "integer",
+            "description": "The unique numeric identifier for the region",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "region",
+            "title": "PSE region",
+            "type": "string",
+            "description": "The broad-scale region that the CU is part of in the PSE"
+          },
+          {
+            "name": "Year",
+            "title": "Analysis year",
+            "type": "integer",
+            "description": "Same as ANALYSIS_YR in all_areas_nuseds",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "ESTIMATE_CLASSIFICATION",
+            "title": "Estimate classification",
+            "type": "string",
+            "description": "This categorizes estimates based on their levels of accuracy and precision (Type-1 are the most accurate, Type-6 the least accurate). There are three other classifications that belong to SENs whose source data were migrated from the regional MSAccess SILBC16 database (definitions extracted from that user manual).RELATIVE: CONSTANT MULTI-YEAR METHODS andRELATIVE: VARYING MULTI-YEAR METHODS: 'This is the case with survey methods restricted to a fraction of the spawning habitat and/or a fraction of the spawning period. There are various types of relative abundance estimates depending on the survey method, the level of standardization of the methods, and the sampling effort.  For our purpose we have retained one type based on between-year consistency of the method where there are two levels.'NO SURVEY THIS YEAR: 'stream was not inspected for that species this year' "
+          },
+          {
+            "name": "spawner_abundance",
+            "title": "Spawner abundance (sum of stream MAX_ESTIMATE)",
+            "type": "number",
+            "description": "Sum of MAX_ESTIMATE over the CU's stream sites with a non-missing estimate of this classification in this year. Not infilled or expanded; NOT the PSE CU-level spawner abundance.",
+            "unit_iri": "http://qudt.org/vocab/unit/INDIV",
+            "term_iri": "https://w3id.org/gcdfo/salmon#SpawnerAbundance",
+            "term_type": "owl_class",
+            "property_iri": "https://w3id.org/smn/Abundance",
+            "entity_iri": "https://w3id.org/smn/SalmonIndividual",
+            "constraint_iri": "https://w3id.org/smn/SpawnerStageContext"
+          },
+          {
+            "name": "n_sites",
+            "title": "Number of stream sites",
+            "type": "integer",
+            "description": "Number of PSE stream sites (streamid) contributing a non-missing MAX_ESTIMATE.",
+            "unit_iri": "http://qudt.org/vocab/unit/NUM"
+          }
+        ],
+        "primaryKey": [
+          "cuid",
+          "Year",
+          "ESTIMATE_CLASSIFICATION"
+        ]
+      },
+      "title": "Spawner abundance by CU, year and estimate classification (corpus aggregate)",
+      "description": "Sum of MAX_ESTIMATE over stream sites, by PSE CU x year x NuSEDS estimate classification. Source of the RDF Data Cube."
+    },
+    {
+      "profile": "tabular-data-resource",
+      "name": "sdp_observation_structures",
+      "path": "metadata/structure/observation_structures.csv",
+      "title": "SDP observation structures metadata",
+      "description": "Optional logical observation structures that declare the grain of individual measures in wide or mixed-grain tables.",
+      "schema": "https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/observation_structures.schema.json"
+    },
+    {
+      "profile": "tabular-data-resource",
+      "name": "sdp_observation_components",
+      "path": "metadata/structure/observation_components.csv",
+      "title": "SDP observation components metadata",
+      "description": "Ordered bindings from table columns to the measure, dimensions, and attributes of a logical observation structure.",
+      "schema": "https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/observation_components.schema.json"
+    }
+  ],
+  "contributors": [
+    {
+      "title": "Bruno Carturan (ORCID 0000-0001-6811-1063); Stephanie Peacock (ORCID 0000-0001-5016-2153); Pacific Salmon Foundation",
+      "role": "creator"
+    },
+    {
+      "title": "Pacific Salmon Foundation (Salmon Watersheds Program)",
+      "role": "contact",
+      "email": "MISSING METADATA: no contact email in Zenodo record",
+      "organization": "Pacific Salmon Foundation"
+    }
+  ],
+  "licenses": [
+    {
+      "name": "CC-BY-4.0",
+      "title": "Creative Commons Attribution 4.0 International",
+      "path": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  ],
+  "temporal": {
+    "start": "1920-01-01",
+    "end": "2024-12-31"
+  }
+}

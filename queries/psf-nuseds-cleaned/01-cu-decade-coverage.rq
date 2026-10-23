@@ -1,0 +1,23 @@
+# CQ1: Which Fraser sockeye CUs have spawner counts in each decade?
+# Years with >=1 stream estimate per CU and decade (any estimate classification).
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX csvw: <http://www.w3.org/ns/csvw#>
+PREFIX smn: <https://w3id.org/smn/>
+PREFIX gcdfo: <https://w3id.org/gcdfo/salmon#>
+PREFIX def: <https://w3id.org/salmon-demo-corpus/def/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?cu_label ?cu_index ?decade (COUNT(DISTINCT ?year) AS ?years_with_counts) (SUM(?n) AS ?site_estimates)
+WHERE {
+  ?region skos:prefLabel "Fraser"@en .
+  ?cu a gcdfo:ConservationUnit ; def:region ?region ; def:taxon ?taxon ; skos:prefLabel ?cu_label ; def:pseCuIndex ?cu_index .
+  ?taxon rdfs:label "Oncorhynchus nerka" .
+  ?obs def:conservationUnit ?cu ; smn:returnYear ?y ; def:siteCount ?n .
+  BIND(xsd:integer(STR(?y)) AS ?year)
+  BIND(FLOOR(?year / 10) * 10 AS ?decade)
+}
+GROUP BY ?cu_label ?cu_index ?decade
+ORDER BY ?cu_index ?decade

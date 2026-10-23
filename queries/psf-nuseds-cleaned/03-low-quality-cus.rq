@@ -1,0 +1,25 @@
+# CQ3: Which CUs rely mostly on low-quality estimate types (2015-2024)?
+# Low quality = gcdfo Type-5 or Type-6, or no Hyatt type (UNKNOWN, multi-year relative, unmapped).
+# Share = low-quality stream estimates / all stream estimates; CUs with >= 10 stream estimates and >= 50% low quality.
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX csvw: <http://www.w3.org/ns/csvw#>
+PREFIX smn: <https://w3id.org/smn/>
+PREFIX gcdfo: <https://w3id.org/gcdfo/salmon#>
+PREFIX def: <https://w3id.org/salmon-demo-corpus/def/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?region_label ?species ?cu_label ?cu_index (SUM(?n) AS ?site_estimates) (SUM(?low) AS ?low_quality)
+       (ROUND(100 * SUM(?low) / SUM(?n)) AS ?pct_low_quality)
+WHERE {
+  ?obs def:conservationUnit ?cu ; def:estimateClassification ?code ; smn:returnYear ?y ; def:siteCount ?n .
+  FILTER(xsd:integer(STR(?y)) >= 2015)
+  ?cu skos:prefLabel ?cu_label ; def:pseCuIndex ?cu_index ; def:region/skos:prefLabel ?region_label ; def:taxon/rdfs:label ?species .
+  OPTIONAL { ?code skos:exactMatch ?t . FILTER(?t IN (gcdfo:Type1, gcdfo:Type2, gcdfo:Type3, gcdfo:Type4)) }
+  BIND(IF(BOUND(?t), 0, ?n) AS ?low)
+}
+GROUP BY ?region_label ?species ?cu_label ?cu_index
+HAVING (SUM(?n) >= 10 && SUM(?low) / SUM(?n) >= 0.5)
+ORDER BY DESC(?pct_low_quality) DESC(?site_estimates)

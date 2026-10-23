@@ -1,0 +1,272 @@
+dataset_id,table_id,column_name,code_value,code_label,code_description,vocabulary_iri,term_iri,term_type
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES,Chinook,Chinook,Oncorhynchus tshawytscha,,http://purl.obolibrary.org/obo/NCBITaxon_74940,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES,Chum,Chum,Oncorhynchus keta,,http://purl.obolibrary.org/obo/NCBITaxon_8018,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES,Coho,Coho,Oncorhynchus kisutch,,http://purl.obolibrary.org/obo/NCBITaxon_8019,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES,Pink,Pink,Oncorhynchus gorbuscha,,http://purl.obolibrary.org/obo/NCBITaxon_8017,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES,Sockeye,Sockeye,Oncorhynchus nerka,,http://purl.obolibrary.org/obo/NCBITaxon_8023,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ADULT_PRESENCE,NONE OBSERVED,NONE OBSERVED,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ADULT_PRESENCE,NOT INSPECTED,NOT INSPECTED,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ADULT_PRESENCE,PRESENT,PRESENT,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ADULT_PRESENCE,UNKNOWN,UNKNOWN,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JACK_PRESENCE,NONE OBSERVED,NONE OBSERVED,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JACK_PRESENCE,NOT INSPECTED,NOT INSPECTED,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JACK_PRESENCE,PRESENT,PRESENT,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JACK_PRESENCE,UNKNOWN,UNKNOWN,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RUN_TYPE,1,1,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RUN_TYPE,2,2,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RUN_TYPE,EARLY STUART,EARLY STUART,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RUN_TYPE,EARLY SUMMER,EARLY SUMMER,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RUN_TYPE,FALL,FALL,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RUN_TYPE,LATE,LATE,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RUN_TYPE,SPRING,SPRING,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RUN_TYPE,SUMMER,SUMMER,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ACCURACY,HIGH,HIGH,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ACCURACY,LOW,LOW,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ACCURACY,MED,MED,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ACCURACY,UNK,UNK,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,PRECISION,HIGH,HIGH,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,PRECISION,LOW,LOW,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,PRECISION,MED,MED,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,PRECISION,UNK,UNK,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,INDEX_YN,N,N,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,INDEX_YN,U,U,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,INDEX_YN,Y,Y,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RELIABILITY,HIGH,HIGH,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RELIABILITY,LOW,LOW,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RELIABILITY,MED,MED,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RELIABILITY,MHIGH,MHIGH,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RELIABILITY,MLOW,MLOW,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_STAGE,FINAL,FINAL,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_STAGE,NEAR FINAL,NEAR FINAL,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_STAGE,PRELIMINARY,PRELIMINARY,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,NO SURVEY,NO SURVEY,"[corpus addition] Value in data (50 rows), absent from crosswalk; treated like 'NO SURVEY THIS YEAR'.",https://w3id.org/gcdfo/salmon#EstimateTypeScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,NO SURVEY THIS YEAR,NO SURVEY THIS YEAR,"Absence-of-observation marker, not an estimate type: no survey happened, so no Hyatt classification applies. Deliberately unmapped.",https://w3id.org/gcdfo/salmon#EstimateTypeScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,PRESENCE-ABSENCE (TYPE-6),PRESENCE-ABSENCE (TYPE-6),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type6,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,RELATIVE ABUNDANCE (TYPE-3),RELATIVE ABUNDANCE (TYPE-3),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type3,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,RELATIVE ABUNDANCE (TYPE-4),RELATIVE ABUNDANCE (TYPE-4),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type4,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,RELATIVE ABUNDANCE (TYPE-5),RELATIVE ABUNDANCE (TYPE-5),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type5,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,RELATIVE: CONSTANT MULTI-YEAR METHODS,RELATIVE: CONSTANT MULTI-YEAR METHODS,No released concept for the multi-year relative classifications; linked at EstimateType scheme level. Mint a specific term before asserting more.,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#EstimateType,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,RELATIVE: VARYING MULTI-YEAR METHODS,RELATIVE: VARYING MULTI-YEAR METHODS,No released concept for the multi-year relative classifications; linked at EstimateType scheme level. Mint a specific term before asserting more.,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#EstimateType,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,TRUE ABUNDANCE (TYPE-1),TRUE ABUNDANCE (TYPE-1),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type1,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,TRUE ABUNDANCE (TYPE-2),TRUE ABUNDANCE (TYPE-2),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type2,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_CLASSIFICATION,UNKNOWN,UNKNOWN,Administrative unknown label. Treat as classification-unknown unless documented elsewhere.,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,(Peak Live+Cum Dead)*Expansion,(Peak Live+Cum Dead)*Expansion,Legacy label with known ambiguity in operator precedence; confirm component order before interpretation.,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#ExpansionMathematicalOperations,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Addition/Subtraction,Addition/Subtraction,Use explicit companion logic when combining methods; requires base-method context.,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#ExpansionMathematicalOperations,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Aerial Survey,Aerial Survey,"[corpus addition] Value in data (6 rows), absent from crosswalk; gcdfo:AerialSurveyCount is an enumeration (field) method, not an estimate method, so left unmapped.",https://w3id.org/gcdfo/salmon#EstimateMethodScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Area Under the Curve,Area Under the Curve,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#AreaUnderTheCurve,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Calibrated Time Series,Calibrated Time Series,"Record calibration source years, diagnostics, and revision history.",https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#CalibratedTimeSeries,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Combined Methods,Combined Methods,"Decompose into components (e.g., sonar + visual apportionment) and apply conservative classification.",https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#EstimateMethod,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Cumulative New,Cumulative New,Legacy dictionary label; mapping is provisional pending local confirmation.,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#PeakCountAnalysis,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Expert Opinion,Expert Opinion,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Fence Count,Fence Count,"[corpus addition, needs review] Value in data, absent from crosswalk; treated like 'Fixed Site Census'.",https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#FixedStationTally,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Lake Expansion,Lake Expansion,Use explicit companion logic when combining methods; requires base-method context.,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#ExpansionMathematicalOperations,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Mark & Recapture: Bayesian,Mark & Recapture: Bayesian,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#MarkRecaptureAnalysis,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Mark & Recapture: Open Model,Mark & Recapture: Open Model,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#MarkRecaptureAnalysis,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Mark & Recapture: Petersen,Mark & Recapture: Petersen,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#MarkRecaptureAnalysis,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Multiplication/Division,Multiplication/Division,Use explicit companion logic when combining methods; requires base-method context.,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#ExpansionMathematicalOperations,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Not Applicable,Not Applicable,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Other Estimate Method,Other Estimate Method,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Peak Live * Expansion,Peak Live * Expansion,Legacy label with known ambiguity in operator precedence; confirm component order before interpretation.,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#ExpansionMathematicalOperations,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Peak Live + Cumulative Dead,Peak Live + Cumulative Dead,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#PeakCountAnalysis,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Peak Live + Dead,Peak Live + Dead,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#PeakCountAnalysis,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Redd Count,Redd Count,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#ReddExpansionAnalysis,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Resistivity Counter,Resistivity Counter,Enumerated as a device/mode; ensure bypass/coverage/QA metadata are captured.,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#FixedStationTally,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Sonar-ARIS,Sonar-ARIS,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#HydroacousticModelling,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Sonar-DIDSON,Sonar-DIDSON,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#HydroacousticModelling,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Unknown Estimate Method,Unknown Estimate Method,,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,ESTIMATE_METHOD,Video Counter,Video Counter,Enumerated as a device/mode; ensure QA review rate and uptime/coverage metadata are captured.,https://w3id.org/gcdfo/salmon#EstimateMethodScheme,https://w3id.org/gcdfo/salmon#FixedStationTally,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,ADULT_BROODSTOCK_REMOVALS,ADULT_BROODSTOCK_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,ADULT_BROODSTOCK_REMOVALS + OTHER_REMOVALS,ADULT_BROODSTOCK_REMOVALS + OTHER_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,NATURAL_ADULT_SPAWNERS,NATURAL_ADULT_SPAWNERS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,NATURAL_SPAWNERS_TOTAL,NATURAL_SPAWNERS_TOTAL,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,NATURAL_SPAWNERS_TOTAL + ADULT_BROODSTOCK_REMOVALS,NATURAL_SPAWNERS_TOTAL + ADULT_BROODSTOCK_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,NATURAL_SPAWNERS_TOTAL + ADULT_BROODSTOCK_REMOVALS + OTHER_REMOVALS,NATURAL_SPAWNERS_TOTAL + ADULT_BROODSTOCK_REMOVALS + OTHER_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,NATURAL_SPAWNERS_TOTAL + OTHER_REMOVALS,NATURAL_SPAWNERS_TOTAL + OTHER_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,NATURAL_SPAWNERS_TOTAL + TOTAL_BROODSTOCK_REMOVALS,NATURAL_SPAWNERS_TOTAL + TOTAL_BROODSTOCK_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,NATURAL_SPAWNERS_TOTAL + TOTAL_BROODSTOCK_REMOVALS + OTHER_REMOVALS,NATURAL_SPAWNERS_TOTAL + TOTAL_BROODSTOCK_REMOVALS + OTHER_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,OTHER_REMOVALS,OTHER_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,TOTAL_BROODSTOCK_REMOVALS,TOTAL_BROODSTOCK_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,Source,TOTAL_RETURN_TO_RIVER,TOTAL_RETURN_TO_RIVER,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,SpawnersSource,NATURAL_SPAWNERS_TOTAL,NATURAL_SPAWNERS_TOTAL,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,BroodstockSource,ADULT_BROODSTOCK_REMOVALS,ADULT_BROODSTOCK_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,BroodstockSource,TOTAL_BROODSTOCK_REMOVALS,TOTAL_BROODSTOCK_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,RemovalsSource,OTHER_REMOVALS,OTHER_REMOVALS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,GFE_TYPE,Artificial Channel,Artificial Channel,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,GFE_TYPE,Lake,Lake,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,GFE_TYPE,Lake Portion,Lake Portion,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,GFE_TYPE,Slough,Slough,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,GFE_TYPE,Slough Segment,Slough Segment,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,GFE_TYPE,Stream,Stream,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,GFE_TYPE,Stream Aggregate,Stream Aggregate,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,GFE_TYPE,Stream Segment,Stream Segment,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES_QUALIFIED,CK,CK,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES_QUALIFIED,CM,CM,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES_QUALIFIED,CO,CO,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES_QUALIFIED,PKE,PKE,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES_QUALIFIED,PKO,PKO,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES_QUALIFIED,SEL,SEL,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,SPECIES_QUALIFIED,SER,SER,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,Alsek,Alsek,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,BB,BB,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,BCD,BCD,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,EVI,EVI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,FRCany,FRCany,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,HG,HG,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,HK,HK,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,HecLow,HecLow,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,KP,KP,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,LFR,LFR,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,LILL,LILL,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,LNR-P,LNR-P,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,LSK,LSK,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,LStk,LStk,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,LTh,LTh,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,MFR,MFR,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,MSK,MSK,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,NC,NC,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,NOlg,NOlg,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,NTh,NTh,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,OK,OK,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,PS,PS,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,RR,RR,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,RSI,RSI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,SC,SC,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,STh,STh,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,Taku,Taku,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,UFR,UFR,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,UNR,UNR,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,USK,USK,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,UStk,UStk,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,WVI,WVI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,YukSlk,YukSlk,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,FAZ_ACRO,midYR,midYR,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,AKCst,AKCst,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,Ber,Ber,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,GStr,GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,HStr,HStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,NQCI,NQCI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,NSKEst,NSKEst,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,ORWA,ORWA,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,SFj,SFj,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,TBFj,TBFj,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,WQCI,WQCI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,MAZ_ACRO,WVI,WVI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,Alsek+AKCst,Alsek+AKCst,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,BB+GStr,BB+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,BCD+HStr,BCD+HStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,EVI+GStr,EVI+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,EVI+SFj,EVI+SFj,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,FRCany+GStr,FRCany+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,HG+HStr,HG+HStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,HG+NQCI,HG+NQCI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,HG+WQCI,HG+WQCI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,HK+SFj,HK+SFj,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,HecLow+HStr,HecLow+HStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,HecLow+NSKEst,HecLow+NSKEst,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,KP+Ber,KP+Ber,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,LFR+GStr,LFR+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,LILL+GStr,LILL+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,LNR-P+NSKEst,LNR-P+NSKEst,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,LSK+NSKEst,LSK+NSKEst,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,LStk+TBFj,LStk+TBFj,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,LTh+GStr,LTh+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,MFR+GStr,MFR+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,MSK+NSKEst,MSK+NSKEst,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,NC+HStr,NC+HStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,NOlg+Ber,NOlg+Ber,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,NTh+GStr,NTh+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,OK+ORWA,OK+ORWA,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,PS+Ber,PS+Ber,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,RR+Ber,RR+Ber,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,RSI+HStr,RSI+HStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,SC+GStr,SC+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,SC+SFj,SC+SFj,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,STh+GStr,STh+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,Taku+TBFj,Taku+TBFj,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,UFR+GStr,UFR+GStr,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,UNR+NSKEst,UNR+NSKEst,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,USK+NSKEst,USK+NSKEst,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,UStk+TBFj,UStk+TBFj,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,WVI+WQCI,WVI+WQCI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,WVI+WVI,WVI+WVI,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,YukSlk+Ber,YukSlk+Ber,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,JAZ_ACRO,midYR+Ber,midYR+Ber,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,CU_TYPE,Bin,Bin,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,CU_TYPE,Current,Current,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,CU_TYPE,Extirpated,Extirpated,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,CU_TYPE,VREQ[Bin],VREQ[Bin],,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,CU_TYPE,VREQ[Current],VREQ[Current],,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,CU_TYPE,VREQ[Extirpated],VREQ[Extirpated],,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,IS_INDICATOR,N,N,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,IS_INDICATOR,Y,Y,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,stream_survey_quality,High,High,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,stream_survey_quality,Low,Low,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,stream_survey_quality,Medium,Medium,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,stream_survey_quality,Medium-High,Medium-High,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,stream_survey_quality,Medium-Low,Medium-Low,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,stream_survey_quality,Unknown,Unknown,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,Central Coast,Central Coast,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,Columbia,Columbia,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,East Vancouver Island & Mainland Inlets,East Vancouver Island & Mainland Inlets,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,Fraser,Fraser,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,Haida Gwaii,Haida Gwaii,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,Nass,Nass,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,Northern Transboundary,Northern Transboundary,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,Skeena,Skeena,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,West Vancouver Island,West Vancouver Island,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,region,Yukon,Yukon,,,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Bank Walk,Bank Walk,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualGroundCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Based on Angling Catch,Based on Angling Catch,Catch-based index; treat as a CPUE-style index unless more detail is provided. [corpus fix: gcdfo:EnumerationMethod -> smn:EnumerationMethod; the former does not exist],https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/smn/EnumerationMethod,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Biologist/Working Group,Biologist/Working Group,Not a method. Treat as method-unknown unless a specific field/analysis method is documented elsewhere.,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Boat,Boat,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualGroundCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Broodstock Removal,Broodstock Removal,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#FixedSiteCensusManual,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Dead Pitch,Dead Pitch,Carcass-based visual surveys; often paired with peak/cumulative dead estimation methods.,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualGroundCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Electroshocking,Electroshocking,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#ElectrofishingCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Enumeration by Hatchery,Enumeration by Hatchery,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#FixedSiteCensusManual,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Fence,Fence,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#FixedSiteCensusManual,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Fixed Wing Aircraft,Fixed Wing Aircraft,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#AerialSurveyCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Float,Float,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualGroundCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Helicopter,Helicopter,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#AerialSurveyCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Hydroacoustic Station,Hydroacoustic Station,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#HydroacousticSonarCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Other,Other,Treat as method-unknown unless a specific field/analysis method is documented elsewhere.,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,,
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Peak Live and Dead Count,Peak Live and Dead Count,Value is analysis-like; prefer capturing peak/cumulative variants under ESTIMATE_METHOD.,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualGroundCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Redd Counts,Redd Counts,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#ReddCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Snorkel,Snorkel,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualSnorkelCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Spot Checks,Spot Checks,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualGroundCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Stream Walk,Stream Walk,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualGroundCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Strip Counts,Strip Counts,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualGroundCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Tag Recovery,Tag Recovery,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#MarkRecaptureFieldProgram,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Trap,Trap,"If trap is non-spanning or efficiency-corrected, use T; fully constraining traps may behave more like fixed-site counting.",https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#TrapCount,skos_concept
+psf_nuseds_cleaned,nuseds_cuid_streamid,primary_enumeration_method,Walk,Walk,,https://w3id.org/gcdfo/salmon#EnumerationMethodScheme,https://w3id.org/gcdfo/salmon#VisualGroundCount,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,SPECIES,Chinook,Chinook,Oncorhynchus tshawytscha,,http://purl.obolibrary.org/obo/NCBITaxon_74940,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,SPECIES,Chum,Chum,Oncorhynchus keta,,http://purl.obolibrary.org/obo/NCBITaxon_8018,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,SPECIES,Coho,Coho,Oncorhynchus kisutch,,http://purl.obolibrary.org/obo/NCBITaxon_8019,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,SPECIES,Pink,Pink,Oncorhynchus gorbuscha,,http://purl.obolibrary.org/obo/NCBITaxon_8017,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,SPECIES,Sockeye,Sockeye,Oncorhynchus nerka,,http://purl.obolibrary.org/obo/NCBITaxon_8023,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,SPECIES_QUALIFIED,CK,CK,,,,
+psf_nuseds_cleaned,cu_year_spawners,SPECIES_QUALIFIED,CM,CM,,,,
+psf_nuseds_cleaned,cu_year_spawners,SPECIES_QUALIFIED,CO,CO,,,,
+psf_nuseds_cleaned,cu_year_spawners,SPECIES_QUALIFIED,PKE,PKE,,,,
+psf_nuseds_cleaned,cu_year_spawners,SPECIES_QUALIFIED,PKO,PKO,,,,
+psf_nuseds_cleaned,cu_year_spawners,SPECIES_QUALIFIED,SEL,SEL,,,,
+psf_nuseds_cleaned,cu_year_spawners,SPECIES_QUALIFIED,SER,SER,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,Central Coast,Central Coast,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,Columbia,Columbia,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,East Vancouver Island & Mainland Inlets,East Vancouver Island & Mainland Inlets,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,Fraser,Fraser,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,Haida Gwaii,Haida Gwaii,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,Nass,Nass,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,Northern Transboundary,Northern Transboundary,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,Skeena,Skeena,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,West Vancouver Island,West Vancouver Island,,,,
+psf_nuseds_cleaned,cu_year_spawners,region,Yukon,Yukon,,,,
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,NO SURVEY THIS YEAR,NO SURVEY THIS YEAR,"Absence-of-observation marker, not an estimate type: no survey happened, so no Hyatt classification applies. Deliberately unmapped.",https://w3id.org/gcdfo/salmon#EstimateTypeScheme,,
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,PRESENCE-ABSENCE (TYPE-6),PRESENCE-ABSENCE (TYPE-6),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type6,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,RELATIVE ABUNDANCE (TYPE-3),RELATIVE ABUNDANCE (TYPE-3),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type3,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,RELATIVE ABUNDANCE (TYPE-4),RELATIVE ABUNDANCE (TYPE-4),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type4,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,RELATIVE ABUNDANCE (TYPE-5),RELATIVE ABUNDANCE (TYPE-5),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type5,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,RELATIVE: CONSTANT MULTI-YEAR METHODS,RELATIVE: CONSTANT MULTI-YEAR METHODS,No released concept for the multi-year relative classifications; linked at EstimateType scheme level. Mint a specific term before asserting more.,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#EstimateType,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,RELATIVE: VARYING MULTI-YEAR METHODS,RELATIVE: VARYING MULTI-YEAR METHODS,No released concept for the multi-year relative classifications; linked at EstimateType scheme level. Mint a specific term before asserting more.,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#EstimateType,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,TRUE ABUNDANCE (TYPE-1),TRUE ABUNDANCE (TYPE-1),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type1,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,TRUE ABUNDANCE (TYPE-2),TRUE ABUNDANCE (TYPE-2),,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,https://w3id.org/gcdfo/salmon#Type2,skos_concept
+psf_nuseds_cleaned,cu_year_spawners,ESTIMATE_CLASSIFICATION,UNKNOWN,UNKNOWN,Administrative unknown label. Treat as classification-unknown unless documented elsewhere.,https://w3id.org/gcdfo/salmon#EstimateTypeScheme,,

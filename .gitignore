@@ -8,3 +8,11 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Corpus build: large or regenerable files
+.cache/
+data/
+packages/*/data/
+graph/store/
+runs/*/transcript.jsonl
+**/.claude/.cc-writes

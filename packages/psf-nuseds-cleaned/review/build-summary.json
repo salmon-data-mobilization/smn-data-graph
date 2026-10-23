@@ -1,0 +1,41 @@
+{
+  "main_rows": 315501,
+  "cube_rows": 26141,
+  "dict_rows": 102,
+  "codes_rows": 271,
+  "codes_with_term": 67,
+  "decomposition_rows": 32,
+  "observation_structures": 20,
+  "term_gaps": 33,
+  "metasalmonpy_term_gaps": 0,
+  "validation": {
+    "structural_issues": [],
+    "semantic_issues": [],
+    "missing_terms": [
+      "Adult Broodstock Removals",
+      "Jack Broodstock Removals",
+      "Total Broodstock Removals",
+      "Other Removals",
+      "Total Return To River",
+      "Natural Adult Females",
+      "Natural Adult Males",
+      "Effective Females",
+      "Weighted Pct Spawn",
+      "No Inspections Used",
+      "Returns",
+      "Broodstock",
+      "Removals",
+      "N Sites"
+    ],
+    "missing_semantics_by_field": {
+      "constraint_iri": 14,
+      "entity_iri": 14,
+      "property_iri": 14,
+      "statistical_modifier_iri": 20,
+      "term_iri": 14
+    }
+  },
+  "validation_require_iris": {
+    "error": "ValueError: Measurement columns require term_iri; missing in rows 20, 21, 22, 23, 24, 30, 31, 32, 33, 51, 56, 60, 62, and 102."
+  }
+}

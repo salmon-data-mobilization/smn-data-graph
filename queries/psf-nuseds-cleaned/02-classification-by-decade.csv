@@ -1,0 +1,62 @@
+decade,estimate_type,site_estimates
+1920,unmapped NuSEDS: UNKNOWN,11
+1930,unmapped NuSEDS: UNKNOWN,3579
+1930,"Type-3, Relative Abundance, high resolution",1
+1940,unmapped NuSEDS: UNKNOWN,6734
+1940,"Type-4, Relative Abundance, medium resolution",9
+1940,"Type-3, Relative Abundance, high resolution",1
+1950,unmapped NuSEDS: UNKNOWN,18527
+1950,"Type-4, Relative Abundance, medium resolution",27
+1950,"Type-5, Relative Abundance, low resolution",18
+1950,"Type-3, Relative Abundance, high resolution",7
+1960,unmapped NuSEDS: UNKNOWN,21469
+1960,"Type-5, Relative Abundance, low resolution",16
+1960,"Type-4, Relative Abundance, medium resolution",14
+1960,"Type-3, Relative Abundance, high resolution",11
+1960,"Type-2, True Abundance, medium resolution",2
+1960,"Type-1, True Abundance, high resolution",1
+1970,unmapped NuSEDS: UNKNOWN,22555
+1970,"Type-4, Relative Abundance, medium resolution",47
+1970,"Type-5, Relative Abundance, low resolution",45
+1970,"Type-1, True Abundance, high resolution",15
+1970,"Type-3, Relative Abundance, high resolution",6
+1970,"Type-2, True Abundance, medium resolution",1
+1980,unmapped NuSEDS: UNKNOWN,24197
+1980,"Type-4, Relative Abundance, medium resolution",104
+1980,"Type-1, True Abundance, high resolution",72
+1980,"Type-5, Relative Abundance, low resolution",70
+1980,"Type-2, True Abundance, medium resolution",48
+1980,"Type-3, Relative Abundance, high resolution",19
+1980,"Type-6, Presence or Absence",2
+1990,unmapped NuSEDS: UNKNOWN,17527
+1990,"Type-4, Relative Abundance, medium resolution",1009
+1990,"Type-3, Relative Abundance, high resolution",685
+1990,"Type-1, True Abundance, high resolution",575
+1990,Estimate Type,539
+1990,"Type-5, Relative Abundance, low resolution",509
+1990,"Type-6, Presence or Absence",283
+1990,"Type-2, True Abundance, medium resolution",261
+1990,unmapped NuSEDS: NO SURVEY THIS YEAR,1
+2000,"Type-4, Relative Abundance, medium resolution",5653
+2000,"Type-3, Relative Abundance, high resolution",3870
+2000,"Type-5, Relative Abundance, low resolution",2911
+2000,unmapped NuSEDS: UNKNOWN,1359
+2000,"Type-1, True Abundance, high resolution",885
+2000,"Type-2, True Abundance, medium resolution",739
+2000,"Type-6, Presence or Absence",479
+2000,Estimate Type,268
+2010,"Type-4, Relative Abundance, medium resolution",5146
+2010,"Type-3, Relative Abundance, high resolution",4095
+2010,"Type-5, Relative Abundance, low resolution",2762
+2010,"Type-6, Presence or Absence",1075
+2010,"Type-1, True Abundance, high resolution",561
+2010,"Type-2, True Abundance, medium resolution",466
+2010,unmapped NuSEDS: UNKNOWN,76
+2020,"Type-4, Relative Abundance, medium resolution",2613
+2020,"Type-3, Relative Abundance, high resolution",1747
+2020,"Type-5, Relative Abundance, low resolution",1563
+2020,"Type-6, Presence or Absence",610
+2020,"Type-2, True Abundance, medium resolution",238
+2020,"Type-1, True Abundance, high resolution",235
+2020,unmapped NuSEDS: UNKNOWN,43
+2020,unmapped NuSEDS: NO SURVEY THIS YEAR,1

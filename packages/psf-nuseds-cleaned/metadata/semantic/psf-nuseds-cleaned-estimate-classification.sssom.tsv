@@ -1,0 +1,24 @@
+#sssom_version: "1.1"
+#curie_map:
+#  gcdfo: https://w3id.org/gcdfo/salmon#
+#  nusedsEC: https://w3id.org/salmon-demo-corpus/code/nuseds/estimate-classification/
+#mapping_set_id: https://w3id.org/salmon-demo-corpus/mapping/psf-nuseds-cleaned/estimate-classification
+#mapping_set_version: 2026-10-22
+#mapping_set_description: NuSEDS ESTIMATE_CLASSIFICATION values in psf-nuseds-cleaned mapped to gcdfo concepts; from metasalmonpy 0.6.0 crosswalks plus corpus corrections.
+#license: https://creativecommons.org/licenses/by/4.0/
+#subject_source: https://w3id.org/salmon-demo-corpus/code/nuseds/estimate-classification/
+#subject_source_version: psf-nuseds-cleaned 2026-02-20
+#object_source: https://w3id.org/gcdfo/salmon
+#object_source_version: main sha256:31e7c28cd06a14c4
+subject_id	subject_label	predicate_id	object_id	object_label	mapping_justification	mapping_cardinality	mapping_tool	comment
+nusedsEC:no-survey	NO SURVEY	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	[corpus addition] Value in data (50 rows), absent from crosswalk; treated like 'NO SURVEY THIS YEAR'. Source: corpus agent.
+nusedsEC:no-survey-this-year	NO SURVEY THIS YEAR	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Absence-of-observation marker, not an estimate type: no survey happened, so no Hyatt classification applies. Deliberately unmapped. Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.
+nusedsEC:presence-absence-type-6	PRESENCE-ABSENCE (TYPE-6)	skos:exactMatch	gcdfo:Type6		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.
+nusedsEC:relative-abundance-type-3	RELATIVE ABUNDANCE (TYPE-3)	skos:exactMatch	gcdfo:Type3		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.
+nusedsEC:relative-abundance-type-4	RELATIVE ABUNDANCE (TYPE-4)	skos:exactMatch	gcdfo:Type4		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.
+nusedsEC:relative-abundance-type-5	RELATIVE ABUNDANCE (TYPE-5)	skos:exactMatch	gcdfo:Type5		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.
+nusedsEC:relative-constant-multi-year-methods	RELATIVE: CONSTANT MULTI-YEAR METHODS	skos:broadMatch	gcdfo:EstimateType		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	No released concept for the multi-year relative classifications; linked at EstimateType scheme level. Mint a specific term before asserting more. Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.
+nusedsEC:relative-varying-multi-year-methods	RELATIVE: VARYING MULTI-YEAR METHODS	skos:broadMatch	gcdfo:EstimateType		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	No released concept for the multi-year relative classifications; linked at EstimateType scheme level. Mint a specific term before asserting more. Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.
+nusedsEC:true-abundance-type-1	TRUE ABUNDANCE (TYPE-1)	skos:exactMatch	gcdfo:Type1		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.
+nusedsEC:true-abundance-type-2	TRUE ABUNDANCE (TYPE-2)	skos:exactMatch	gcdfo:Type2		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.
+nusedsEC:unknown	UNKNOWN	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Administrative unknown label. Treat as classification-unknown unless documented elsewhere. Source: metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk.

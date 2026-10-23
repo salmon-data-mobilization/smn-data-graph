@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "sssom_version": "1.1",
+  "mapping_sets": [
+    {
+      "path": "metadata/semantic/psf-nuseds-cleaned-enumeration-method.sssom.tsv",
+      "sha256": "8cdc50b52a47c2868db381a97b713a41a1cadeb641fac608f3522b8390e0d24f",
+      "row_count": 23,
+      "mapping_set_id": "https://w3id.org/salmon-demo-corpus/mapping/psf-nuseds-cleaned/enumeration-method",
+      "mapping_set_version": "2026-10-22",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "subject_source": "https://w3id.org/salmon-demo-corpus/code/nuseds/enumeration-method/",
+      "subject_source_version": "psf-nuseds-cleaned 2026-02-20",
+      "object_source": "https://w3id.org/gcdfo/salmon",
+      "object_source_version": "main sha256:31e7c28cd06a14c4"
+    },
+    {
+      "path": "metadata/semantic/psf-nuseds-cleaned-estimate-classification.sssom.tsv",
+      "sha256": "6e189fa675c2b640d3ced0055dce0ef4c77db7bcc3000411ac64b88c917c031b",
+      "row_count": 11,
+      "mapping_set_id": "https://w3id.org/salmon-demo-corpus/mapping/psf-nuseds-cleaned/estimate-classification",
+      "mapping_set_version": "2026-10-22",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "subject_source": "https://w3id.org/salmon-demo-corpus/code/nuseds/estimate-classification/",
+      "subject_source_version": "psf-nuseds-cleaned 2026-02-20",
+      "object_source": "https://w3id.org/gcdfo/salmon",
+      "object_source_version": "main sha256:31e7c28cd06a14c4"
+    },
+    {
+      "path": "metadata/semantic/psf-nuseds-cleaned-estimate-method.sssom.tsv",
+      "sha256": "f18a345433bf9c023ccaf2b7f5f73abf64ee51d4fd58f37c63210efd7b985062",
+      "row_count": 25,
+      "mapping_set_id": "https://w3id.org/salmon-demo-corpus/mapping/psf-nuseds-cleaned/estimate-method",
+      "mapping_set_version": "2026-10-22",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "subject_source": "https://w3id.org/salmon-demo-corpus/code/nuseds/estimate-method/",
+      "subject_source_version": "psf-nuseds-cleaned 2026-02-20",
+      "object_source": "https://w3id.org/gcdfo/salmon",
+      "object_source_version": "main sha256:31e7c28cd06a14c4"
+    }
+  ],
+  "provenance": {
+    "generated_by": "metasalmonpy.write_sdp_sssom",
+    "metasalmonpy_version": "0.6.0",
+    "specification": "https://mapping-commons.github.io/sssom/1.1/"
+  }
+}
