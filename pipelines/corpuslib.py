@@ -60,12 +60,14 @@ NS = {
     "qk": "http://qudt.org/vocab/quantitykind/",
     "sssom": "https://w3id.org/sssom/",
     "dwc": "http://rs.tdwg.org/dwc/terms/",
+    "dqv": "http://www.w3.org/ns/dqv#",      # cross-source quality annotations
+    "oa": "http://www.w3.org/ns/oa#",        # annotation targets
 }
 
 # Standard vocabularies we use structurally (W3C/DC); not checked term by term.
 STRUCTURAL_NS = tuple(NS[k] for k in (
     "rdf", "rdfs", "xsd", "owl", "skos", "dcterms", "dcat", "prov", "qb", "csvw",
-    "sosa", "schema", "foaf", "geo", "wgs", "sssom", "corpus"))
+    "sosa", "schema", "foaf", "geo", "wgs", "sssom", "dqv", "oa", "corpus"))
 
 # Verified NCBITaxon IRIs (EBI OLS4 exact search, 2026-10-22).
 NCBI_TAXON = {

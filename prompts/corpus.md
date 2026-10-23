@@ -25,7 +25,7 @@ TriG files and their IRI-keyed Parquet files.
    - the PSF CU nodes ↔ the `dfo-rs` CU series;
    - `sasap` Bristol Bay ↔ `salmonprize` Bristol Bay.
 3. **Discrepancy graph.** For every matched pair × brood year, create a
-   `def:Discrepancy` where the values differ beyond tolerance. Classify the
+   `dqv:QualityAnnotation` (see contract section 4) where the values differ beyond tolerance. Classify the
    explanation in this order:
    - (a) EFS vs total: the ratio to the PSC EFS is ≈1 while the ratio to PSC
      total spawners is ≈2;
@@ -70,4 +70,9 @@ TriG files and their IRI-keyed Parquet files.
    Also write a static `graph/corpus.trig.gz`, so the corpus can be loaded
    anywhere (for example into an ODIS-style or Fuseki store).
 6. Report, with demo notes: the 3–4 strongest cross-source facts with numbers,
-   and the exact SPARQL to run them live.
+   and the exact SPARQL to run them live. Demo rulings (Brett, 2026-10-23):
+   - Do not show cube abundance values. The NuSEDS cube is a sum of stream
+     `MAX_ESTIMATE` values, not CU abundance, so show coverage, estimate types,
+     counts and discrepancies instead.
+   - End monitoring trends at 2023, because 2024 may be incomplete. The NuSEDS
+     result is a 47% fall in stream-level estimates from 1985 to 2023.

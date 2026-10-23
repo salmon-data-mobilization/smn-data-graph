@@ -32,13 +32,40 @@ sockeye stock. So:
   spawners, recruits, catch or run. Then add the constraints: sex (female),
   "effective" (pre-spawn mortality removed), origin (natural / hatchery), and age
   class or jack inclusion.
-- **Use smn/gcdfo IRIs only where they exist.** `VocabIndex` enforces this. For
-  the known gaps, mint the term under `def:` and also write a `def:TermGap` node:
-  effective female spawners, recruits per spawner, recruits per effective female
-  spawner, recruits by age class, smolt abundance, fry abundance, jack,
-  production stock group. The term gaps feed the ontology term-request list.
-  (`smn:EuropeanAgeNotation` does exist; the cloud probe's term search missed it,
-  so check the ontology file as well as term search before declaring a gap.)
+- **Use smn/gcdfo IRIs only where they exist.** `VocabIndex` enforces this.
+- **Never mint compound variables as shared terms** (Brett, 2026-10-23; smn
+  ADR-0002 decision 6; smn `CONVENTIONS.md` "Keep compound dataset variables in
+  profile/project SKOS"; gcdfo CONVENTIONS 2.3.4.1). Effective female spawners,
+  recruits per spawner, recruits per EFS, recruits by age class, smolt and fry
+  abundance, total return and similar column variables are **profile SKOS
+  concepts**, optionally typed `iadopt:Variable`. Use gcdfo where the concept
+  already exists there (NuSEDS-derived concepts belong in the gcdfo profile).
+  Otherwise put it in the shared corpus scheme
+  `<https://w3id.org/salmon-demo-corpus/scheme/variables>` (a `skos:ConceptScheme`).
+  Decompose each concept into **atomic** parts: `iadopt:hasProperty
+  smn:Abundance`, an object of interest, and constraints such as basis, sex,
+  "effective" (pre-spawn mortality removed), origin, life stage and jack
+  inclusion.
+- **Only atomic constraints go to smn, as term requests.** When an atomic part
+  has no smn/gcdfo term, write a term-request node for that atomic part only.
+  Examples: female sex as a constraint, the effective (pre-spawn-mortality-adjusted)
+  qualifier, jack. Never request the compound. The term requests feed the RDA WG
+  list. Before treating EFS as a gap, check the PSC Salmon Vocabularies repo on
+  this Mac (`~/code/psc-salmon-vocabularies`, read-only) for `PSC-CV-000035`
+  (EFFECTIVE_FEMALES), and cite it if it fits. `smn:EuropeanAgeNotation` exists
+  (the cloud probe's term search missed it), so check the ontology files as well
+  as term search before declaring any gap.
+- **Namespaces.** `def:` is not a home for definitions: any definition must come
+  from smn/gcdfo or become an smn term request. Instance IRIs (stocks,
+  observations, crosswalk and quality nodes) stay under the provisional base,
+  which needs an organisation-owned namespace later. w3id registration is
+  optional for the demo. Say "provisional namespace" in every report.
+- **Known value mappings** (Brett, 2026-10-23): NuSEDS enumeration methods map
+  to `smn:EnumerationMethod`, not `gcdfo:EnumerationMethod`, which does not
+  exist. Map `Fence Count` to `gcdfo:FixedStationTally`. The NuSEDS values
+  `NO SURVEY`, `Fence Count`, `Aerial Survey` and `Net` are being added upstream
+  in metasalmon and metasalmonpy. Until then, map them in the pipeline and record
+  each workaround. Keep gcdfo on `main`.
 - **Make the age notation explicit on every age-class column.** Use
   `smn:GilbertRichAgeNotation` for PSC Fraser `age` codes (21, 31, 32, 41, 42,
   43, 51, 52, 53, 62, 63, 64, 72) and `smn:EuropeanAgeNotation` for `a.b`. Store
@@ -62,9 +89,14 @@ sockeye stock. So:
 
 ## 4. The `discrepancy` named graph (built by `pipelines/corpus.py`)
 
-A `def:Discrepancy` node exists for each source pair × stock × year where the
-values differ beyond tolerance. It carries `def:valueA`, `def:valueB`,
-`def:sourceA`, `def:sourceB` and `def:explanation`, chosen from a controlled list:
+Record each cross-source difference with the W3C Data Quality Vocabulary
+(`dqv:`, http://www.w3.org/ns/dqv#), not with corpus-minted classes. For each
+source pair × stock × year where the values differ beyond tolerance, write a
+`dqv:QualityAnnotation`. Its `oa:hasTarget` is the two observations, and its
+`dqv:inDimension` is a concept from a small corpus SKOS scheme of explanation
+classes (`<https://w3id.org/salmon-demo-corpus/scheme/discrepancy-explanations>`).
+Also write a `dqv:QualityMeasurement` that holds the relative difference.
+The explanation classes are:
 
 - spawner measure differs: EFS vs total
 - age classes missing

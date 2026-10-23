@@ -49,7 +49,9 @@ The shared rules (`prompts/common.md`) and the corpus contract (`prompts/corpus-
 3. Build the SDP:
    - Use I-ADOPT decomposition, with explicit year basis, age notation and
      jack inclusion.
-   - Mint `def:` terms for R/S and R/EFS, with gap nodes.
+   - Add R/S and R/EFS as concepts in the corpus variable scheme
+     (contract section 2), decomposed into atomic parts. Write term requests
+     only for missing atomic parts.
    - Validate.
 4. Build the graph:
    - Stock nodes `ident("stock","dfo-rs",<series id>)`, linked to the PSF/DFO CU
