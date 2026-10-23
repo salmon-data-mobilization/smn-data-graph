@@ -1,0 +1,8 @@
+# Test fixture: a one-concept stand-in for the PSC CV (not real PSC content).
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://w3id.org/psc/vocab/concept/PSC-CV-999999> a skos:Concept ;
+    skos:prefLabel "Test concept"@en ;
+    skos:inScheme <https://w3id.org/psc/vocab/scheme/test-scheme> .
+
+<https://w3id.org/psc/vocab/scheme/test-scheme> a skos:ConceptScheme .

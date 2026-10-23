@@ -8,8 +8,16 @@ dependencies = [
     "claude-agent-sdk>=0.2.173",
     "duckdb>=2.0.0",
     "metasalmonpy[eml,verify]",
+    "pyarrow>=17.0",
     "pyoxigraph>=0.5.13",
+    "pyshacl>=0.40.1",
+    "pyyaml>=6.0",
 ]
 
 [tool.uv.sources]
 metasalmonpy = { url = "https://github.com/salmon-data-mobilization/metasalmonpy/archive/refs/tags/v0.6.0.tar.gz" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"

@@ -1,0 +1,14 @@
+# Test fixture: a two-term stand-in for gcdfo (not real gcdfo content).
+@prefix gcdfo: <https://w3id.org/gcdfo/salmon#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://w3id.org/gcdfo/salmon> a owl:Ontology ;
+    owl:versionInfo "0.0.0-test" .
+
+gcdfo:MethodX a skos:Concept ;
+    skos:prefLabel "Method X"@en ;
+    skos:broader gcdfo:UndeclaredParent .
+
+# gcdfo's file re-declares an smn IRI that smn itself does not declare.
+<https://w3id.org/smn/MirroredOnlyInGcdfo> a skos:Concept .

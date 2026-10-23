@@ -1,0 +1,20 @@
+# Test fixture: a three-term stand-in for the smn flat build (not real smn content).
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://w3id.org/smn> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/smn/9.9.9> ;
+    owl:versionInfo "9.9.9" .
+
+<https://w3id.org/smn/TermA> a skos:Concept ;
+    skos:prefLabel "Term A"@en ;
+    rdfs:label "term a (rdfs)"@en .
+
+<https://w3id.org/smn/TermB> a skos:Concept ;
+    rdfs:label "Terme B"@fr ;
+    rdfs:label "Term B"@en .
+
+# smn's file says something about a gcdfo IRI; that must not make it a gcdfo term.
+<https://w3id.org/gcdfo/salmon#OnlyAnnotatedBySmn> a skos:Concept ;
+    skos:closeMatch <https://w3id.org/smn/TermA> .

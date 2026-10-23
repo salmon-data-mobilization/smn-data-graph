@@ -16,3 +16,10 @@ packages/*/data/
 graph/store/
 runs/*/transcript.jsonl
 **/.claude/.cc-writes
+
+# salmongraph outputs (salmongraph/INTERFACES.md section 7). The generic
+# build/ and dist/ entries above already match these; they are listed so the
+# corpus layout is explicit. releases/<version>/manifest.json is committed.
+/build/
+/dist/
+.pytest_cache/
