@@ -159,6 +159,15 @@ def fetch_source(raw_dir: Path, files: dict[str, str], meta: dict, force: bool =
 # Vocabulary index: does an ontology IRI really exist?
 # --------------------------------------------------------------------------
 
+def portable_path(path: Path) -> str:
+    """A path that reads the same on every machine: relative to the project or to ~."""
+    path = path.absolute()
+    for base, prefix in ((ROOT, ""), (Path.home(), "~/")):
+        if path.is_relative_to(base):
+            return prefix + str(path.relative_to(base))
+    return str(path)
+
+
 class VocabIndex:
     """In-memory store of gcdfo + smn used to check IRIs and fetch labels."""
 
@@ -170,7 +179,7 @@ class VocabIndex:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 subprocess.run(["curl", "-L", "--fail", "-sS", "-o", str(path), url], check=True)
             self.store.load(path=str(path), format=ox.RdfFormat.TURTLE)
-            self.sources[key] = {"url": url, "path": str(path), "sha256": sha256(path)}
+            self.sources[key] = {"url": url, "path": portable_path(path), "sha256": sha256(path)}
         self._subjects = {q.subject.value for q in self.store if isinstance(q.subject, ox.NamedNode)}
 
     def exists(self, iri: str) -> bool:

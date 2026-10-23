@@ -22,6 +22,17 @@ Every stock node gets `rdfs:label` (the source's own name, verbatim),
 `dcterms:source` (the dataset IRI), the species (NCBITaxon), and region or
 jurisdiction where the source states it.
 
+**Roll-ups are not a hierarchy** (ADR-0001 D5). Never infer that a population
+belongs to a CU, or a CU to an SMU, from names or geography alone. Membership
+comes from a published source wherever one exists. The first is the DFO
+SMU–CU–DU crosswalk (`dfo-pacific-science/Salmon-SMU-CU-DU-Crosswalk` on GitHub;
+the official record is on Open Canada). Record each membership with its source,
+the source's version, and the period it is valid for. If you propose a link that
+no source publishes, mark it as agent-derived and critical (section 2a).
+
+**Never hardcode the base IRI.** Build every instance IRI with `ident()` or from
+`corpuslib.NS`. The base is provisional and will change (ADR-0001 D10).
+
 ## 2. Measures must say what was measured, not only what the column is called
 
 The key lesson from the cloud probes: a column called `TotalEscapement` in a
@@ -50,22 +61,38 @@ sockeye stock. So:
   has no smn/gcdfo term, write a term-request node for that atomic part only.
   Examples: female sex as a constraint, the effective (pre-spawn-mortality-adjusted)
   qualifier, jack. Never request the compound. The term requests feed the RDA WG
-  list. Before treating EFS as a gap, check the PSC Salmon Vocabularies repo on
-  this Mac (`~/code/psc-salmon-vocabularies`, read-only) for `PSC-CV-000035`
-  (EFFECTIVE_FEMALES), and cite it if it fits. `smn:EuropeanAgeNotation` exists
-  (the cloud probe's term search missed it), so check the ontology files as well
-  as term search before declaring any gap.
+  list.
+- **The PSC controlled vocabulary already defines four stock–recruit
+  variables.** Use them where they fit, and say so in the report:
+  `PSC-CV-000035` (effective female spawner abundance), `PSC-CV-000036` and
+  `PSC-CV-000037` (freshwater age-1 and age-2 smolt abundance) and
+  `PSC-CV-000038` (fry abundance estimate). Their IRIs are
+  `https://w3id.org/psc/vocab/concept/<concept-id>`. Read the definitions in the PSC
+  Salmon Vocabularies repo on this Mac (`~/code/psc-salmon-vocabularies`,
+  read-only, `data/concepts.csv`) before you use one. Two warnings. EFS in
+  PSC-CV-000035 is adjusted for eggs not spawned, so do not use it for an
+  unadjusted female count. And a PSC canonical IRI always redirects to an HTML
+  page; the machine-readable copy is the `.ttl` beside it. `smn:EuropeanAgeNotation`
+  exists (the cloud probe's term search missed it), so check the ontology files
+  as well as term search before declaring any gap.
 - **Namespaces.** `def:` is not a home for definitions: any definition must come
   from smn/gcdfo or become an smn term request. Instance IRIs (stocks,
-  observations, crosswalk and quality nodes) stay under the provisional base,
-  which needs an organisation-owned namespace later. w3id registration is
-  optional for the demo. Say "provisional namespace" in every report.
-- **Known value mappings** (Brett, 2026-10-23): NuSEDS enumeration methods map
-  to `smn:EnumerationMethod`, not `gcdfo:EnumerationMethod`, which does not
-  exist. Map `Fence Count` to `gcdfo:FixedStationTally`. The NuSEDS values
-  `NO SURVEY`, `Fence Count`, `Aerial Survey` and `Net` are being added upstream
-  in metasalmon and metasalmonpy. Until then, map them in the pipeline and record
-  each workaround. Keep gcdfo on `main`.
+  observations, crosswalk and quality nodes) stay under the provisional base
+  until ADR-0001 D10 is decided. w3id registration is optional for the demo. Say
+  "provisional namespace" in every report.
+- **Enumeration and estimate methods stay in gcdfo** (Brett, 2026-10-23;
+  ADR-0001 D13). Use metasalmonpy's crosswalks, which map each NuSEDS method
+  value to a specific gcdfo concept. Two estimate values (`Cumulative CPUE`,
+  `Combined Methods`) are linked only to `gcdfo:EstimateMethod`, at scheme
+  level; keep those as broad matches, as the crosswalk notes say. Do not add new
+  scheme-level fallbacks, and never fall back to `smn:EnumerationMethod`.
+  `gcdfo:EnumerationMethod` does not exist, so `Based on Angling Catch`, which
+  the crosswalk maps to it, stays unmapped and is recorded as a gap. Hub item
+  B-76 holds the open question of where the method branches hang. Map
+  `Fence Count` (an `ESTIMATE_METHOD` value) to `gcdfo:FixedStationTally`. The
+  values `NO SURVEY`, `Fence Count`, `Aerial Survey` and `Net` are in the data
+  but missing from the crosswalks. Map them in the pipeline and record each
+  workaround; the upstream change is paused. Keep gcdfo on `main`.
 - **Make the age notation explicit on every age-class column.** Use
   `smn:GilbertRichAgeNotation` for PSC Fraser `age` codes (21, 31, 32, 41, 42,
   43, 51, 52, 53, 62, 63, 64, 72) and `smn:EuropeanAgeNotation` for `a.b`. Store
@@ -77,6 +104,36 @@ sockeye stock. So:
   (historical / post-RSA / post-DBE / in-season-based), DFO estimate
   classification, the dataset version, and the extract date.
 
+## 2a. Mark everything you derive (ADR-0001 D6)
+
+Every assertion you make that a source does not state is agent-derived: a column
+mapping, a decomposition, an identity link, a membership, a value mapping, a
+discrepancy explanation. Mark each one, in the package's mapping or review
+tables and in the graph, with:
+
+- who asserted it (agent and model) and the run;
+- the evidence (the source passage, the match statistics or the rule used);
+- a **confidence**: `high`, `medium` or `low`;
+- a **criticality**: `critical` or `non-critical`.
+
+An assertion is **critical** if it can change a number or a join:
+
+- identity equivalence or membership;
+- what a measure counts (sex, the "effective" adjustment, origin, life stage,
+  jack inclusion);
+- unit or scale;
+- year basis;
+- age notation;
+- estimate type;
+- licence or access terms.
+
+Labels, descriptions, keywords and documentation links are non-critical.
+
+Only an assertion that is both `high` and `non-critical` is **agent-accepted**.
+Everything else is **awaiting review**: list it in the report's review queue,
+critical items first, each with its evidence and a one-line suggested decision.
+Never describe an agent-derived assertion as verified or reviewed.
+
 ## 3. The `crosswalk` named graph (shared, rebuilt by `pipelines/corpus.py`)
 
 - Use `skos:exactMatch` only when the numbers prove it: identical totals by
@@ -86,6 +143,10 @@ sockeye stock. So:
 - Every crosswalk assertion is a reified node. It records who or what asserted
   it, the evidence (the match statistics), and the date. Write it in SSSOM terms
   where possible.
+- Every crosswalk assertion is critical (section 2a), so an agent-derived one
+  always awaits review, however strong the numbers are. A link published by a
+  source (for example DFO's SMU–CU–DU crosswalk) is not agent-derived; cite the
+  source and its version instead.
 
 ## 4. The `discrepancy` named graph (built by `pipelines/corpus.py`)
 
