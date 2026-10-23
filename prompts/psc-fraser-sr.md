@@ -50,9 +50,11 @@ Prize Fraser rows are all checked against it.
    - Decompose spawners vs EFS vs recruits by age with I-ADOPT, as the contract
      requires.
    - Use `smn:GilbertRichAgeNotation` for the age codes.
-   - Add EFS, recruits by age, and smolt and fry abundance as concepts in the
-     corpus variable scheme (check `PSC-CV-000035` first for EFS). Write term
-     requests only for missing atomic parts.
+   - Use the PSC CV concepts where they fit (contract section 2):
+     `PSC-CV-000035` for EFS, `PSC-CV-000036` and `PSC-CV-000037` for age-1 and
+     age-2 smolts, and `PSC-CV-000038` for fry. Add recruits by age, and any
+     variable the PSC CV does not define, as concepts in the corpus variable
+     scheme. Write term requests only for missing atomic parts.
    - Validate.
 4. Build the graph:
    - Stock identity nodes `ident("stock","psc-frsk",code)`.

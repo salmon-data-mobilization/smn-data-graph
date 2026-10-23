@@ -253,7 +253,7 @@ def stage_profile() -> dict:
     for col in cols:
         q = f'"{col}"'
         nn, nd = c.execute(f"SELECT count({q}), count(DISTINCT {q}) FROM raw").fetchone()
-        top = c.execute(f"SELECT {q}::VARCHAR v, count(*) k FROM raw WHERE {q} IS NOT NULL GROUP BY 1 ORDER BY k DESC LIMIT 5").fetchall()
+        top = c.execute(f"SELECT {q}::VARCHAR v, count(*) k FROM raw WHERE {q} IS NOT NULL GROUP BY 1 ORDER BY k DESC, v LIMIT 5").fetchall()
         mn = mx = None
         if types[col] in ("BIGINT", "DOUBLE", "INTEGER"):
             mn, mx = c.execute(f"SELECT min({q}), max({q}) FROM raw").fetchone()
@@ -283,11 +283,12 @@ def crosswalks() -> dict[str, pd.DataFrame]:
     """metasalmonpy NuSEDS crosswalks + documented corpus corrections/additions."""
     en = ms.nuseds_enumeration_method_crosswalk().copy()
     en["source"] = "metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk"
-    # Correction: gcdfo:EnumerationMethod does not exist in gcdfo; the scheme's top
-    # concept is smn:EnumerationMethod (gcdfo dfo-salmon.ttl, EnumerationMethodScheme).
+    # Correction: gcdfo:EnumerationMethod does not exist in gcdfo. Methods map to
+    # specific gcdfo concepts (ADR-0001 D13), and "Based on Angling Catch" has none,
+    # so it is left unmapped and recorded as a gap until hub item B-76 is ruled.
     bad = en["ontology_term"] == "gcdfo:EnumerationMethod"
-    en.loc[bad, "ontology_term"] = "smn:EnumerationMethod"
-    en.loc[bad, "notes"] = en.loc[bad, "notes"] + " [corpus fix: gcdfo:EnumerationMethod -> smn:EnumerationMethod; the former does not exist]"
+    en.loc[bad, "ontology_term"] = pd.NA
+    en.loc[bad, "notes"] = en.loc[bad, "notes"] + " [corpus fix: gcdfo:EnumerationMethod does not exist; no specific gcdfo concept, so unmapped (gap, hub B-76)]"
     en = pd.concat([en, pd.DataFrame([{
         "nuseds_value": "Net", "method_family": "unknown", "ontology_term": pd.NA,
         "notes": "[corpus addition] Value in data, absent from crosswalk; no concept found.",
@@ -937,8 +938,8 @@ def stage_graph() -> dict:
     STORE_DIR.parent.mkdir(parents=True, exist_ok=True)
     st = ox.Store(str(STORE_DIR))
     st.bulk_extend(g.quads)
-    for key, info in vocab.sources.items():
-        st.bulk_load(path=info["path"], format=ox.RdfFormat.TURTLE, to_graph=N(f"{C.BASE}graph/vocab/{key}"))
+    for key, path in vocab.paths.items():
+        st.bulk_load(path=str(path), format=ox.RdfFormat.TURTLE, to_graph=N(f"{C.BASE}graph/vocab/{key}"))
     st.flush()
     stats = {"quads_dataset": len(g.quads), "quads_store_total": len(st),
              "per_graph": {k: sum(1 for q in g.quads if q.graph_name.value == v) for k, v in GRAPHS.items()},

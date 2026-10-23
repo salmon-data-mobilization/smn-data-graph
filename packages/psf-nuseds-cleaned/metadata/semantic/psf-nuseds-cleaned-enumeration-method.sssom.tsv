@@ -2,7 +2,6 @@
 #curie_map:
 #  gcdfo: https://w3id.org/gcdfo/salmon#
 #  nusedsEM: https://w3id.org/salmon-demo-corpus/code/nuseds/enumeration-method/
-#  smn: https://w3id.org/smn/
 #mapping_set_id: https://w3id.org/salmon-demo-corpus/mapping/psf-nuseds-cleaned/enumeration-method
 #mapping_set_version: 2026-10-22
 #mapping_set_description: NuSEDS primary_enumeration_method values in psf-nuseds-cleaned mapped to gcdfo concepts; from metasalmonpy 0.6.0 crosswalks plus corpus corrections.
@@ -13,7 +12,7 @@
 #object_source_version: main sha256:31e7c28cd06a14c4
 subject_id	subject_label	predicate_id	object_id	object_label	mapping_justification	mapping_cardinality	mapping_tool	comment
 nusedsEM:bank-walk	Bank Walk	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
-nusedsEM:based-on-angling-catch	Based on Angling Catch	skos:broadMatch	smn:EnumerationMethod		semapv:ManualMappingCuration	1:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Catch-based index; treat as a CPUE-style index unless more detail is provided. [corpus fix: gcdfo:EnumerationMethod -> smn:EnumerationMethod; the former does not exist] Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
+nusedsEM:based-on-angling-catch	Based on Angling Catch	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Catch-based index; treat as a CPUE-style index unless more detail is provided. [corpus fix: gcdfo:EnumerationMethod does not exist; no specific gcdfo concept, so unmapped (gap, hub B-76)] Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
 nusedsEM:biologist-working-group	Biologist/Working Group	skos:exactMatch	sssom:NoTermFound		semapv:ManualMappingCuration	1:0	metasalmonpy 0.6.0 NuSEDS crosswalk	Not a method. Treat as method-unknown unless a specific field/analysis method is documented elsewhere. Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
 nusedsEM:boat	Boat	skos:broadMatch	gcdfo:VisualGroundCount		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
 nusedsEM:broodstock-removal	Broodstock Removal	skos:broadMatch	gcdfo:FixedSiteCensusManual		semapv:ManualMappingCuration	n:1	metasalmonpy 0.6.0 NuSEDS crosswalk	Source: metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk.
