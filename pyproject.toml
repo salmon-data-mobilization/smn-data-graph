@@ -12,4 +12,4 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-metasalmonpy = { url = "https://github.com/salmon-data-mobilization/metasalmonpy/archive/refs/tags/v0.6.0.tar.gz" }
+metasalmonpy = { url = "https://github.com/salmon-data-mobilization/metasalmonpy/archive/943fe1f50d7ac5b88b8be81250dca2e7aeb0f632.tar.gz" }
