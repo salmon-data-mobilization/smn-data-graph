@@ -1,4 +1,6 @@
-# CQ7: What maps NuSEDS method/classification codes to gcdfo concepts, and on what evidence?
+# CQ7: Live inherited code mappings and separate pending agent candidates.
+# Live upstream rows have no humanAccepted status inferred from their presence.
+# Pending targets (including NoTermFound decisions) are review records, not joins.
 PREFIX qb: <http://purl.org/linked-data/cube#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -9,12 +11,31 @@ PREFIX gcdfo: <https://w3id.org/gcdfo/salmon#>
 PREFIX def: <https://w3id.org/salmon-demo-corpus/def/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT ?scheme_label ?nuseds_value ?predicate ?gcdfo_label ?gcdfo_concept ?mapping_set ?note
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX profile: <https://w3id.org/salmon-demo-corpus/profile/>
+
+SELECT ?scheme_label ?nuseds_value ?mapping_state ?predicate ?gcdfo_label ?gcdfo_concept
+       ?review_status ?confidence ?mapping_set ?note
 WHERE {
   ?code skos:inScheme ?scheme ; skos:prefLabel ?nuseds_value ; dcterms:source ?mapping_set .
   ?scheme rdfs:label ?scheme_label .
-  OPTIONAL { ?code ?predicate ?gcdfo_concept . FILTER(?predicate IN (skos:exactMatch, skos:broadMatch, skos:closeMatch))
-             OPTIONAL { ?gcdfo_concept skos:prefLabel ?gcdfo_label } }
   OPTIONAL { ?code skos:editorialNote ?note }
+  {
+    ?code ?predicate ?gcdfo_concept .
+    FILTER(?predicate IN (skos:exactMatch, skos:broadMatch, skos:closeMatch))
+    OPTIONAL { ?gcdfo_concept skos:prefLabel ?gcdfo_label }
+    BIND("live inherited mapping; no human-review status asserted" AS ?mapping_state)
+  } UNION {
+    ?statement a rdf:Statement ; rdf:subject ?code ; rdf:predicate ?predicate ; rdf:object ?gcdfo_concept ;
+      profile:reviewStatus ?review_status ; profile:confidence ?confidence .
+    FILTER(?predicate IN (skos:exactMatch, skos:broadMatch, skos:closeMatch))
+    OPTIONAL { ?gcdfo_concept skos:prefLabel ?gcdfo_label }
+    BIND("pending agent candidate" AS ?mapping_state)
+  } UNION {
+    ?code dcterms:source ?mapping_set .
+    FILTER NOT EXISTS { ?code ?live_predicate ?target . FILTER(?live_predicate IN (skos:exactMatch, skos:broadMatch, skos:closeMatch)) }
+    FILTER NOT EXISTS { ?pending a rdf:Statement ; rdf:subject ?code ; rdf:predicate ?pending_predicate . FILTER(?pending_predicate IN (skos:exactMatch, skos:broadMatch, skos:closeMatch)) }
+    BIND("source code with no live target or pending candidate" AS ?mapping_state)
+  }
 }
-ORDER BY ?scheme_label ?nuseds_value
+ORDER BY ?scheme_label ?nuseds_value ?mapping_state ?predicate ?gcdfo_concept ?review_status ?confidence

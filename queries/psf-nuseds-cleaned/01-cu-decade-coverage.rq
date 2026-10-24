@@ -1,4 +1,4 @@
-# CQ1: Which Fraser sockeye CUs have spawner counts in each decade?
+# CQ1: Which Fraser sockeye CUs have source MAX_ESTIMATE records in each decade?
 # Years with >=1 stream estimate per CU and decade (any estimate classification).
 PREFIX qb: <http://purl.org/linked-data/cube#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -10,7 +10,7 @@ PREFIX gcdfo: <https://w3id.org/gcdfo/salmon#>
 PREFIX def: <https://w3id.org/salmon-demo-corpus/def/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT ?cu_label ?cu_index ?decade (COUNT(DISTINCT ?year) AS ?years_with_counts) (SUM(?n) AS ?site_estimates)
+SELECT ?cu_label ?cu_index ?decade (COUNT(DISTINCT ?year) AS ?years_with_source_estimates) (SUM(?n) AS ?site_estimates)
 WHERE {
   ?region skos:prefLabel "Fraser"@en .
   ?cu a gcdfo:ConservationUnit ; def:region ?region ; def:taxon ?taxon ; skos:prefLabel ?cu_label ; def:pseCuIndex ?cu_index .

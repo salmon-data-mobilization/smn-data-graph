@@ -16,7 +16,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import datetime as dt
+import hashlib
 import json
+import os
 import shutil
 import sys
 import tempfile
@@ -39,6 +42,7 @@ DATASET_ID = "psf_nuseds_cleaned"
 MAIN_T = "nuseds_cuid_streamid"
 CUBE_T = "cu_year_spawners"
 RAW = C.ROOT / "data/raw" / SLUG
+OUTPUT_ROOT = C.ROOT
 PKG = C.ROOT / "packages" / SLUG
 GRAPH_FILE = C.ROOT / "graph" / f"{SLUG}.trig"
 STORE_DIR = C.ROOT / "graph/store" / SLUG
@@ -59,9 +63,13 @@ ATTRIBUTION = ("Carturan, B. and Peacock, S. (2026). Cleaned spawner survey data
                "Licence - Canada).")
 NUSEDS_OPEN_DATA = "https://open.canada.ca/data/en/dataset/c48669a3-045b-400d-b730-48aafe8c5ee6"
 
-GRAPHS = {k: f"{C.BASE}graph/{SLUG}/{k}" for k in ("metadata", "mappings", "identity", "cube", "provenance")}
+GRAPHS = {k: f"{C.BASE}graph/{SLUG}/{k}" for k in ("metadata", "mappings", "identity", "crosswalk", "cube", "provenance")}
 DS = f"{C.BASE}dataset/{SLUG}"
 SRC_DS = f"https://doi.org/{DOI}"
+PROFILE = C.BASE + "profile/"
+AGENT = C.BASE + "agent/software/psf-nuseds-cleaned-pipeline"
+SEMAPV_AGENT = "https://w3id.org/semapv/vocab/AgentBasedMatching"
+PSC_EFS = "https://w3id.org/psc/vocab/concept/PSC-CV-000035"
 
 # --------------------------------------------------------------------------
 # Column specification. Descriptions come from PSF's METADATA_2_nuseds_cuid_streamid.csv
@@ -137,7 +145,7 @@ COLS = [
     ("BroodstockSource", "categorical", "string", None, "Broodstock source", "[agent] NuSEDS field used for Broodstock."),
     ("Removals", "measurement", "integer", INDIV, "Removals (PSF)", "[agent] PSF-derived other removals."),
     ("RemovalsSource", "categorical", "string", None, "Removals source", "[agent] NuSEDS field used for Removals."),
-    ("MAX_ESTIMATE", "measurement", "number", INDIV, "Maximum estimate", None),
+    ("MAX_ESTIMATE", "measurement", "number", INDIV, "Source MAX_ESTIMATE", None),
     ("CENSUS_SITE", "attribute", "string", None, "Census site", None),
     ("GFE_TYPE", "categorical", "string", None, "Stream feature type", "[agent] Geographic feature type of GFE_ID (Stream, Lake, ...)."),
     ("SPECIES_QUALIFIED", "categorical", "string", None, "Species qualifier", None),
@@ -180,8 +188,8 @@ CUBE_COLS = [
     ("Year", "temporal", "integer", None, "Analysis year", "NuSEDS analysis (return/spawning) year."),
     ("ESTIMATE_CLASSIFICATION", "categorical", "string", None, "Estimate classification",
      "NuSEDS estimate classification of the contributing stream estimates ('MISSING' where blank)."),
-    ("spawner_abundance", "measurement", "number", INDIV, "Spawner abundance (sum of stream MAX_ESTIMATE)",
-     "Sum of MAX_ESTIMATE over the CU's stream sites with a non-missing estimate of this classification in this year. Not infilled or expanded; NOT the PSE CU-level spawner abundance."),
+    ("spawner_abundance", "measurement", "number", INDIV, "Sum of source MAX_ESTIMATE",
+     "Sum of the source MAX_ESTIMATE values over CU stream sites, year and estimate classification. The legacy field name is retained; this is not asserted to be spawner abundance. Values are unchanged, not infilled or expanded."),
     ("n_sites", "measurement", "integer", NUM, "Number of stream sites",
      "Number of PSE stream sites (streamid) contributing a non-missing MAX_ESTIMATE."),
 ]
@@ -191,19 +199,81 @@ SPAWNER_COLS = {  # columns given term gcdfo:SpawnerAbundance, with extra constr
     "NATURAL_JACK_SPAWNERS": ["jack (precocious male) life stage", "natural (in-river) spawning, excludes broodstock removals"],
     "NATURAL_SPAWNERS_TOTAL": ["natural (in-river) spawning, excludes broodstock removals"],
     "Spawners": ["PSF-derived: NATURAL_SPAWNERS_TOTAL or sum of components"],
-    "MAX_ESTIMATE": [],
 }
-MAX_EST_MOD_GAP = ("maximum across alternative escapement fields",
-                   "MAX_ESTIMATE is the maximum over 8 NuSEDS fields (spawners, broodstock removals, other removals, "
-                   "total return to river), not a statistic over a sample; smn:MaximumStatisticalModifier would misstate it.")
 
 
 def log(msg: str) -> None:
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
+def build_reference_time() -> str:
+    """Stable build reference, not an assertion about when execution ended.
+
+    A pinned timestamp is required for the package/release creation reference.
+    Source publication or retrieval dates are not package-creation dates. Real
+    execution time is retained outside the reproducible dataset artifacts.
+    """
+    value = os.environ.get("SALMONGRAPH_BUILD_TIME")
+    if value is None:
+        raise ValueError("An explicit --build-time or SALMONGRAPH_BUILD_TIME is required for package/graph artifacts")
+    parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        raise ValueError("SALMONGRAPH_BUILD_TIME must include a timezone")
+    return parsed.astimezone(dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def configure_output_root(root: Path) -> None:
+    """Rebuild into an isolated output tree while reading the same pinned inputs."""
+    global OUTPUT_ROOT, PKG, GRAPH_FILE, STORE_DIR, PARQUET, QDIR, PROFILE_DIR
+    OUTPUT_ROOT = root.resolve()
+    PKG = OUTPUT_ROOT / "packages" / SLUG
+    GRAPH_FILE = OUTPUT_ROOT / "graph" / f"{SLUG}.trig"
+    STORE_DIR = OUTPUT_ROOT / "graph/store" / SLUG
+    PARQUET = PKG / "data" / f"{MAIN_T}.iri-keyed.parquet"
+    QDIR = OUTPUT_ROOT / "queries" / SLUG
+    PROFILE_DIR = OUTPUT_ROOT / "profiles" / SLUG
+    if OUTPUT_ROOT != C.ROOT:
+        QDIR.mkdir(parents=True, exist_ok=True)
+        for query in sorted((C.ROOT / "queries" / SLUG).glob("*.rq")):
+            shutil.copyfile(query, QDIR / query.name)
+
+
+def review_assertion(g: C.G, subject, predicate, obj, graph: str, *, evidence=(),
+                     note: str, confidence="mediumConfidence", justification=None,
+                     assert_triple=False) -> str:
+    """Emit a source-backed candidate and stable RDF 1.1 statement provenance.
+
+    Critical candidates remain awaiting review and are statement-only by default:
+    ordinary union queries must not silently join an unreviewed identity bridge.
+    The assertion identifier includes its graph so that the same triple in two
+    releases is not one review record.
+    """
+    s, p = N(subject), N(predicate)
+    o = obj if isinstance(obj, (ox.NamedNode, ox.Literal)) else N(obj)
+    key = "\n".join((str(s), str(p), str(o), graph))
+    statement = f"{C.BASE}assertion/{SLUG}/{hashlib.sha256(key.encode()).hexdigest()}"
+    if assert_triple:
+        g.add(s, p, o, graph)
+    for pred, value in [("rdf:type", "rdf:Statement"), ("rdf:subject", s),
+                        ("rdf:predicate", p), ("rdf:object", o),
+                        ("prov:wasAttributedTo", AGENT),
+                        ("prov:wasGeneratedBy", f"{C.BASE}activity/{SLUG}/build"),
+                        (PROFILE + "confidence", PROFILE + confidence),
+                        (PROFILE + "criticality", PROFILE + "critical"),
+                        (PROFILE + "reviewStatus", PROFILE + "awaitingReview")]:
+        g.add(statement, pred, value, graph)
+    for source in sorted(set(evidence)):
+        g.add(statement, "dcterms:source", source, graph)
+    g.add(statement, "rdfs:comment", L(note, lang="en"), graph)
+    if justification:
+        g.add(statement, "sssom:mapping_justification", justification, graph)
+    return statement
+
+
 def con() -> duckdb.DuckDBPyConnection:
     c = duckdb.connect()
+    # Pin reduction/scan order for repeatable CSV, Parquet and floating-point sums.
+    c.execute("SET threads = 1")
     c.execute(f"""CREATE TABLE raw AS SELECT * FROM read_csv('{RAW / CSV_NAME}', nullstr=['NA',''],
                   sample_size=-1)""")
     c.execute("""CREATE VIEW src AS SELECT *,
@@ -279,16 +349,17 @@ def stage_profile() -> dict:
 # package
 # ==========================================================================
 
-def crosswalks() -> dict[str, pd.DataFrame]:
+def crosswalks(vocab=None) -> dict[str, pd.DataFrame]:
     """metasalmonpy NuSEDS crosswalks + documented corpus corrections/additions."""
     en = ms.nuseds_enumeration_method_crosswalk().copy()
     en["source"] = "metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk"
-    # Correction: gcdfo:EnumerationMethod does not exist in gcdfo. Methods map to
-    # specific gcdfo concepts (ADR-0001 D13), and "Based on Angling Catch" has none,
-    # so it is left unmapped and recorded as a gap until hub item B-76 is ruled.
-    bad = en["ontology_term"] == "gcdfo:EnumerationMethod"
-    en.loc[bad, "ontology_term"] = pd.NA
-    en.loc[bad, "notes"] = en.loc[bad, "notes"] + " [corpus fix: gcdfo:EnumerationMethod does not exist; no specific gcdfo concept, so unmapped (gap, hub B-76)]"
+    # B-76 retains this target. It is usable only after the pinned ontology
+    # declares it; a policy ruling alone does not make an undeclared IRI valid.
+    vocab = vocab or C.VocabIndex()
+    if not vocab.exists(NS["gcdfo"] + "EnumerationMethod"):
+        bad = en["ontology_term"] == "gcdfo:EnumerationMethod"
+        en.loc[bad, "ontology_term"] = pd.NA
+        en.loc[bad, "notes"] = en.loc[bad, "notes"] + " [corpus gap: the pinned gcdfo does not yet declare gcdfo:EnumerationMethod; retain as a gap pending B-76]"
     en = pd.concat([en, pd.DataFrame([{
         "nuseds_value": "Net", "method_family": "unknown", "ontology_term": pd.NA,
         "notes": "[corpus addition] Value in data, absent from crosswalk; no concept found.",
@@ -311,7 +382,7 @@ def crosswalks() -> dict[str, pd.DataFrame]:
          "notes": "[corpus addition] Value in data (50 rows), absent from crosswalk; treated like 'NO SURVEY THIS YEAR'.",
          "source": "corpus agent"},
         {"nuseds_value": "MISSING", "estimate_type": pd.NA, "ontology_term": pd.NA,
-         "notes": "[corpus addition] Placeholder for blank ESTIMATE_CLASSIFICATION in the aggregate table only (2 source rows).",
+         "notes": "[corpus addition] Shared RDF/Parquet join-key category for blank source ESTIMATE_CLASSIFICATION; raw blanks and numeric values remain unchanged (2 source rows).",
          "source": "corpus agent"}])], ignore_index=True)
     return {"ESTIMATE_CLASSIFICATION": ec, "ESTIMATE_METHOD": em, "primary_enumeration_method": en}
 
@@ -323,16 +394,24 @@ CODE_SCHEMES = {  # column -> (code IRI path, gcdfo scheme)
 }
 
 
-def code_iri(column: str, value: str) -> str:
+def code_iri(column: str, value) -> str:
     path = CODE_SCHEMES[column][0] if column in CODE_SCHEMES else f"{SLUG}/{C.slug_iri(column)}"
-    return f"{C.BASE}code/{path}/{C.slug_iri(value) or 'blank'}"
+    # Raw blanks remain blank in the numeric table. Their join key uses the same
+    # explicit missing category as the existing aggregate, in RDF and Parquet.
+    if value is None or pd.isna(value) or not str(value).strip():
+        value = "MISSING" if column == "ESTIMATE_CLASSIFICATION" else "blank"
+    return f"{C.BASE}code/{path}/{C.slug_iri(str(value)) or 'blank'}"
 
 
 def build_codes(c, dict_df: pd.DataFrame, table: str, source_view: str, vocab: C.VocabIndex) -> pd.DataFrame:
-    xw = crosswalks()
+    xw = crosswalks(vocab)
     rows = []
     for col in dict_df.loc[dict_df.column_role == "categorical", "column_name"]:
         vals = [r[0] for r in c.execute(f'SELECT DISTINCT "{col}"::VARCHAR FROM {source_view} WHERE "{col}" IS NOT NULL ORDER BY 1').fetchall()]
+        if col == "ESTIMATE_CLASSIFICATION" and c.execute(
+            f'SELECT count(*) FROM {source_view} WHERE "{col}" IS NULL OR trim("{col}"::VARCHAR) = \'\''
+        ).fetchone()[0]:
+            vals = sorted(set(vals) | {"MISSING"})
         for v in vals:
             term, vocab_iri, desc = None, None, None
             if col == "SPECIES" and v in C.NCBI_TAXON:
@@ -365,12 +444,16 @@ def build_dict(spec, table: str, psf_meta: dict) -> pd.DataFrame:
                      "required": name in ("ACT_ID", "IndexId", "GFE_ID", "Year", "POP_ID") if table == MAIN_T else role in ("identifier", "temporal"),
                      "property_iri": None, "entity_iri": None, "constraint_iri": None, "statistical_modifier_iri": None})
     df = pd.DataFrame(rows)
-    sa = (df.column_name.isin(SPAWNER_COLS.keys()) if table == MAIN_T else df.column_name.eq("spawner_abundance"))
+    sa = df.column_name.isin(SPAWNER_COLS.keys()) if table == MAIN_T else pd.Series(False, index=df.index)
     df.loc[sa, ["term_iri", "term_type", "property_iri", "entity_iri", "constraint_iri"]] = [
         NS["gcdfo"] + "SpawnerAbundance", "owl_class", NS["smn"] + "Abundance",
         NS["smn"] + "SalmonIndividual", NS["smn"] + "SpawnerStageContext"]
     if table == MAIN_T:
         df.loc[df.column_name == "SPECIES", ["term_iri", "term_type"]] = ["http://rs.tdwg.org/dwc/terms/scientificName", "property"]
+        max_field = df.column_name.eq("MAX_ESTIMATE")
+        df.loc[max_field, "column_description"] = ("Source MAX_ESTIMATE, retained exactly as released by PSF. "
+            "The PSF field documentation is evidence, not approval of a spawner-only interpretation or a literal row-maximum equation; "
+            "the measure's biological scope awaits source review.")
     return df
 
 
@@ -384,11 +467,6 @@ def decompositions(dict_df: pd.DataFrame) -> pd.DataFrame:
         extra = SPAWNER_COLS.get(r.column_name, [])
         for g in extra:
             comps.append(("constraint", "gap", "", g, f"No smn/gcdfo concept found for '{g}'."))
-        if r.column_name in ("MAX_ESTIMATE",):
-            comps.append(("statistical_modifier", "gap", "", MAX_EST_MOD_GAP[0], MAX_EST_MOD_GAP[1]))
-        if r.table_id == CUBE_T:
-            comps.append(("statistical_modifier", "matched", NS["smn"] + "TotalStatisticalModifier", "Total",
-                          "Sum over stream sites within CU, year and estimate classification."))
         comps.append(("unit", "matched", INDIV, "Individual", ""))
         for i, (role, status, iri, label, why) in enumerate(comps, 1):
             if role == "unit":
@@ -427,8 +505,8 @@ def observation_structures(dict_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Data
     return pd.DataFrame(S), pd.DataFrame(K)
 
 
-def write_sssom(codes: pd.DataFrame, outdir: Path, gcdfo_sha: str) -> list[Path]:
-    xw = crosswalks()
+def write_sssom(codes: pd.DataFrame, outdir: Path, gcdfo_sha: str, vocab=None) -> list[Path]:
+    xw = crosswalks(vocab)
     paths = []
     for col, (path, scheme) in CODE_SCHEMES.items():
         x = xw[col]
@@ -451,7 +529,7 @@ def write_sssom(codes: pd.DataFrame, outdir: Path, gcdfo_sha: str) -> list[Path]
             f"# subject_source_version: '{SLUG} 2026-02-20'",
             "# object_source: https://w3id.org/gcdfo/salmon",
             f"# object_source_version: 'main sha256:{gcdfo_sha[:16]}'",
-            "subject_id\tsubject_label\tpredicate_id\tobject_id\tobject_label\tmapping_justification\tmapping_cardinality\tmapping_tool\tcomment",
+            "subject_id\tsubject_label\tpredicate_id\tobject_id\tobject_label\tmapping_justification\tmapping_cardinality\tmapping_tool\tauthor_id\tcomment",
         ]
         for (_, r), n_obj in zip(x.iterrows(), per_obj):
             obj = r.object_id
@@ -469,8 +547,11 @@ def write_sssom(codes: pd.DataFrame, outdir: Path, gcdfo_sha: str) -> list[Path]
                 pred = "skos:exactMatch"
             note = str(r.notes if pd.notna(r.notes) else "").replace("\t", " ").replace("\n", " ")
             note = (note + f" Source: {r.source}.").strip()
+            by_agent = r.source == "corpus agent"
             lines.append("\t".join([f"{pfx}:{C.slug_iri(r.nuseds_value)}", r.nuseds_value, pred, obj, "",
-                                    "semapv:ManualMappingCuration", card, "metasalmonpy 0.6.0 NuSEDS crosswalk", note]))
+                                    "semapv:AgentBasedMatching" if by_agent else "semapv:ManualMappingCuration",
+                                    card, "agent-authored corpus pipeline" if by_agent else "metasalmonpy 0.6.0 NuSEDS crosswalk",
+                                    AGENT if by_agent else "", note]))
         p = outdir / f"{SLUG}-{path.split('/')[1]}.sssom.tsv"
         p.write_text("\n".join(lines) + "\n")
         paths.append(p)
@@ -478,7 +559,20 @@ def write_sssom(codes: pd.DataFrame, outdir: Path, gcdfo_sha: str) -> list[Path]
 
 
 def stage_package() -> dict:
+    build_reference_time()
     vocab = C.VocabIndex()
+    # Validate the truthful agent justification before overwriting any package
+    # artifact. Older metasalmonpy pins omit this canonical SEMAPV term from
+    # their enum; that requires a dependency fix, not fabricated human curation.
+    with tempfile.TemporaryDirectory() as td:
+        probe_codes = pd.DataFrame({"column_name": ["ESTIMATE_CLASSIFICATION"], "code_value": ["NO SURVEY"]})
+        probe = write_sssom(probe_codes, Path(td), vocab.sources["gcdfo"]["sha256"], vocab)[0]
+        try:
+            ms.read_sssom_mapping_set(str(probe))
+        except ValueError as error:
+            if "mapping_justification" not in str(error):
+                raise
+            raise RuntimeError("The pinned metasalmonpy must support canonical semapv:AgentBasedMatching before this package can be built; no human-curation fallback is permitted.") from error
     c = con()
     psf_meta = dict(pd.read_csv(RAW / META_NAME)[["field", "description"]].itertuples(index=False))
     log("reading source into pandas")
@@ -519,16 +613,16 @@ def stage_package() -> dict:
         (f"Source {SRC_DS} retrieved via Zenodo API; md5 verified; column definitions from {META_URL}. "
          "PSF cleaning: https://salmonwatersheds.github.io/population-indicators/spawner-surveys/code/1_nuseds_collation.html ; "
          "CU matching: https://github.com/salmonwatersheds/salmon_data_demise/blob/main/code/b_nuseds_cuid_pse.Rmd"),
-        C.now_utc()[:10]]
+        build_reference_time()[:10]]
     tm = art["table_meta"].set_index("table_id")
     tm.loc[MAIN_T, ["table_label", "description", "observation_unit", "observation_unit_iri", "primary_key"]] = [
         "NuSEDS spawner survey records with CU and stream IDs",
         "One row per NuSEDS population (IndexId) x stream (GFE_ID) x analysis year; all 90 source columns plus primary_enumeration_method.",
         "Escapement estimate", NS["smn"] + "EscapementEstimate", "ACT_ID"]
     tm.loc[CUBE_T, ["table_label", "description", "observation_unit", "observation_unit_iri", "primary_key"]] = [
-        "Spawner abundance by CU, year and estimate classification (corpus aggregate)",
+        "Sum of source MAX_ESTIMATE by CU, year and estimate classification",
         "Sum of MAX_ESTIMATE over stream sites, by PSE CU x year x NuSEDS estimate classification. Source of the RDF Data Cube.",
-        "Spawner abundance aggregate", NS["gcdfo"] + "SpawnerAbundance", "cuid,Year,ESTIMATE_CLASSIFICATION"]
+        "Source MAX_ESTIMATE aggregate; biological scope awaits review", "", "cuid,Year,ESTIMATE_CLASSIFICATION"]
     tm = tm.reset_index()
     if PKG.exists() and not (PKG / "metadata").exists():
         pass
@@ -540,7 +634,7 @@ def stage_package() -> dict:
     S, K = observation_structures(dict_df)
     ms.write_sdp_observation_structures(PKG, S, K, overwrite=True)
     with tempfile.TemporaryDirectory() as td:
-        ms.write_sdp_sssom(PKG, write_sssom(codes, Path(td), vocab.sources["gcdfo"]["sha256"]), overwrite=True)
+        ms.write_sdp_sssom(PKG, write_sssom(codes, Path(td), vocab.sources["gcdfo"]["sha256"], vocab), overwrite=True)
     # term gaps (structured): measurement/categorical columns with no term, plus decomposition gaps
     gaps = []
     for _, r in dict_df.iterrows():
@@ -598,7 +692,175 @@ def add_def(g: C.G, iri: str, kind: str, label: str, comment: str, gr: str, **ex
         g.add(iri, p.replace("__", ":"), o, gr)
 
 
+def add_identities(g: C.G, c) -> dict[str, int]:
+    """Retain observed source pairings; stable labels do not choose membership.
+
+    Source identifier attributes can vary. All distinct attribute tuples are
+    retained, with the first non-null label in lexical order used for display.
+    Crosswalks are candidates in a separate graph, never asserted as approved
+    equivalences from an arbitrary representative row. POP_ID is deliberately
+    not reminted here: Pink odd/even IndexId contexts remain in the evidence.
+    """
+    ID, XW, D = GRAPHS["identity"], GRAPHS["crosswalk"], NS["def"]
+    cus = c.execute("""SELECT DISTINCT cuid, cu_name_pse, cu_name_dfo, FULL_CU_IN_PSE,
+                       SPECIES, SPECIES_QUALIFIED, regionid, region, CU_TYPE, CU_LAT, CU_LONGT
+                       FROM src WHERE cuid IS NOT NULL ORDER BY ALL""").fetchall()
+    labelled = {}
+    for cuid, name, dname, pidx, sp, sq, rid, rname, ctype, lat, lon in cus:
+        cu = ident("cu", "psf", cuid)
+        g.add(cu, "rdf:type", "gcdfo:ConservationUnit", ID)
+        if name:
+            if cu not in labelled or name != labelled[cu]:
+                g.add(cu, "skos:altLabel" if cu in labelled else "skos:prefLabel", L(name, lang="en"), ID)
+            labelled.setdefault(cu, name)
+        if dname and dname != name:
+            g.add(cu, "skos:altLabel", L(dname, lang="en"), ID)
+        g.add(cu, "dcterms:identifier", L(f"psf-cuid:{cuid}"), ID)
+        g.add(cu, "skos:notation", L(str(cuid), D + "psfCuid"), ID)
+        if pidx:
+            g.add(cu, D + "pseCuIndex", L(pidx), ID)
+        if sp in C.NCBI_TAXON:
+            g.add(cu, D + "taxon", C.NCBI_TAXON[sp][1], ID)
+        if sq:
+            g.add(cu, D + "speciesQualifier", L(sq), ID)
+        if rid is not None:
+            reg = ident("region", "psf", rid)
+            g.add(cu, D + "region", reg, ID)
+            g.add(reg, "rdf:type", "skos:Concept", ID)
+            if rname:
+                g.add(reg, "skos:prefLabel", L(rname, lang="en"), ID)
+            g.add(reg, "skos:notation", L(str(rid)), ID)
+        if ctype:
+            g.add(cu, D + "cuType", L(ctype), ID)
+        if lat is not None and lon is not None:
+            g.add(cu, "wgs:lat", L(float(lat)), ID)
+            g.add(cu, "wgs:long", L(float(lon)), ID)
+    pairings = c.execute("""SELECT cuid, FULL_CU_IN,
+                         list(DISTINCT FULL_CU_IN_PSE ORDER BY FULL_CU_IN_PSE),
+                         list(DISTINCT IndexId ORDER BY IndexId), min(Year), max(Year)
+                         FROM src WHERE cuid IS NOT NULL AND FULL_CU_IN IS NOT NULL
+                         GROUP BY cuid, FULL_CU_IN ORDER BY cuid, FULL_CU_IN""").fetchall()
+    for cuid, didx, pidxs, index_ids, first_year, last_year in pairings:
+        cu, dcu = ident("cu", "psf", cuid), ident("cu", "dfo", didx)
+        g.add(dcu, "rdf:type", "gcdfo:ConservationUnit", ID)
+        g.add(dcu, "dcterms:identifier", L(f"dfo-full-cu-in:{didx}"), ID)
+        g.add(dcu, "skos:notation", L(didx, D + "dfoFullCuIn"), ID)
+        g.add(cu, D + "dfoCuIndex", L(didx), ID)
+        context = {"cuid": cuid, "FULL_CU_IN": didx, "FULL_CU_IN_PSE": pidxs,
+                   "IndexId": index_ids, "observed_year_bounds": [first_year, last_year]}
+        review_assertion(g, cu, "skos:closeMatch", dcu, XW, evidence=[SRC_DS, META_URL],
+            confidence="lowConfidence", justification=SEMAPV_AGENT,
+            note="Candidate PSF-to-DFO CU correspondence from source row pairings; equal code strings do not establish exact equivalence or human approval. "
+                 + json.dumps(context, sort_keys=True))
+    for sp, (sci, tax) in C.NCBI_TAXON.items():
+        if sp not in ("Steelhead", "Cutthroat"):
+            g.add(tax, "rdfs:label", L(sci), ID)
+            g.add(tax, "skos:altLabel", L(f"{sp} salmon", lang="en"), ID)
+    streams = c.execute("""SELECT DISTINCT GFE_ID, sys_nm, GAZETTED_NAME, WATERBODY,
+                           GFE_TYPE, Y_LAT, X_LONGT, WATERSHED_CDE, FWA_WATERSHED_CDE, StatArea
+                           FROM src WHERE GFE_ID IS NOT NULL ORDER BY ALL""").fetchall()
+    labelled = {}
+    for gfe, nm, gaz, wb, gtype, lat, lon, wsc, fwa, sa in streams:
+        stream = ident("stream", "dfo-nuseds-gfe", gfe)
+        g.add(stream, "rdf:type", D + "StreamFeature", ID)
+        if gtype == "Stream":
+            g.add(stream, "rdf:type", "obo:ENVO_00000023", ID)
+        if nm:
+            if stream not in labelled or nm != labelled[stream]:
+                g.add(stream, "skos:altLabel" if stream in labelled else "skos:prefLabel", L(nm), ID)
+            labelled.setdefault(stream, nm)
+        for alternate in (gaz, wb):
+            if alternate and alternate != nm:
+                g.add(stream, "skos:altLabel", L(alternate), ID)
+        g.add(stream, "dcterms:identifier", L(f"dfo-nuseds-gfe-id:{gfe}"), ID)
+        if gtype:
+            g.add(stream, D + "featureType", L(gtype), ID)
+        if lat is not None and lon is not None:
+            g.add(stream, "wgs:lat", L(float(lat)), ID)
+            g.add(stream, "wgs:long", L(float(lon)), ID)
+            g.add(stream, "geo:hasGeometry", L(f"POINT({lon} {lat})", "geo:wktLiteral"), ID)
+        for prefix, value in (("dfo-watershed-code", wsc), ("bc-fwa-watershed-code", fwa)):
+            if value:
+                g.add(stream, "dcterms:identifier", L(f"{prefix}:{value}"), ID)
+        if sa:
+            g.add(stream, D + "statArea", L(str(sa)), ID)
+    sites = c.execute("""SELECT streamid, min(sys_nm), bool_or(IS_INDICATOR = 'Y')
+                         FROM src WHERE streamid IS NOT NULL GROUP BY streamid ORDER BY streamid""").fetchall()
+    for sid, name, indicator in sites:
+        site = ident("site", "psf-streamid", sid)
+        g.add(site, "rdf:type", D + "SurveySite", ID)
+        if name:
+            g.add(site, "skos:prefLabel", L(name), ID)
+        g.add(site, "dcterms:identifier", L(f"psf-streamid:{sid}"), ID)
+        if indicator is not None:
+            g.add(site, D + "isIndicator", L(bool(indicator)), ID)
+    for sid, gfe in c.execute("""SELECT DISTINCT streamid, GFE_ID FROM src
+                                WHERE streamid IS NOT NULL AND GFE_ID IS NOT NULL ORDER BY ALL""").fetchall():
+        g.add(ident("site", "psf-streamid", sid), D + "atStream", ident("stream", "dfo-nuseds-gfe", gfe), ID)
+    pops = c.execute("""SELECT POP_ID, min(POPULATION), min(SPECIES) FROM src
+                        WHERE POP_ID IS NOT NULL GROUP BY POP_ID ORDER BY POP_ID""").fetchall()
+    for pid, name, species in pops:
+        pop = ident("population", "dfo-nuseds", pid)
+        g.add(pop, "rdf:type", "smn:Population", ID)
+        if name:
+            g.add(pop, "skos:prefLabel", L(name), ID)
+        g.add(pop, "dcterms:identifier", L(f"dfo-nuseds-pop-id:{pid}"), ID)
+        if species in C.NCBI_TAXON:
+            g.add(pop, D + "taxon", C.NCBI_TAXON[species][1], ID)
+    for pid, gfe in c.execute("""SELECT DISTINCT POP_ID, GFE_ID FROM src
+                                WHERE POP_ID IS NOT NULL AND GFE_ID IS NOT NULL ORDER BY ALL""").fetchall():
+        g.add(ident("population", "dfo-nuseds", pid), D + "atStream", ident("stream", "dfo-nuseds-gfe", gfe), ID)
+    memberships = c.execute("""SELECT POP_ID, cuid, list(DISTINCT IndexId ORDER BY IndexId),
+                              list(DISTINCT SPECIES_QUALIFIED ORDER BY SPECIES_QUALIFIED), min(Year), max(Year)
+                              FROM src WHERE POP_ID IS NOT NULL AND cuid IS NOT NULL
+                              GROUP BY POP_ID, cuid ORDER BY POP_ID, cuid""").fetchall()
+    for pid, cuid, index_ids, qualifiers, first_year, last_year in memberships:
+        context = {"POP_ID": pid, "cuid": cuid, "IndexId": index_ids,
+                   "SPECIES_QUALIFIED": qualifiers, "observed_year_bounds": [first_year, last_year]}
+        review_assertion(g, ident("population", "dfo-nuseds", pid), "smn:populationOf", ident("cu", "psf", cuid), ID,
+            evidence=[SRC_DS, META_URL], note="Source population-to-CU pairing; not functional membership. "
+            "Pink POP_IDs can include odd/even IndexId contexts; these have not been merged or independently approved. "
+            + json.dumps(context, sort_keys=True))
+    return {"cu": len({row[0] for row in cus}), "streams": len({row[0] for row in streams}),
+            "sites": len(sites), "populations": len(pops)}
+
+
+def write_iri_parquet(c, path: Path) -> None:
+    """Use the graph's code_iri implementation for every classification join key."""
+    values = c.execute("SELECT DISTINCT ESTIMATE_CLASSIFICATION FROM src ORDER BY 1").fetchall()
+    mapping = pd.DataFrame([(v, code_iri("ESTIMATE_CLASSIFICATION", v)) for (v,) in values],
+                           columns=["code_value", "code_iri"])
+    c.register("classification_iris", mapping)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    B = NS["id"]
+    c.execute(f"""COPY (SELECT
+        CASE WHEN cuid IS NOT NULL THEN '{B}cu/psf/' || cuid END AS cu_iri,
+        '{B}stream/dfo-nuseds-gfe/' || GFE_ID AS stream_iri,
+        '{B}population/dfo-nuseds/' || POP_ID AS population_iri,
+        CASE WHEN streamid IS NOT NULL THEN '{B}site/psf-streamid/' || streamid END AS site_iri,
+        CASE SPECIES {' '.join(f"WHEN '{k}' THEN '{v[1]}'" for k, v in C.NCBI_TAXON.items())} END AS species_iri,
+        classification_iris.code_iri AS estimate_classification_iri,
+        src.* FROM src LEFT JOIN classification_iris
+          ON src.ESTIMATE_CLASSIFICATION IS NOT DISTINCT FROM classification_iris.code_value
+        ORDER BY src.ACT_ID) TO '{path}' (FORMAT parquet, COMPRESSION zstd)""")
+
+
+def validate_parquet_iris(store, c, path: Path) -> dict[str, int]:
+    """Fail if a non-null row-level join key has no dataset-graph subject."""
+    counts = {}
+    for column in ("cu_iri", "stream_iri", "population_iri", "site_iri", "species_iri", "estimate_classification_iri"):
+        keys = [row[0] for row in c.execute(
+            f'SELECT DISTINCT "{column}" FROM read_parquet(\'{path}\') WHERE "{column}" IS NOT NULL ORDER BY 1'
+        ).fetchall()]
+        absent = [iri for iri in keys if next(store.quads_for_pattern(N(iri), None, None, None), None) is None]
+        if absent:
+            raise ValueError(f"Orphan Parquet {column} join keys: {absent[:10]} ({len(absent)} total)")
+        counts[column] = len(keys)
+    return counts
+
+
 def stage_graph() -> dict:
+    build_reference_time()
     vocab = C.VocabIndex()
     g = C.G(vocab)
     src = json.loads((RAW / "source.json").read_text())
@@ -630,19 +892,23 @@ def stage_graph() -> dict:
         ("conservationUnit", "qb:DimensionProperty", "conservation unit", "Cube dimension: PSE Conservation Unit."),
         ("species", "qb:DimensionProperty", "species", "Cube dimension: species (NCBITaxon IRI)."),
         ("estimateClassification", "qb:DimensionProperty", "estimate classification", "Cube dimension: NuSEDS ESTIMATE_CLASSIFICATION code (mapped to gcdfo estimate types in the mappings graph)."),
-        ("spawnerAbundance", "qb:MeasureProperty", "spawner abundance", "Sum of stream-level MAX_ESTIMATE (not infilled or expanded)."),
+        ("spawnerAbundance", "qb:MeasureProperty", "sum of source MAX_ESTIMATE", "Sum of unchanged source MAX_ESTIMATE values. Legacy predicate name retained; no spawner-only interpretation is asserted."),
         ("siteCount", "qb:MeasureProperty", "number of stream sites", "Number of stream sites contributing an estimate."),
         ("unitMeasure", "qb:AttributeProperty", "unit of measure", "QUDT unit of the measure."),
     ]:
         add_def(g, D + p, kind, label, comment, M)
-    g.add(D + "spawnerAbundance", "qb:concept", "gcdfo:SpawnerAbundance", M)
     g.add(D + "conservationUnit", "rdfs:range", "gcdfo:ConservationUnit", M)
-    g.add(D + "conservationUnit", "rdfs:subPropertyOf", "gcdfo:hasConservationUnit", M)
     g.add(D + "estimateClassification", "qb:codeList", C.BASE + "code/nuseds/estimate-classification", M)
     for cls, label, comment in [("SemanticGap", "Semantic gap", "A needed ontology term that was not found; candidate term request."),
                                 ("StreamFeature", "NuSEDS stream feature", "A NuSEDS geographic feature (GFE_ID): stream, lake, channel, ..."),
-                                ("SurveySite", "PSE stream site", "A PSE streamid: one CU at one stream feature.")]:
+                                ("SurveySite", "PSE stream site", "A source PSE streamid; all observed stream associations are retained.")]:
         add_def(g, D + cls, "owl:Class", label, comment, M)
+    for name in ("confidence", "criticality", "reviewStatus"):
+        g.add(PROFILE + name, "rdf:type", "owl:ObjectProperty", M)
+    for name in ("highConfidence", "mediumConfidence", "lowConfidence", "critical", "awaitingReview"):
+        g.add(PROFILE + name, "rdf:type", "skos:Concept", M)
+    g.add(AGENT, "rdf:type", "prov:SoftwareAgent", M)
+    g.add(AGENT, "rdfs:label", L("Agent-authored legacy PSF NuSEDS corpus pipeline"), M)
 
     # ---- DCAT + provenance ---------------------------------------------------------------
     csvf = next(f for f in src["files"] if f["name"] == CSV_NAME)
@@ -671,7 +937,8 @@ def stage_graph() -> dict:
     g.add(act, "rdfs:label", L(f"salmon-demo-corpus pipeline build of {SLUG}"), PV)
     g.add(act, "prov:used", SRC_DS, PV)
     g.add(act, "prov:used", f"{C.BASE}distribution/{SLUG}/source-csv", PV)
-    g.add(act, "prov:endedAtTime", L(C.now_utc(), "xsd:dateTime"), PV)
+    g.add(act, "dcterms:date", L(build_reference_time(), "xsd:dateTime"), PV)
+    g.add(act, "rdfs:comment", L("Pinned build reference timestamp, not actual execution start or end; real run events are retained outside reproducible artifacts."), PV)
     g.add(act, "prov:wasAssociatedWith", f"{C.BASE}agent/software/metasalmonpy-{ms.__version__}", PV)
     g.add(f"{C.BASE}agent/software/metasalmonpy-{ms.__version__}", "rdf:type", "prov:SoftwareAgent", PV)
     g.add(f"{C.BASE}agent/software/metasalmonpy-{ms.__version__}", "rdfs:label", L(f"metasalmonpy {ms.__version__}"), PV)
@@ -680,6 +947,12 @@ def stage_graph() -> dict:
     for key, info in vocab.sources.items():
         g.add(act, "prov:used", {"gcdfo": "https://w3id.org/gcdfo/salmon", "smn": "https://w3id.org/smn"}[key], PV)
     g.add(act, "rdfs:comment", L(f"Ontology files used: {json.dumps(vocab.sources)}"), PV)
+    metadata_file = next(f for f in src["files"] if f["name"] == META_NAME)
+    metadata_dist = f"{C.BASE}distribution/{SLUG}/source-metadata"
+    g.add(metadata_dist, "rdf:type", "dcat:Distribution", PV)
+    g.add(metadata_dist, "dcat:downloadURL", META_URL, PV)
+    g.add(metadata_dist, "dcterms:identifier", L("sha256:" + metadata_file["sha256"]), PV)
+    g.add(act, "prov:used", metadata_dist, PV)
 
     # ---- tables, columns, variables ---------------------------------------------------------
     tables = pkg["tables"] if "tables" in pkg else pkg.get("table_meta")
@@ -708,12 +981,22 @@ def stage_graph() -> dict:
             g.add(col, "http://qudt.org/schema/qudt/unit", r.unit_iri, M)
         term = r.term_iri if isinstance(r.term_iri, str) and r.term_iri else None
         status = "gap"
-        if term and r.column_role == "measurement":
+        provisional = r.column_name in ("MAX_ESTIMATE", "spawner_abundance", "EFFECTIVE_FEMALES")
+        if r.column_role == "measurement" and (term or provisional):
             var = f"{C.BASE}id/variable/{SLUG}/{r.table_id}/{r.column_name}"
             g.add(col, D + "variable", var, M)
             g.add(var, "rdf:type", "iop:Variable", M)
             g.add(var, "rdfs:label", L(f"{r.column_label} ({r.column_name})", lang="en"), M)
-            g.add(var, "skos:broadMatch" if r.column_name != "spawner_abundance" else "skos:closeMatch", term, M)
+            if term:
+                g.add(var, "skos:broadMatch", term, M)
+            if provisional:
+                review_assertion(g, var, "rdfs:label", L(r.column_label, lang="en"), M,
+                    evidence=[SRC_DS, META_URL],
+                    note="Critical source-field interpretation awaiting source/dictionary review; source numbers are unchanged and no spawner-only or literal row-maximum equation is asserted.")
+                if r.column_name == "EFFECTIVE_FEMALES":
+                    review_assertion(g, var, "skos:closeMatch", PSC_EFS, MP, evidence=[SRC_DS, META_URL],
+                        confidence="lowConfidence", justification=SEMAPV_AGENT,
+                        note="Candidate only: PSC-CV-000035 is a brood-year stock-recruit variable. NuSEDS EFFECTIVE_FEMALES requires DFO dictionary and scope review before accepting this alignment.")
             rows = dec[(dec.table_id == r.table_id) & (dec.column_name == r.column_name)]
             pmap = {"property": "iop:hasProperty", "entity": "iop:hasObjectOfInterest",
                     "constraint": "iop:hasConstraint", "statistical_modifier": "iop:hasStatisticalModifier"}
@@ -729,7 +1012,7 @@ def stage_graph() -> dict:
                     g.add(gap, "rdfs:label", L(d.component_label, lang="en"), M)
                     g.add(gap, "dcterms:type", L(f"I-ADOPT {d.component_role}"), M)
                     g.add(gap, "skos:scopeNote", L(d.rationale, lang="en"), M)
-            status = "partial" if has_gap else "matched"
+            status = "partial" if has_gap or provisional else "matched"
         elif term:
             g.add(col, "dcterms:subject", term, M)
             status = "matched"
@@ -761,7 +1044,8 @@ def stage_graph() -> dict:
             def ex(x):
                 pf, _, loc = x.partition(":")
                 return cm.get(pf, NS.get(pf, pf + ":")) + loc
-            sssom[ex(m.subject_id)] = (m.predicate_id, m.object_id, ms_set.metadata["mapping_set_id"], m.get("comment", ""))
+            sssom[ex(m.subject_id)] = (m.predicate_id, m.object_id, ms_set.metadata["mapping_set_id"],
+                                      m.get("comment", ""), m.mapping_justification)
     for _, r in codes.drop_duplicates(["column_name", "code_value"]).iterrows():
         sch = f"{C.BASE}code/{CODE_SCHEMES[r.column_name][0]}" if r.column_name in CODE_SCHEMES else f"{C.BASE}code/{SLUG}/{C.slug_iri(r.column_name)}"
         ci = code_iri(r.column_name, r.code_value)
@@ -772,121 +1056,38 @@ def stage_graph() -> dict:
         g.add(ci, "skos:prefLabel", L(r.code_value), MP)
         g.add(ci, "skos:notation", L(r.code_value), MP)
         if ci in sssom:
-            pred, obj, set_id, note = sssom[ci]
+            pred, obj, set_id, note, justification = sssom[ci]
+            by_agent = justification in ("semapv:AgentBasedMatching", SEMAPV_AGENT)
             if obj != "sssom:NoTermFound":
-                g.add(ci, C.expand(pred), C.expand(obj), MP)
+                if by_agent:
+                    review_assertion(g, ci, C.expand(pred), C.expand(obj), MP,
+                        evidence=[SRC_DS, META_URL, set_id], note=str(note), justification=SEMAPV_AGENT)
+                else:
+                    g.add(ci, C.expand(pred), C.expand(obj), MP)
             else:
                 gap = f"{C.BASE}id/gap/{SLUG}/code-{C.slug_iri(r.column_name)}-{C.slug_iri(r.code_value)}"
                 g.add(ci, D + "hasGap", gap, MP)
                 g.add(gap, "rdf:type", D + "SemanticGap", MP)
                 g.add(gap, "rdfs:label", L(f"{r.column_name} = {r.code_value}"), MP)
                 g.add(gap, "dcterms:type", L("code value"), MP)
+                if by_agent:
+                    review_assertion(g, ci, C.expand(pred), C.expand(obj), MP,
+                        evidence=[SRC_DS, META_URL, set_id], note=str(note), justification=SEMAPV_AGENT)
             g.add(ci, "dcterms:source", set_id, MP)
             if isinstance(note, str) and note:
                 g.add(ci, "skos:editorialNote", L(note), MP)
         elif isinstance(r.term_iri, str) and r.term_iri:
             g.add(ci, "skos:exactMatch", r.term_iri, MP)
 
-    # ---- identity nodes ----------------------------------------------------------------------
-    cus = c.execute("""SELECT cuid, any_value(cu_name_pse), any_value(cu_name_dfo), any_value(FULL_CU_IN_PSE),
-                       any_value(FULL_CU_IN), any_value(SPECIES), any_value(SPECIES_QUALIFIED), any_value(regionid),
-                       any_value(region), any_value(CU_TYPE), any_value(CU_LAT), any_value(CU_LONGT), any_value(CU_ACRO)
-                       FROM src WHERE cuid IS NOT NULL GROUP BY cuid""").fetchall()
-    dfo_cu_pse = {}
-    for (cuid, name, dname, pidx, didx, sp, sq, rid, rname, ctype, lat, lon, acro) in cus:
-        cu = ident("cu", "psf", cuid)
-        g.add(cu, "rdf:type", "gcdfo:ConservationUnit", ID)
-        g.add(cu, "skos:prefLabel", L(name, lang="en"), ID)
-        if dname and dname != name:
-            g.add(cu, "skos:altLabel", L(dname, lang="en"), ID)
-        g.add(cu, "dcterms:identifier", L(f"psf-cuid:{cuid}"), ID)
-        g.add(cu, "skos:notation", L(str(cuid), NS["def"] + "psfCuid"), ID)
-        if pidx:
-            g.add(cu, D + "pseCuIndex", L(pidx), ID)
-        if didx:
-            g.add(cu, D + "dfoCuIndex", L(didx), ID)
-            dfo_cu_pse.setdefault(didx, set()).add(pidx)
-            dcu = ident("cu", "dfo", didx)
-            g.add(dcu, "rdf:type", "gcdfo:ConservationUnit", ID)
-            g.add(dcu, "dcterms:identifier", L(f"dfo-full-cu-in:{didx}"), ID)
-            g.add(dcu, "skos:notation", L(didx, NS["def"] + "dfoFullCuIn"), ID)
-            g.add(cu, "skos:exactMatch" if pidx == didx else "skos:broadMatch", dcu, ID)
-        if sp in C.NCBI_TAXON:
-            g.add(cu, D + "taxon", C.NCBI_TAXON[sp][1], ID)
-        g.add(cu, D + "speciesQualifier", L(sq), ID)
-        reg = ident("region", "psf", rid)
-        g.add(cu, D + "region", reg, ID)
-        g.add(reg, "rdf:type", "skos:Concept", ID)
-        g.add(reg, "skos:prefLabel", L(rname, lang="en"), ID)
-        g.add(reg, "skos:notation", L(str(rid)), ID)
-        if ctype:
-            g.add(cu, D + "cuType", L(ctype), ID)
-        if lat is not None and lon is not None:
-            g.add(cu, "wgs:lat", L(float(lat)), ID)
-            g.add(cu, "wgs:long", L(float(lon)), ID)
-    for sp, (sci, tax) in C.NCBI_TAXON.items():
-        if sp in ("Steelhead", "Cutthroat"):
-            continue
-        g.add(tax, "rdfs:label", L(sci), ID)
-        g.add(tax, "skos:altLabel", L(f"{sp} salmon", lang="en"), ID)
-    streams = c.execute("""SELECT GFE_ID, any_value(sys_nm), any_value(GAZETTED_NAME), any_value(WATERBODY),
-                           any_value(GFE_TYPE), any_value(Y_LAT), any_value(X_LONGT), any_value(WATERSHED_CDE),
-                           any_value(FWA_WATERSHED_CDE), any_value(StatArea)
-                           FROM src GROUP BY GFE_ID""").fetchall()
-    for (gfe, nm, gaz, wb, gtype, lat, lon, wsc, fwa, sa) in streams:
-        s = ident("stream", "dfo-nuseds-gfe", gfe)
-        g.add(s, "rdf:type", D + "StreamFeature", ID)
-        if gtype == "Stream":
-            g.add(s, "rdf:type", "obo:ENVO_00000023", ID)
-        g.add(s, "skos:prefLabel", L(nm), ID)
-        if gaz:
-            g.add(s, "skos:altLabel", L(gaz), ID)
-        if wb and wb != nm:
-            g.add(s, "skos:altLabel", L(wb), ID)
-        g.add(s, "dcterms:identifier", L(f"dfo-nuseds-gfe-id:{gfe}"), ID)
-        if gtype:
-            g.add(s, D + "featureType", L(gtype), ID)
-        g.add(s, "wgs:lat", L(float(lat)), ID)
-        g.add(s, "wgs:long", L(float(lon)), ID)
-        g.add(s, "geo:hasGeometry", L(f"POINT({lon} {lat})", "geo:wktLiteral"), ID)
-        if wsc:
-            g.add(s, "dcterms:identifier", L(f"dfo-watershed-code:{wsc}"), ID)
-        if fwa:
-            g.add(s, "dcterms:identifier", L(f"bc-fwa-watershed-code:{fwa}"), ID)
-        if sa:
-            g.add(s, D + "statArea", L(str(sa)), ID)
-    sites = c.execute("""SELECT streamid, any_value(cuid), any_value(GFE_ID), any_value(sys_nm), bool_or(IS_INDICATOR = 'Y')
-                         FROM src WHERE streamid IS NOT NULL GROUP BY streamid""").fetchall()
-    for (sid, cuid, gfe, nm, ind) in sites:
-        s = ident("site", "psf-streamid", sid)
-        g.add(s, "rdf:type", D + "SurveySite", ID)
-        g.add(s, "skos:prefLabel", L(nm), ID)
-        g.add(s, "dcterms:identifier", L(f"psf-streamid:{sid}"), ID)
-        g.add(s, "gcdfo:hasConservationUnit", ident("cu", "psf", cuid), ID)
-        g.add(s, D + "atStream", ident("stream", "dfo-nuseds-gfe", gfe), ID)
-        if ind is not None:
-            g.add(s, D + "isIndicator", L(bool(ind)), ID)
-    pops = c.execute("""SELECT POP_ID, any_value(POPULATION), any_value(SPECIES), list(DISTINCT GFE_ID), list(DISTINCT cuid)
-                        FROM src GROUP BY POP_ID""").fetchall()
-    for (pid, nm, sp, gfes, cuids) in pops:
-        p = ident("population", "dfo-nuseds", pid)
-        g.add(p, "rdf:type", "smn:Population", ID)
-        g.add(p, "skos:prefLabel", L(nm), ID)
-        g.add(p, "dcterms:identifier", L(f"dfo-nuseds-pop-id:{pid}"), ID)
-        if sp in C.NCBI_TAXON:
-            g.add(p, D + "taxon", C.NCBI_TAXON[sp][1], ID)
-        for gfe in gfes:
-            g.add(p, D + "atStream", ident("stream", "dfo-nuseds-gfe", gfe), ID)
-        for cu in cuids:
-            if cu is not None:
-                g.add(p, "gcdfo:hasConservationUnit", ident("cu", "psf", cu), ID)
+    # ---- source identity nodes and reviewable pairing candidates ----------------------------
+    identity_counts = add_identities(g, c)
 
     # ---- RDF Data Cube --------------------------------------------------------------------------
     qbds = f"{C.BASE}cube/{SLUG}/cu-year-spawners"
     dsd = f"{qbds}/structure"
     g.add(qbds, "rdf:type", "qb:DataSet", CB)
-    g.add(qbds, "rdfs:label", L("Spawner abundance by CU, species, year and estimate classification (PSF cleaned NuSEDS)", lang="en"), CB)
-    g.add(qbds, "rdfs:comment", L("Sum of stream-level MAX_ESTIMATE; not infilled, not expanded; not the PSE CU-level abundance series.", lang="en"), CB)
+    g.add(qbds, "rdfs:label", L("Sum of source MAX_ESTIMATE by CU, species, year and estimate classification", lang="en"), CB)
+    g.add(qbds, "rdfs:comment", L("Sum of unchanged source MAX_ESTIMATE values; biological scope awaits review. Not infilled or expanded; the legacy name does not establish spawner abundance.", lang="en"), CB)
     g.add(qbds, "qb:structure", dsd, CB)
     g.add(qbds, "prov:wasDerivedFrom", f"{DS}/table/{CUBE_T}", CB)
     g.add(qbds, "dcterms:license", LICENCE, CB)
@@ -918,33 +1119,29 @@ def stage_graph() -> dict:
     if g.unverified:
         raise SystemExit(f"Unverified smn/gcdfo IRIs emitted: {sorted(g.unverified)}")
     out = g.write(GRAPH_FILE)
-    log(f"graph written: {out} ({len(g.quads)} quads)")
 
-    # IRI-keyed Parquet (row-level data)
-    PARQUET.parent.mkdir(parents=True, exist_ok=True)
-    B = NS["id"]
-    c.execute(f"""COPY (SELECT
-        CASE WHEN cuid IS NOT NULL THEN '{B}cu/psf/' || cuid END AS cu_iri,
-        '{B}stream/dfo-nuseds-gfe/' || GFE_ID AS stream_iri,
-        '{B}population/dfo-nuseds/' || POP_ID AS population_iri,
-        CASE WHEN streamid IS NOT NULL THEN '{B}site/psf-streamid/' || streamid END AS site_iri,
-        CASE SPECIES {' '.join(f"WHEN '{k}' THEN '{v[1]}'" for k, v in C.NCBI_TAXON.items())} END AS species_iri,
-        '{C.BASE}code/nuseds/estimate-classification/' || regexp_replace(lower(regexp_replace(coalesce(ESTIMATE_CLASSIFICATION,'blank'), '[^A-Za-z0-9]+', '-', 'g')), '^-|-$', '', 'g') AS estimate_classification_iri,
-        *
-        FROM src) TO '{PARQUET}' (FORMAT parquet, COMPRESSION zstd)""")
+    # IRI-keyed Parquet (row-level data); raw numeric values are unchanged.
+    write_iri_parquet(c, PARQUET)
     # pyoxigraph store
     if STORE_DIR.exists():
         shutil.rmtree(STORE_DIR)
     STORE_DIR.parent.mkdir(parents=True, exist_ok=True)
     st = ox.Store(str(STORE_DIR))
     st.bulk_extend(g.quads)
-    for key, info in vocab.sources.items():
-        st.bulk_load(path=info["path"], format=ox.RdfFormat.TURTLE, to_graph=N(f"{C.BASE}graph/vocab/{key}"))
+    # Count the unique dataset quads before adding the vocabulary graphs.
+    dataset_quads = len(st)
+    per_graph = {k: sum(1 for _ in st.quads_for_pattern(None, None, None, N(v)))
+                 for k, v in GRAPHS.items()}
+    log(f"graph written: {out} ({dataset_quads} quads)")
+    iri_counts = validate_parquet_iris(st, c, PARQUET)
+    for key, path in vocab.paths.items():
+        st.bulk_load(path=str(path), format=ox.RdfFormat.TURTLE, to_graph=N(f"{C.BASE}graph/vocab/{key}"))
     st.flush()
-    stats = {"quads_dataset": len(g.quads), "quads_store_total": len(st),
-             "per_graph": {k: sum(1 for q in g.quads if q.graph_name.value == v) for k, v in GRAPHS.items()},
-             "cu": len(cus), "streams": len(streams), "sites": len(sites), "populations": len(pops),
-             "cube_observations": len(cube), "graph_file": str(out.relative_to(C.ROOT)),
+    stats = {"quads_dataset": dataset_quads, "quads_store_total": len(st),
+             "per_graph": per_graph,
+             **identity_counts,
+             "parquet_join_keys": iri_counts,
+             "cube_observations": len(cube), "graph_file": str(out.relative_to(OUTPUT_ROOT)),
              "graph_file_bytes": out.stat().st_size, "parquet_bytes": PARQUET.stat().st_size}
     (PKG / "review" / "graph-summary.json").write_text(json.dumps(stats, indent=2) + "\n")
     log(f"graph ok: {stats}")
@@ -964,10 +1161,18 @@ STAGES = {"fetch": stage_fetch, "profile": stage_profile, "package": stage_packa
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--stages", default=",".join(STAGES))
+    ap.add_argument("--build-time", help="Pinned UTC reference timestamp; not actual execution time")
+    ap.add_argument("--output-root", type=Path, help="Isolated output tree; source inputs are read from this checkout")
     a = ap.parse_args()
+    if a.build_time:
+        os.environ["SALMONGRAPH_BUILD_TIME"] = a.build_time
+    if a.output_root:
+        configure_output_root(a.output_root)
     timings = {}
+    log(f"actual execution started: {C.now_utc()}")
     for s in a.stages.split(","):
         t0 = time.time()
         STAGES[s]()
         timings[s] = round(time.time() - t0, 1)
     log(f"timings (s): {timings}")
+    log(f"actual execution ended: {C.now_utc()}")

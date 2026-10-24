@@ -28,6 +28,7 @@ nuseds_cuid_streamid,ESTIMATE_METHOD,code value,Expert Opinion,
 nuseds_cuid_streamid,ESTIMATE_METHOD,code value,Not Applicable,
 nuseds_cuid_streamid,ESTIMATE_METHOD,code value,Other Estimate Method,
 nuseds_cuid_streamid,ESTIMATE_METHOD,code value,Unknown Estimate Method,
+nuseds_cuid_streamid,primary_enumeration_method,code value,Based on Angling Catch,"Catch-based index; treat as a CPUE-style index unless more detail is provided. [corpus fix: gcdfo:EnumerationMethod does not exist; no specific gcdfo concept, so unmapped (gap, hub B-76)]"
 nuseds_cuid_streamid,primary_enumeration_method,code value,Biologist/Working Group,Not a method. Treat as method-unknown unless a specific field/analysis method is documented elsewhere.
 nuseds_cuid_streamid,primary_enumeration_method,code value,Other,Treat as method-unknown unless a specific field/analysis method is documented elsewhere.
 cu_year_spawners,ESTIMATE_CLASSIFICATION,code value,NO SURVEY THIS YEAR,"Absence-of-observation marker, not an estimate type: no survey happened, so no Hyatt classification applies. Deliberately unmapped."

@@ -1,4 +1,4 @@
-# CQ5: How many CUs and stream sites have any spawner estimate each year (1980-2024)?
+# CQ5: How many CUs and stream sites have any source MAX_ESTIMATE record each year (1980-2024)?
 PREFIX qb: <http://purl.org/linked-data/cube#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

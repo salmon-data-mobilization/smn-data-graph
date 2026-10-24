@@ -21,6 +21,7 @@ import datetime as dt
 import gzip
 import hashlib
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -31,7 +32,7 @@ import pyoxigraph as ox
 ROOT = Path(__file__).resolve().parents[1]
 
 # Provisional: not yet registered with w3id.org.
-BASE = "https://w3id.org/salmon-demo-corpus/"
+BASE = os.environ.get("SALMONGRAPH_BASE", "https://w3id.org/salmon-demo-corpus/").rstrip("/") + "/"
 
 NS = {
     "corpus": BASE,
@@ -87,7 +88,8 @@ VOCAB_FILES = {
               ROOT / "data/raw/_vocab/gcdfo.ttl"),
     # smn: local flattened build of ~/code/salmon-domain-ontology (w3id.org/smn/
     # serves HTML by default).
-    "smn": (None, Path.home() / "code/salmon-domain-ontology/salmon-domain-ontology.ttl"),
+    "smn": (None, (ROOT / "data/raw/_vocab/smn.ttl") if (ROOT / "data/raw/_vocab/smn.ttl").exists()
+            else Path.home() / "code/salmon-domain-ontology/salmon-domain-ontology.ttl"),
 }
 
 
@@ -174,12 +176,14 @@ class VocabIndex:
     def __init__(self) -> None:
         self.store = ox.Store()
         self.sources = {}
+        self.paths = {}  # local files to load; sources[...]["path"] is the portable form
         for key, (url, path) in VOCAB_FILES.items():
             if not path.exists() and url:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 subprocess.run(["curl", "-L", "--fail", "-sS", "-o", str(path), url], check=True)
             self.store.load(path=str(path), format=ox.RdfFormat.TURTLE)
             self.sources[key] = {"url": url, "path": portable_path(path), "sha256": sha256(path)}
+            self.paths[key] = path
         self._subjects = {q.subject.value for q in self.store if isinstance(q.subject, ox.NamedNode)}
 
     def exists(self, iri: str) -> bool:
@@ -255,10 +259,13 @@ class G:
         store = ox.Store()
         store.bulk_extend(self.quads)
         path.parent.mkdir(parents=True, exist_ok=True)
-        data = store.dump(format=ox.RdfFormat.TRIG, prefixes={k: v for k, v in NS.items()})
+        # The store normalises literals and de-duplicates; sorting its quads makes the
+        # bytes reproducible, because Store.dump order varies between processes.
+        quads = sorted(store, key=lambda q: (str(q.graph_name), str(q.subject), str(q.predicate), str(q.object)))
+        data = ox.serialize(quads, format=ox.RdfFormat.TRIG, prefixes={k: v for k, v in NS.items()})
         if len(data) > gzip_over_mb * 1e6:
             path = path.with_suffix(path.suffix + ".gz")
-            with gzip.open(path, "wb", compresslevel=6) as fh:
+            with gzip.GzipFile(path, "wb", compresslevel=6, mtime=0) as fh:  # mtime=0: same bytes every build
                 fh.write(data)
             stale = path.with_suffix("")
         else:
@@ -325,7 +332,7 @@ def run_queries(store: ox.Store, qdir: Path, prefixes: str = "") -> dict[str, in
     """Run every NN-*.rq in qdir, write NN-*.csv next to it. Returns row counts."""
     counts = {}
     for rq in sorted(qdir.glob("*.rq")):
-        text = rq.read_text()
+        text = rq.read_text().replace("https://w3id.org/salmon-demo-corpus/", BASE)
         res = store.query(text, use_default_graph_as_union=True)
         vars_ = [v.value for v in res.variables]
         rows = []

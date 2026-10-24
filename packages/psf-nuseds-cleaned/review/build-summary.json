@@ -3,10 +3,10 @@
   "cube_rows": 26141,
   "dict_rows": 102,
   "codes_rows": 271,
-  "codes_with_term": 67,
+  "codes_with_term": 66,
   "decomposition_rows": 32,
   "observation_structures": 20,
-  "term_gaps": 33,
+  "term_gaps": 34,
   "metasalmonpy_term_gaps": 0,
   "validation": {
     "structural_issues": [],
