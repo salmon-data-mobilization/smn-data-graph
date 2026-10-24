@@ -371,8 +371,8 @@ name = "httpcore2"
 version = "2.16.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "h11", marker = "sys_platform != 'emscripten'" },
-    { name = "truststore", marker = "sys_platform != 'emscripten'" },
+    { name = "h11" },
+    { name = "truststore" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c0/61/afa9d6b7452f9eca73f73d45324eb0bb52f098fd5e6049bf6b8263be9b4e/httpcore2-2.16.0.tar.gz", hash = "sha256:c72cd0413563b17e1cd8354677dff887466f8ec2551679759e93126534428643", size = 69886, upload-time = "2026-10-21T07:09:45.31Z" }
 wheels = [
@@ -588,12 +588,12 @@ wheels = [
 [[package]]
 name = "metasalmonpy"
 version = "0.6.0"
-source = { url = "https://github.com/salmon-data-mobilization/metasalmonpy/archive/refs/tags/v0.6.0.tar.gz" }
+source = { url = "https://github.com/salmon-data-mobilization/metasalmonpy/archive/943fe1f50d7ac5b88b8be81250dca2e7aeb0f632.tar.gz" }
 dependencies = [
     { name = "pandas" },
     { name = "requests" },
 ]
-sdist = { hash = "sha256:4cdf71d562add0f29a55bba92138ff1991e2521083810dc9958019d21b709486" }
+sdist = { hash = "sha256:a8eda518be43b1049a089a63b1d9fbea7196c0e6a1f07288d6e3b222464ec2ac" }
 
 [package.optional-dependencies]
 eml = [
@@ -1107,7 +1107,7 @@ dependencies = [
 requires-dist = [
     { name = "claude-agent-sdk", specifier = ">=0.2.173" },
     { name = "duckdb", specifier = ">=2.0.0" },
-    { name = "metasalmonpy", extras = ["eml", "verify"], url = "https://github.com/salmon-data-mobilization/metasalmonpy/archive/refs/tags/v0.6.0.tar.gz" },
+    { name = "metasalmonpy", extras = ["eml", "verify"], url = "https://github.com/salmon-data-mobilization/metasalmonpy/archive/943fe1f50d7ac5b88b8be81250dca2e7aeb0f632.tar.gz" },
     { name = "pyoxigraph", specifier = ">=0.5.13" },
 ]
 
@@ -1207,8 +1207,8 @@ name = "uvicorn"
 version = "0.54.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click", marker = "sys_platform != 'emscripten'" },
-    { name = "h11", marker = "sys_platform != 'emscripten'" },
+    { name = "click" },
+    { name = "h11" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/da/34/30e9280707135d2cfc589dfff3cb796bd07a3aeb1a3e415ba09dd89d7bb4/uvicorn-0.54.0.tar.gz", hash = "sha256:a2e33cbfaa0306f8e6b0c13e0cb89d7d7a2da3e62b90c66e18c33d9807b28620", size = 112283, upload-time = "2026-09-25T06:52:37.601Z" }
 wheels = [
