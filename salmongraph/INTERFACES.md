@@ -19,12 +19,12 @@ name is missing from this file.
 | `graph` | **working** | `GraphBuilder`: quads in named graphs, literals, RDF 1.2 reifiers |
 | `io.det` | **working** | sorted N-Quads / TriG, gzip mtime 0, canonical JSON/CSV, sha256, portable paths |
 | `provenance` | **working (minimal)** | D6 marks, review status, agent and activity nodes, corp: profile terms |
-| `spec` | stub | `specs/<slug>.yaml` parsing and validation |
-| `executor` | stub | spec -> SDP, dataset graphs, Parquet, report (includes the SDP -> RDF compiler) |
+| `spec` | **working (bounded v1)** | local schema/YAML parsing, deterministic CURIE expansion, semantic/vocabulary validation; no source fetch or review decisions |
+| `executor` | **working (bounded)** | private deterministic dataset build, genuine SDP round trip, graph compiler, observation Parquet, validation and review queue |
 | `identity` | stub | authority nodes, published membership, crosswalks, selection sets |
 | `combine` | stub | one corpus store, shared graphs, cross-source checks |
-| `shapes/`, `validate` | stub | SHACL shapes and the gate |
-| `review` | stub | review queue, decisions as data, reviewed/full views |
+| `shapes/`, `validate` | **working (bounded)** | local SHACL + original-quad structural gates; not scientific approval |
+| `review` | **partial** | pending queues/CSV/status counts work; human decisions and views remain stubs |
 | `ledger` | stub | `runs/ledger.csv` |
 | `catalog` | stub | VoID + DCAT for releases and graphs |
 | `release` | stub | `dist/corpus-<version>/` and `releases/<version>/manifest.json` |
@@ -122,9 +122,11 @@ most needs:
 | variable decomposition | `iop:hasProperty`, `iop:hasObjectOfInterest`, `iop:hasConstraint`, `iop:hasStatisticalModifier` |
 | concept measured by a component | `qb:concept` |
 
-What has no fit yet (a column's variable concept; estimate type; CV; year as
-a dimension with its basis) needs an `sdpv:` term, minted with
-`iri.sdpv_term(localName)` and listed in section 6.4 with its reason.
+The bounded compiler uses `qb:concept` on a source-local column/variable and
+an explicit brood/return-year Data Cube component. It does not mint a generic
+`sdpv:` term for estimate type, age notation, CV or interval bounds: those stay
+in the saved spec, SDP and Parquet with an explicit RDF gap where necessary.
+Any future `sdpv:` term needs a stated reason and a declaration here before use.
 
 ## 4. IRI layout (`salmongraph.iri`)
 
@@ -232,7 +234,7 @@ provenance.profile_vocabulary(graph, *, cfg=None) -> list[Quad]
 provenance.mark_derived(builder, target, *, agent, activity, evidence, confidence,
                         criticality, graph, date=None) -> status
 provenance.mark_statement(builder, reifier, s, p, o, *, graph, agent, activity, evidence,
-                          confidence, criticality, assert_triple=True, date=None) -> status
+                          confidence, criticality, assert_triple=None, date=None) -> status
 provenance.software_agent(builder, name, version, *, graph, label=None) -> iri
 provenance.ai_agent(builder, model, *, graph, label=None, on_behalf_of=None) -> iri
 provenance.person_agent(builder, name, *, graph, orcid=None) -> iri
@@ -241,6 +243,12 @@ provenance.activity_node(builder, activity, *, graph, label, date, used=(), asso
 ```
 
 Extend only by adding keyword arguments with defaults.
+
+Pending statement marks are statement-only by default. `assert_triple=None`
+asserts only a reviewed status; explicit `False` keeps a reifier unasserted.
+Explicit `True` for a pending statement fails, as does a matching live SPO
+already in that target graph. Aggregate validation also checks cross-graph leaks.
+This does not create human decisions or certify the underlying semantics.
 
 ### 6.3 Criticality
 
@@ -365,6 +373,26 @@ Details, inputs and outputs are in each docstring.
 `spec_path(slug)`, `load_spec(path_or_slug)`, `validate_spec(spec, vocab) -> list[str]`,
 `spec_sha256(spec)`.
 
+`observations[].year_column` is required: a named integer source column,
+listed in that block's `dimensions`. The initial writer does not infer the
+year column from its name. Measure `year_basis` stays explicit
+(`smn:broodYear` or `smn:returnYear`). Optional column `mark` values record
+explicit agent assertions; missing marks do not imply any review decision.
+The single column-level mark governs every semantic binding on that column.
+A noncritical label/description mark is therefore allowed only on a purely
+descriptive column. Measures, code mappings, designated year columns, and
+columns with explicit concept/unit/year-basis/age/type/method/decomposition
+bindings require a critical mark when marked. A label-only evidence record is
+refused rather than reused to approve a critical interpretation.
+
+The initial parsers are typed CSV and XLSX. XLSX requires an explicit
+`tables[].sheet`; CSV and bespoke parsers cannot silently select a sheet.
+Custom `module:function` parsers resolve to verified project-local source and
+return exactly the declared table DataFrames. Spec loading never imports them.
+`source.licence` may be null only when redistribution is explicitly
+`unconfirmed`. Such a build stays private and records a publication gap; null
+never means public domain or an inferred licence grant.
+
 ### `salmongraph.executor`
 
 `BUILD_DIR`, `BUILD_FILES`, `AgentRun(run_id, model, date)`, `BuildResult`,
@@ -376,6 +404,46 @@ Details, inputs and outputs are in each docstring.
 `measure_iri`, `value`, `unit_iri`, `year`, `year_basis_iri`,
 `<dimension>_iri`..., optional `standard_error`, `cv`, `lower`, `upper`,
 `estimate_type_iri`, `method_iri`, and `review_status`.
+`review_status` is nullable for source-stated semantics with no explicit
+agent marks; absence is not an accepted status.
+
+Source code dimensions retain their own identities even when a target mapping
+is missing. The compiler and Parquet writer share the private helper
+`_source_code_iri(slug, table_id, column_name, value)`: scheme
+`<slug>/field-<stable_key(table_id, column_name)>`, then `iri.code(scheme, value)`.
+Mapped vocabulary targets never replace these source-code dimension IRIs.
+
+The graph compiler keeps I-ADOPT decompositions and units on source-local
+columns, rather than redefining a shared biological concept. A column's
+`qb:concept`, unit, method and year interpretation follow its explicit mark.
+Critical pending bindings are statement-only and trace to their actual
+`AgentRun`; missing run evidence fails rather than inventing an agent or date.
+Observations retain their source-local variable and numeric value. Required
+key dimensions are Data Cube dimensions; optional non-key dimensions are
+attributes, so missing source values do not become invented unknown identities.
+
+Target-only code declarations do not imply `skos:exactMatch`. An actual SSSOM
+row supplies its predicate. Published non-agent rows retain source evidence and
+justification without an invented human acceptance. Inherited agent mappings
+without their own D6 evidence stay a literal source inventory and an explicit
+gap, outside the asserted alignment graph. The compiler validates genuine SDK
+extensions and refuses conflicting source/spec semantics transactionally.
+
+Build orchestration verifies saved spec and raw SHA256 values before parsing
+and before replacing outputs. It uses the genuine SDK with semantic guessing
+and model assessment disabled, selects the supported vendored schema, and
+compares source values after the SDP round trip. A changed source value fails.
+Dates are explicit inputs. The manifest records actual runtime source hashes,
+vocabulary pins, tool versions and every exported file except itself. Existing
+outputs are replaced only when their prior build manifest and hashes still
+match; unknown or dirty outputs are preserved. Custom parsers run as trusted
+project code, with counted Python network guards; this is not an OS sandbox.
+
+The default build runs local SHACL. `validate=False` explicitly records a
+skipped check. Existing human decision rows fail clearly while decision
+application is a stub; cross-source expectations are recorded as not run until
+combine exists. Private build reports retain metadata/RDF/publication gaps and
+always report publication readiness as false. No build uploads an artifact.
 
 ### `salmongraph.identity`
 
@@ -400,6 +468,15 @@ Details, inputs and outputs are in each docstring.
 literal so pyshacl/rdflib can read it), `validate.validate(data, *, shapes=None, graphs=None)`,
 `validate.assert_valid(data, *, shapes=None, graphs=None)`.
 
+Validation uses local shapes plus structural checks on the original quads.
+RDF 1.2 triple terms become literals only for the SHACL compatibility view;
+their embedded triples are never asserted as shadow data. Pending SPO leakage
+is checked across the supplied graph union. A passing report establishes the
+bounded structural contract, not biological correctness, reviewer identity,
+redistribution permission or publication readiness. An explicitly unconfirmed
+private dataset can omit a licence IRI only with the matching access-rights
+marker; confirmed redistribution still requires a real licence IRI.
+
 ### `salmongraph.review`
 
 `REVIEW_QUEUE_COLUMNS`, `DECISION_COLUMNS`, `DECISIONS_PATH`, `VIEWS`,
@@ -407,6 +484,13 @@ literal so pyshacl/rdflib can read it), `validate.validate(data, *, shapes=None,
 `write_review_queue(items, path)`, `load_decisions(path=DECISIONS_PATH)`,
 `apply_decisions(builder, decisions, *, graph) -> missing targets`,
 `view_store(store, view="reviewed")`, `status_counts(data)`.
+
+Only queue generation, deterministic CSV and status counts currently work.
+Queues prioritize critical targets, then explicit downstream dependency count
+and IRI. They leave the suggested decision blank. Conflicting statuses and
+invalid review proof fail rather than supplying an approval. Human decision
+loading/application and reviewed views remain stubs; callers must not ignore
+existing decision rows while those operations are unavailable.
 
 ### `salmongraph.ledger`
 
@@ -447,6 +531,12 @@ Nothing here uploads; Brett runs uploads.
 
 ## 10. Known gaps in this version
 
+- Core interoperability is tested against public metasalmonpy commit
+  `943fe1f50d7ac5b88b8be81250dca2e7aeb0f632`, including its canonical
+  `semapv:AgentBasedMatching` support. The current dependency URL and lockfile
+  still reference the earlier baseline. Integrate the immutable SDK pin and
+  regenerate a coherent lockfile before claiming a fresh locked installation;
+  source-runtime fixture tests do not establish that installation path.
 - `sdpv:` has no published home (3.2).
 - The PSC CV default URL is the latest complete Turtle; its version is the
   release tag whose manifest lists the same sha256, found from a local clone

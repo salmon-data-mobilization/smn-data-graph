@@ -339,9 +339,22 @@ def mark_derived(builder: GraphBuilder, target: str | ox.NamedNode, *, agent: st
 
 def mark_statement(builder: GraphBuilder, reifier: str, s: object, p: object, o: object, *,
                    graph: str, agent: str | Sequence[str], activity: str, evidence: Evidence,
-                   confidence: str, criticality: str, assert_triple: bool = True,
+                   confidence: str, criticality: str, assert_triple: bool | None = None,
                    date: str | _dt.date | None = None) -> str:
-    """Reify ``s p o`` as ``reifier`` (asserting it unless ``assert_triple=False``) and mark the reifier.
+    """Reify and mark ``s p o``, asserting it only when its status permits it.
+
+    With ``assert_triple=None`` (the default), an ``agentAccepted`` statement
+    is asserted and an ``awaitingReview`` statement is recorded only as an
+    RDF 1.2 reifier. Explicit ``False`` never adds the live triple. Explicit
+    ``True`` for a pending statement raises instead of overriding review.
+    A pending statement also raises if its exact SPO is already live in the
+    target named graph: this helper neither removes a prior assertion nor
+    treats it as an accepted source assertion. Other graphs are untouched.
+
+    All terms and D6 inputs are validated before mutating ``builder``, so a
+    rejected call cannot leave an asserted triple or incomplete marks behind.
+    Human acceptance is applied separately by the review module; this helper
+    creates only the statuses that :func:`review_status` already permits.
 
     The usual call for an agent-derived mapping, identity link or membership::
 
@@ -352,9 +365,34 @@ def mark_statement(builder: GraphBuilder, reifier: str, s: object, p: object, o:
 
     Returns the review status, as :func:`mark_derived`.
     """
-    builder.reify(reifier, s, p, o, graph, assert_triple=assert_triple)
-    return mark_derived(builder, reifier, agent=agent, activity=activity, evidence=evidence,
-                        confidence=confidence, criticality=criticality, graph=graph, date=date)
+    status = review_status(confidence, criticality)
+    if assert_triple is not None and not isinstance(assert_triple, bool):
+        raise ValueError("assert_triple must be None, True or False")
+    target = _iri_of(reifier, "reifier")
+    if target in builder.marked:
+        raise ValueError(f"{target} is already marked ({builder.marked[target]}); mark a target once")
+    pending = status not in REVIEWED_STATUSES
+    if pending and assert_triple is True:
+        raise ValueError("cannot assert an awaitingReview statement before acceptance")
+
+    # Use the same term conversion and mark validation as the live builder,
+    # but stage them first. In particular mark_derived validates the optional
+    # date after writing its other marks, so calling it on the live builder
+    # before validation could leave a partial assertion on failure.
+    staged = GraphBuilder(builder.vocab, cfg=builder.cfg)
+    staged.reify(target, s, p, o, graph, assert_triple=False)
+    reified = staged.quads[0]
+    triple = reified.object
+    live = ox.Quad(triple.subject, triple.predicate, triple.object, reified.graph_name)
+    if pending and live in builder.quads:
+        raise ValueError("cannot mark an awaitingReview statement whose exact SPO is already live in this graph")
+    mark_derived(staged, target, agent=agent, activity=activity, evidence=evidence,
+                 confidence=confidence, criticality=criticality, graph=graph, date=date)
+    if assert_triple is True or assert_triple is None and not pending:
+        staged.add(live.subject, live.predicate, live.object, live.graph_name)
+    builder.extend(staged.quads)
+    builder.marked[target] = status
+    return status
 
 
 # --------------------------------------------------------------------------

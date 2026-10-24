@@ -1,0 +1,26 @@
+@prefix shape: <urn:salmongraph:shape:> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# These are structure/pin assertions, not verification of permission or bytes.
+shape:DatasetMetadata a sh:NodeShape ; sh:targetClass dcat:Dataset ; sh:nodeKind sh:IRI ;
+    sh:property shape:Licence, shape:Attribution, shape:Version, shape:BuildDate, shape:SourceChecksum ;
+    sh:or ([ sh:property [ sh:path dcterms:license ; sh:minCount 1 ] ]
+           [ sh:property [ sh:path dcterms:accessRights ; sh:hasValue "redistribution unconfirmed"^^xsd:string ] ]) .
+shape:Licence a sh:PropertyShape ; sh:path dcterms:license ;
+    sh:maxCount 1 ; sh:nodeKind sh:IRI .
+shape:Attribution a sh:PropertyShape ; sh:path dcterms:rights ;
+    sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "\\S" .
+shape:Version a sh:PropertyShape ; sh:path pav:version ;
+    sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:string ; sh:pattern "\\S" .
+shape:BuildDate a sh:PropertyShape ; sh:path dcterms:created ;
+    sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:date .
+shape:SourceChecksum a sh:PropertyShape ; sh:path (prov:wasGeneratedBy prov:used) ;
+    sh:qualifiedMinCount 1 ; sh:qualifiedValueShape [ sh:nodeKind sh:IRI ;
+        sh:property [ sh:path prov:hadPrimarySource ; sh:minCount 1 ; sh:nodeKind sh:IRI ] ;
+        sh:property [ sh:path dcterms:identifier ; sh:minCount 1 ;
+                      sh:datatype xsd:string ; sh:pattern "^sha256:[0-9a-f]{64}$" ] ] .

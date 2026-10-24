@@ -1,0 +1,545 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "salmongraph/spec.schema.json",
+  "title": "salmongraph contracted dataset specification, version 1",
+  "description": "Local structural validation for spec.py and INTERFACES.md. Unsupported interrupted-draft fields are rejected. Vocabulary and relational checks follow in validate_spec. Marks contain explicit evidence, not review decisions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "spec_version",
+    "slug",
+    "version",
+    "title",
+    "description",
+    "source",
+    "tables"
+  ],
+  "properties": {
+    "spec_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "not": {
+        "enum": [
+          "corpus",
+          "vocab"
+        ]
+      }
+    },
+    "version": {
+      "$ref": "#/$defs/text"
+    },
+    "title": {
+      "$ref": "#/$defs/text"
+    },
+    "description": {
+      "$ref": "#/$defs/text"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "parser": {
+      "type": "string",
+      "pattern": "^(csv|xlsx|[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*:[A-Za-z_][A-Za-z0-9_]*)$"
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/table"
+      },
+      "minItems": 1
+    },
+    "identity": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/identity"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/observations"
+      }
+    },
+    "cross_source_checks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/check"
+      }
+    },
+    "term_requests": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/term_request"
+      }
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[-.][a-z0-9]+)*$"
+    },
+    "file": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "iri": {
+      "type": "string",
+      "pattern": "^((https?://|urn:)\\S+|[a-z][a-z0-9]*:\\S+)$"
+    },
+    "nullable_iri": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/iri"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "url": {
+      "type": "string",
+      "pattern": "^https?://[^\\s/]+(?:/[^\\s]*)?$"
+    },
+    "column_names": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      },
+      "uniqueItems": true
+    },
+    "mark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aspect",
+        "confidence",
+        "evidence"
+      ],
+      "properties": {
+        "aspect": {
+          "$ref": "#/$defs/text"
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publisher",
+        "landing_page",
+        "licence",
+        "redistribution",
+        "attribution",
+        "files"
+      ],
+      "properties": {
+        "publisher": {
+          "$ref": "#/$defs/text"
+        },
+        "landing_page": {
+          "$ref": "#/$defs/url"
+        },
+        "doi": {
+          "type": "string",
+          "pattern": "^10\\.[0-9]{4,9}/\\S+$"
+        },
+        "licence": {
+          "$ref": "#/$defs/nullable_iri"
+        },
+        "redistribution": {
+          "enum": [
+            "confirmed",
+            "unconfirmed"
+          ]
+        },
+        "attribution": {
+          "$ref": "#/$defs/text"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "url",
+              "sha256"
+            ],
+            "properties": {
+              "name": {
+                "$ref": "#/$defs/file"
+              },
+              "url": {
+                "$ref": "#/$defs/url"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          },
+          "minItems": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "redistribution": {
+                "const": "confirmed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "licence": {
+                "$ref": "#/$defs/iri"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "decomposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "property",
+        "object_of_interest",
+        "constraints"
+      ],
+      "properties": {
+        "property": {
+          "$ref": "#/$defs/iri"
+        },
+        "object_of_interest": {
+          "$ref": "#/$defs/iri"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/iri"
+          },
+          "uniqueItems": true
+        },
+        "statistical_modifier": {
+          "$ref": "#/$defs/nullable_iri"
+        }
+      }
+    },
+    "column": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "role",
+        "datatype"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/text"
+        },
+        "role": {
+          "enum": [
+            "identifier",
+            "dimension",
+            "measure",
+            "attribute"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "datatype": {
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "date"
+          ]
+        },
+        "concept": {
+          "$ref": "#/$defs/iri"
+        },
+        "decomposition": {
+          "$ref": "#/$defs/decomposition"
+        },
+        "unit": {
+          "$ref": "#/$defs/nullable_iri"
+        },
+        "year_basis": {
+          "$ref": "#/$defs/nullable_iri"
+        },
+        "age_notation": {
+          "$ref": "#/$defs/nullable_iri"
+        },
+        "estimate_type": {
+          "$ref": "#/$defs/nullable_iri"
+        },
+        "method": {
+          "$ref": "#/$defs/nullable_iri"
+        },
+        "uncertainty": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "standard_error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "cv": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "lower": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "upper": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "codes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/nullable_iri"
+          }
+        },
+        "mark": {
+          "$ref": "#/$defs/mark"
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "file",
+        "keys",
+        "columns"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$"
+        },
+        "file": {
+          "$ref": "#/$defs/file"
+        },
+        "keys": {
+          "$ref": "#/$defs/column_names",
+          "minItems": 1
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/column"
+          },
+          "minItems": 1
+        },
+        "sheet": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "table",
+        "column",
+        "kind",
+        "authority"
+      ],
+      "properties": {
+        "table": {
+          "$ref": "#/$defs/text"
+        },
+        "column": {
+          "$ref": "#/$defs/text"
+        },
+        "kind": {
+          "$ref": "#/$defs/name"
+        },
+        "authority": {
+          "$ref": "#/$defs/name"
+        },
+        "label_column": {
+          "$ref": "#/$defs/text"
+        },
+        "species": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "observations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "table",
+        "key",
+        "dimensions",
+        "measures",
+        "year_column"
+      ],
+      "properties": {
+        "table": {
+          "$ref": "#/$defs/text"
+        },
+        "key": {
+          "$ref": "#/$defs/column_names",
+          "minItems": 1
+        },
+        "dimensions": {
+          "$ref": "#/$defs/column_names"
+        },
+        "measures": {
+          "$ref": "#/$defs/column_names",
+          "minItems": 1
+        },
+        "year_column": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "other",
+        "join",
+        "measure",
+        "other_measure",
+        "tolerance",
+        "expect"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/name"
+        },
+        "other": {
+          "$ref": "#/$defs/name"
+        },
+        "join": {
+          "$ref": "#/$defs/text"
+        },
+        "measure": {
+          "$ref": "#/$defs/text"
+        },
+        "other_measure": {
+          "$ref": "#/$defs/text"
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "expect": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "term_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_concept",
+        "says",
+        "mint_in",
+        "columns"
+      ],
+      "properties": {
+        "profile_concept": {
+          "$ref": "#/$defs/iri"
+        },
+        "says": {
+          "$ref": "#/$defs/text"
+        },
+        "mint_in": {
+          "const": "smn"
+        },
+        "columns": {
+          "$ref": "#/$defs/column_names",
+          "minItems": 1
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "parser"
+        ],
+        "properties": {
+          "parser": {
+            "const": "xlsx"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "tables": {
+            "items": {
+              "required": [
+                "sheet"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "tables": {
+            "items": {
+              "not": {
+                "required": [
+                  "sheet"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

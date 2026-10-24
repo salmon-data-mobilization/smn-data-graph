@@ -312,7 +312,7 @@ def test_positive_controls_are_found(real_vocab):
 
 
 def test_negative_control_is_reported(real_vocab):
-    bad = GCDFO + "EnumerationMethod"
+    bad = GCDFO + "UndeclaredGuardProbe"
     assert real_vocab.is_guarded(bad) and not real_vocab.exists(bad)
     assert real_vocab.check(POSITIVE_CONTROLS + [bad]) == [bad]
 
@@ -350,12 +350,12 @@ def test_builder_reports_undeclared_iris(real_vocab):
     b.add(DEFAULT + "id/x/y/z", "sosa:usedProcedure", "gcdfo:FixedStationTally", g)
     assert b.undeclared() == []
     b.assert_vocab()
-    b.reify(DEFAULT + "xwalk/t/1", DEFAULT + "id/x/y/z", "sosa:usedProcedure", "gcdfo:EnumerationMethod", g)
+    b.reify(DEFAULT + "xwalk/t/1", DEFAULT + "id/x/y/z", "sosa:usedProcedure", "gcdfo:UndeclaredGuardProbe", g)
     b.add(DEFAULT + "id/x/y/z", "dcterms:type", L("v", "https://w3id.org/psc/vocab/concept/PSC-CV-000000"), g)
-    assert b.undeclared() == [GCDFO + "EnumerationMethod", PSC + "PSC-CV-000000"]
+    assert b.undeclared() == [GCDFO + "UndeclaredGuardProbe", PSC + "PSC-CV-000000"]
     with pytest.raises(UndeclaredIRIError) as err:
         b.assert_vocab()
-    assert err.value.iris == [GCDFO + "EnumerationMethod", PSC + "PSC-CV-000000"]
+    assert err.value.iris == [GCDFO + "UndeclaredGuardProbe", PSC + "PSC-CV-000000"]
 
 
 # ==========================================================================
@@ -632,11 +632,17 @@ def test_agents_and_activity_nodes():
 # Stubs: importable, documented, raise NotImplementedError, listed in INTERFACES.md
 # ==========================================================================
 
-STUB_MODULES = ["salmongraph.spec", "salmongraph.executor", "salmongraph.identity", "salmongraph.combine",
-                "salmongraph.shapes", "salmongraph.validate", "salmongraph.review", "salmongraph.ledger",
+STUB_MODULES = ["salmongraph.identity", "salmongraph.combine",
+                "salmongraph.review", "salmongraph.ledger",
                 "salmongraph.catalog", "salmongraph.release", "salmongraph.serve.sparql_server",
                 "salmongraph.serve.mcp_server", "salmongraph.publish.schemaorg", "salmongraph.publish.knb",
                 "salmongraph.publish.zenodo"]
+
+# Implemented portions have substantive fixture tests. Keep checking the
+# remaining placeholders instead of dropping an entire partially built module.
+IMPLEMENTED_PARTIAL_FUNCTIONS = {
+    "salmongraph.review": {"review_queue", "write_review_queue", "status_counts"},
+}
 
 
 @pytest.mark.parametrize("name", STUB_MODULES)
@@ -646,6 +652,8 @@ def test_stub_functions_raise_not_implemented(name):
     funcs = [getattr(mod, n) for n in mod.__all__ if inspect.isfunction(getattr(mod, n))]
     assert funcs, name
     for fn in funcs:
+        if fn.__name__ in IMPLEMENTED_PARTIAL_FUNCTIONS.get(name, set()):
+            continue
         assert fn.__doc__, f"{name}.{fn.__name__} has no docstring"
         params = inspect.signature(fn).parameters.values()
         args = [None for p in params if p.kind == p.POSITIONAL_OR_KEYWORD and p.default is p.empty]
@@ -657,7 +665,8 @@ def test_stub_functions_raise_not_implemented(name):
 def test_interfaces_md_lists_every_public_name():
     text = (ROOT / "salmongraph" / "INTERFACES.md").read_text(encoding="utf-8")
     missing = []
-    for name in STUB_MODULES + ["salmongraph.provenance"]:
+    for name in STUB_MODULES + ["salmongraph.provenance", "salmongraph.spec", "salmongraph.executor",
+                              "salmongraph.validate", "salmongraph.shapes"]:
         mod = importlib.import_module(name)
         missing += [f"{name}.{n}" for n in mod.__all__ if n not in text]
     assert missing == []

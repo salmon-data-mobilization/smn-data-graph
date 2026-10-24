@@ -1,0 +1,27 @@
+@prefix shape: <urn:salmongraph:shape:> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix corp: <urn:salmongraph:profile:> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sssom: <https://w3id.org/sssom/> .
+@prefix semapv: <https://w3id.org/semapv/vocab/> .
+
+# Exact encoding and pending/live containment are checked on original quads.
+# The SHACL view never asserts the triple hidden inside rdf:reifies.
+shape:Assertion a sh:NodeShape ;
+    sh:targetSubjectsOf rdf:reifies, rdf:subject, rdf:predicate, rdf:object ;
+    sh:targetClass rdf:Statement ;
+    sh:nodeKind sh:IRI ;
+    sh:or ([ sh:node shape:AgentDerived ] [ sh:node shape:SourceAssertion ]) .
+
+# Retaining a source's justification does not assert that we verified its
+# curation claim. It must not fabricate a current agent/run or review decision.
+shape:SourceAssertion a sh:NodeShape ;
+    sh:property [ sh:path sssom:mapping_justification ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:nodeKind sh:IRI ; sh:not [ sh:hasValue semapv:AgentBasedMatching ] ] ;
+    sh:property [ sh:path prov:wasDerivedFrom ; sh:minCount 1 ; sh:nodeKind sh:IRI ] ;
+    sh:not [ sh:or (
+        [ sh:property [ sh:path corp:confidence ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path corp:criticality ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path corp:reviewStatus ; sh:minCount 1 ] ]
+    ) ] .

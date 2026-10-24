@@ -1,0 +1,62 @@
+@prefix shape: <urn:salmongraph:shape:> .
+@prefix corp: <urn:salmongraph:profile:> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Profile placeholders are bound to config.current() by the local loader.
+shape:AgentDerived a sh:NodeShape ;
+    sh:targetSubjectsOf corp:confidence, corp:criticality, corp:reviewStatus ;
+    sh:nodeKind sh:IRI ;
+    sh:property shape:Confidence, shape:Criticality, shape:ReviewStatus,
+                shape:Agent, shape:Activity, shape:ActivityDate, shape:Evidence ;
+    sh:sparql shape:AgentAcceptedPolicy, shape:HumanDecisionEvidence .
+
+shape:Confidence a sh:PropertyShape ; sh:path corp:confidence ;
+    sh:minCount 1 ; sh:maxCount 1 ;
+    sh:in (corp:highConfidence corp:mediumConfidence corp:lowConfidence) .
+shape:Criticality a sh:PropertyShape ; sh:path corp:criticality ;
+    sh:minCount 1 ; sh:maxCount 1 ; sh:in (corp:critical corp:nonCritical) .
+shape:ReviewStatus a sh:PropertyShape ; sh:path corp:reviewStatus ;
+    sh:minCount 1 ; sh:maxCount 1 ;
+    sh:in (corp:agentAccepted corp:awaitingReview corp:humanAccepted corp:humanAmended corp:rejected) .
+shape:Agent a sh:PropertyShape ; sh:path prov:wasAttributedTo ;
+    sh:minCount 1 ; sh:nodeKind sh:IRI .
+shape:Activity a sh:PropertyShape ; sh:path prov:wasGeneratedBy ;
+    sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:IRI .
+shape:ActivityDate a sh:PropertyShape ; sh:path (prov:wasGeneratedBy dcterms:date) ;
+    sh:minCount 1 ; sh:maxCount 1 ; sh:or ([ sh:datatype xsd:date ] [ sh:datatype xsd:dateTime ]) .
+shape:Evidence a sh:PropertyShape ; sh:path prov:wasDerivedFrom ; sh:minCount 1 ;
+    sh:or ([ sh:nodeKind sh:IRI ] [ sh:nodeKind sh:BlankNode ; sh:class prov:Entity ;
+        sh:property [ sh:path prov:value ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "\\S" ] ]) .
+
+shape:AgentAcceptedPolicy a sh:SPARQLConstraint ;
+    sh:message "agentAccepted requires high confidence and non-criticality; critical assertions need review." ;
+    sh:select """
+      PREFIX corp: <urn:salmongraph:profile:>
+      SELECT $this WHERE {
+        $this corp:reviewStatus corp:agentAccepted .
+        FILTER NOT EXISTS { $this corp:confidence corp:highConfidence ; corp:criticality corp:nonCritical . }
+      }
+    """ .
+
+# A status token alone cannot supply the review evidence described in review.py.
+shape:HumanDecisionEvidence a sh:SPARQLConstraint ;
+    sh:message "Human decision status requires an identified prov:Person reviewer and a recorded decision date/time." ;
+    sh:select """
+      PREFIX corp: <urn:salmongraph:profile:>
+      PREFIX pav: <http://purl.org/pav/>
+      PREFIX prov: <http://www.w3.org/ns/prov#>
+      PREFIX dcterms: <http://purl.org/dc/terms/>
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      SELECT $this WHERE {
+        $this corp:reviewStatus ?status .
+        FILTER (?status IN (corp:humanAccepted, corp:humanAmended, corp:rejected))
+        FILTER NOT EXISTS {
+          $this pav:curatedBy ?person . ?person a prov:Person . FILTER (isIRI(?person))
+          { $this pav:curatedOn ?date . FILTER (datatype(?date) = xsd:dateTime) }
+          UNION { $this dcterms:date ?date . FILTER (datatype(?date) = xsd:date) }
+        }
+      }
+    """ .
