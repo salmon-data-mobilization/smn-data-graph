@@ -1,0 +1,226 @@
+spec_version: 1
+slug: ohlberger-pws-2021
+version: lexical-cfb985d80518
+title: Ohlberger PWS 2021 original source table, lexical discovery
+description: '[agent] Derived lexical source-discovery build of the complete GCB-21-1726
+  Data.csv attached to Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0. All 60 rows,
+  26 native fields, 197 literal NA tokens and original order are retained without
+  filtering, imputation, numeric conversion, identity bridges or measured observations.
+  The source README is pinned evidence. The derived version is a CSV-content hash
+  label; the publisher record has no stated version. No scientific review or publication
+  approval is implied.'
+source:
+  publisher: Jan Ohlberger
+  landing_page: https://zenodo.org/records/5780246
+  doi: 10.5281/zenodo.5780246
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: 'Ohlberger, Jan (2021). Non-stationary and interactive effects of climate
+    and competition on pink salmon productivity. Zenodo, record 5780246. https://doi.org/10.5281/zenodo.5780246.
+    CC BY 4.0: https://creativecommons.org/licenses/by/4.0/. Changes: original CSV
+    parsed as UTF-8-sig and reserialized by the executor; source headers, lexical
+    cells and row order retained. Derived structural/provenance metadata added. No
+    publisher version is asserted. Local staging aliases GCB-21-1726-Data.csv and
+    GCB-21-1726-README.rtf are byte-identical copies of publisher files GCB-21-1726
+    Data.csv and GCB-21-1726 README.rtf respectively; remote names and URLs are unchanged.'
+  files:
+  - name: GCB-21-1726-README.rtf
+    url: https://zenodo.org/api/records/5780246/files/GCB-21-1726%20README.rtf/content
+    sha256: dad4e980f1f0dd7038ef594160c1aabd2b795d48e07d96ecc94677d079103c5d
+  - name: GCB-21-1726-Data.csv
+    url: https://zenodo.org/api/records/5780246/files/GCB-21-1726%20Data.csv/content
+    sha256: cfb985d805183a4ce16c83e020c714e66d87ea586d47629bec349d338c9de9f4
+parser: csv
+tables:
+- id: pws_data
+  file: GCB-21-1726-Data.csv
+  keys:
+  - Year
+  columns:
+  - name: Year
+    role: attribute
+    datatype: string
+    label: Year
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      return year. [agent] Retained verbatim as lexical source values; no numerical
+      conversion or ontology binding.'
+  - name: BL
+    role: attribute
+    datatype: string
+    label: BL
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      brood line (odd/even). [agent] Retained verbatim as lexical source values; no
+      numerical conversion or ontology binding.'
+  - name: regime
+    role: attribute
+    datatype: string
+    label: regime
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      ocean climate regime (upto1988/since1989). [agent] Retained verbatim as lexical
+      source values; no numerical conversion or ontology binding.'
+  - name: Escapement
+    role: attribute
+    datatype: string
+    label: Escapement
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      wild PWS pink salmon spawner escapement (millions). [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: Run.Size
+    role: attribute
+    datatype: string
+    label: Run.Size
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      wild PWS pink salmon run size, i.e. total return (millions). [agent] Retained
+      verbatim as lexical source values; no numerical conversion or ontology binding.'
+  - name: Spawners
+    role: attribute
+    datatype: string
+    label: Spawners
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      wild PWS pink salmon spawners two years prior (millions). [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: RS
+    role: attribute
+    datatype: string
+    label: RS
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      wild PWS pink salmon recruits/spawner. [agent] Retained verbatim as lexical
+      source values; no numerical conversion or ontology binding.'
+  - name: lnRS
+    role: attribute
+    datatype: string
+    label: lnRS
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      wild PWS pink salmon ln(recruits/spawner). [agent] Retained verbatim as lexical
+      source values; no numerical conversion or ontology binding.'
+  - name: prevYearRunSize
+    role: attribute
+    datatype: string
+    label: prevYearRunSize
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      wild PWS pink salmon previous year run size (millions). [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: prev_tot_PWS_return
+    role: attribute
+    datatype: string
+    label: prev_tot_PWS_return
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      previous year return wild plus hatchery fish (millions). [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: PWS_released_Total
+    role: attribute
+    datatype: string
+    label: PWS_released_Total
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      PWS pink salmon hatchery releases (millions). [agent] Retained verbatim as lexical
+      source values; no numerical conversion or ontology binding.'
+  - name: sameYrcomp_regional
+    role: attribute
+    datatype: string
+    label: sameYrcomp_regional
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      regional sockeye plus chum salmon abundance (millions). [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: sameYrcompetitors
+    role: attribute
+    datatype: string
+    label: sameYrcompetitors
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      NE Pacific sockeye plus chum salmon abundance (millions). [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: egoa.win.sst
+    role: attribute
+    datatype: string
+    label: egoa.win.sst
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      eastern Gulf of Alaska winter temperature anomaly. [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: egoa.spr.sst
+    role: attribute
+    datatype: string
+    label: egoa.spr.sst
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      eastern Gulf of Alaska spring temperature anomaly. [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: wgoa.win.sst
+    role: attribute
+    datatype: string
+    label: wgoa.win.sst
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      western Gulf of Alaska winter temperature anomaly. [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: wgoa.spr.sst
+    role: attribute
+    datatype: string
+    label: wgoa.spr.sst
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      western Gulf of Alaska spring temperature anomaly. [agent] Retained verbatim
+      as lexical source values; no numerical conversion or ontology binding.'
+  - name: PDOann
+    role: attribute
+    datatype: string
+    label: PDOann
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      annual Pacific Decadal Oscillation index. [agent] Retained verbatim as lexical
+      source values; no numerical conversion or ontology binding.'
+  - name: NPGOann
+    role: attribute
+    datatype: string
+    label: NPGOann
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      annual North Pacific Gyre Oscillation index. [agent] Retained verbatim as lexical
+      source values; no numerical conversion or ontology binding.'
+  - name: pCO2_PWS
+    role: attribute
+    datatype: string
+    label: pCO2_PWS
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      pCO2 Prince William Sound. [agent] Retained verbatim as lexical source values;
+      no numerical conversion or ontology binding.'
+  - name: pCO2_nGoA
+    role: attribute
+    datatype: string
+    label: pCO2_nGoA
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      pCO2 northern Gulf of Alaska. [agent] Retained verbatim as lexical source values;
+      no numerical conversion or ontology binding.'
+  - name: pH_PWS
+    role: attribute
+    datatype: string
+    label: pH_PWS
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      pH Prince William Sound. [agent] Retained verbatim as lexical source values;
+      no numerical conversion or ontology binding.'
+  - name: pH_nGoA
+    role: attribute
+    datatype: string
+    label: pH_nGoA
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      pH northern Gulf of Alaska. [agent] Retained verbatim as lexical source values;
+      no numerical conversion or ontology binding.'
+  - name: mean_pCO2
+    role: attribute
+    datatype: string
+    label: mean_pCO2
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      pCO2 subpolar gyre. [agent] Retained verbatim as lexical source values; no numerical
+      conversion or ontology binding.'
+  - name: mean_pH
+    role: attribute
+    datatype: string
+    label: mean_pH
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      pCO2 subpolar gyre. [agent] Retained verbatim as lexical source values; no numerical
+      conversion or ontology binding. Source label and README pCO2 wording disagree;
+      the ambiguity is retained without correction.'
+  - name: mean_NGAO
+    role: attribute
+    datatype: string
+    label: mean_NGAO
+    description: 'Source README, Jan Ohlberger (2021), Zenodo 5780246, CC BY 4.0:
+      NGAO index subpolar gyre. [agent] Retained verbatim as lexical source values;
+      no numerical conversion or ontology binding.'
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

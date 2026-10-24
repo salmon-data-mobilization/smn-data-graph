@@ -1,0 +1,128 @@
+{
+  "candidate_only_overlap_context": {
+    "identity_status": "Proposed context only; no equivalence, join, ratio, normalization or graph bridge",
+    "native_other_stock_id": "226",
+    "origin_and_stock_equivalence": "unresolved",
+    "other_blank_use_flags": 2,
+    "other_brood_rows": 52,
+    "other_label": "PWS",
+    "other_source": "Malick pink-chum-database v1.1, Zenodo 6478751",
+    "other_source_is_input": false
+  },
+  "interpretation_limits": {
+    "NA": "Literal NA retained exactly; no missingness equivalence or zero assigned",
+    "RS_lnRS_regime_BL": "Source strings only; no recomputation or biological inference",
+    "Spawners": "README states two years prior, millions; no numerical transformation or cross-source normalization",
+    "Year": "README states return year; no brood-year shift or ontology year binding",
+    "mean_pH": "README describes pCO2 subpolar gyre despite mean_pH header; retained unresolved"
+  },
+  "local_filename_staging": {
+    "byte_changes": false,
+    "mapping": {
+      "GCB-21-1726 Data.csv": "GCB-21-1726-Data.csv",
+      "GCB-21-1726 README.rtf": "GCB-21-1726-README.rtf"
+    },
+    "overwrite_different_content": false,
+    "parser": "Existing builtin csv; no custom parser or core/schema/guard changes.",
+    "reason": "Existing Spec schema requires filename tokens without spaces. Original filenames/URLs/bytes remain unchanged.",
+    "symlinks": false
+  },
+  "original_files": [
+    {
+      "bytes": 1943,
+      "local_alias": "GCB-21-1726-README.rtf",
+      "name": "GCB-21-1726 README.rtf",
+      "original_publisher_name": "GCB-21-1726 README.rtf",
+      "publisher_checksum": "md5:7527d49f4c8d52b1e0b6b0616925b35b",
+      "sha256": "dad4e980f1f0dd7038ef594160c1aabd2b795d48e07d96ecc94677d079103c5d",
+      "url": "https://zenodo.org/api/records/5780246/files/GCB-21-1726%20README.rtf/content"
+    },
+    {
+      "bytes": 14903,
+      "local_alias": "GCB-21-1726-Data.csv",
+      "name": "GCB-21-1726 Data.csv",
+      "original_publisher_name": "GCB-21-1726 Data.csv",
+      "publisher_checksum": "md5:998d5d221c00ba571af2a69c823c370d",
+      "sha256": "cfb985d805183a4ce16c83e020c714e66d87ea586d47629bec349d338c9de9f4",
+      "url": "https://zenodo.org/api/records/5780246/files/GCB-21-1726%20Data.csv/content"
+    }
+  ],
+  "publisher_record": {
+    "creator": "Ohlberger, Jan",
+    "doi": "10.5281/zenodo.5780246",
+    "licence": "https://creativecommons.org/licenses/by/4.0/",
+    "licence_id": "cc-by-4.0",
+    "metadata_snapshot_sha256": "fefd7784bfa8c2984c5f433f3162f37bf061ccf812628a1ac5c11f5797d14095",
+    "metadata_url": "https://zenodo.org/api/records/5780246",
+    "publication_date": "2021-12-14",
+    "publisher_version": null,
+    "record": "https://zenodo.org/records/5780246",
+    "resource_type": {
+      "subtype": "article",
+      "title": "Journal article",
+      "type": "publication"
+    }
+  },
+  "rights_scope": "Record metadata explicitly identifies CC BY 4.0 for the attached files. Source redistribution evidence does not approve science or publish this derived build. Per-output accompanying attribution is emitted outside the genuine build directory. No grant for private AK/DFO/NOAA data is implied.",
+  "schema": "ohlberger-pws-2021-lexical-source-evidence/1",
+  "semantics": {
+    "identity_declarations": 0,
+    "measured_intake_complete": false,
+    "observations": 0,
+    "publication_ready": false,
+    "review_decisions": 0,
+    "semantic_mappings": 0,
+    "whole_lexical_metadata_only": true
+  },
+  "source_citation": "Ohlberger, Jan (2021). Non-stationary and interactive effects of climate and competition on pink salmon productivity. Zenodo, record 5780246. https://doi.org/10.5281/zenodo.5780246. CC BY 4.0: https://creativecommons.org/licenses/by/4.0/.",
+  "source_descriptions": {
+    "BL": "brood line (odd/even)",
+    "Escapement": "wild PWS pink salmon spawner escapement (millions)",
+    "NPGOann": "annual North Pacific Gyre Oscillation index",
+    "PDOann": "annual Pacific Decadal Oscillation index",
+    "PWS_released_Total": "PWS pink salmon hatchery releases (millions)",
+    "RS": "wild PWS pink salmon recruits/spawner",
+    "Run.Size": "wild PWS pink salmon run size, i.e. total return (millions)",
+    "Spawners": "wild PWS pink salmon spawners two years prior (millions)",
+    "Year": "return year",
+    "egoa.spr.sst": "eastern Gulf of Alaska spring temperature anomaly",
+    "egoa.win.sst": "eastern Gulf of Alaska winter temperature anomaly",
+    "lnRS": "wild PWS pink salmon ln(recruits/spawner)",
+    "mean_NGAO": "NGAO index subpolar gyre",
+    "mean_pCO2": "pCO2 subpolar gyre",
+    "mean_pH": "pCO2 subpolar gyre",
+    "pCO2_PWS": "pCO2 Prince William Sound",
+    "pCO2_nGoA": "pCO2 northern Gulf of Alaska",
+    "pH_PWS": "pH Prince William Sound",
+    "pH_nGoA": "pH northern Gulf of Alaska",
+    "prevYearRunSize": "wild PWS pink salmon previous year run size (millions)",
+    "prev_tot_PWS_return": "previous year return wild plus hatchery fish (millions)",
+    "regime": "ocean climate regime (upto1988/since1989)",
+    "sameYrcomp_regional": "regional sockeye plus chum salmon abundance (millions)",
+    "sameYrcompetitors": "NE Pacific sockeye plus chum salmon abundance (millions)",
+    "wgoa.spr.sst": "western Gulf of Alaska spring temperature anomaly",
+    "wgoa.win.sst": "western Gulf of Alaska winter temperature anomaly"
+  },
+  "source_grid": {
+    "blank_cells": 0,
+    "cells": 1560,
+    "columns": 26,
+    "encoding": "UTF-8 with BOM; builtin csv reads utf-8-sig",
+    "filtering": false,
+    "imputation": false,
+    "literal_NA_cells": 197,
+    "numeric_conversion": false,
+    "row_order": "unchanged",
+    "rows": 60,
+    "source_key": [
+      "Year"
+    ],
+    "unique_nonblank_Year_keys": 60
+  },
+  "source_vs_build_version": {
+    "build_date": "Explicit execution input; not a source release, observation or retrieval date",
+    "derivation": "lexical- plus first 12 hexadecimal characters of original CSV SHA256",
+    "derived_spec_version": "lexical-cfb985d80518",
+    "publisher_version": null
+  }
+}
