@@ -1,6 +1,6 @@
-# CQ2: How did estimate classifications change over time?
-# Stream-level estimates per decade by gcdfo estimate type, resolved through the SSSOM-derived
-# mappings graph (NuSEDS code -> gcdfo concept). Unmapped codes are shown by their NuSEDS label.
+# CQ2: Source estimate-classification coverage by decade.
+# Only live inherited mappings supply a type label. Pending agent candidates
+# are reported as metadata states; their targets are not applied as classifications.
 PREFIX qb: <http://purl.org/linked-data/cube#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -11,13 +11,23 @@ PREFIX gcdfo: <https://w3id.org/gcdfo/salmon#>
 PREFIX def: <https://w3id.org/salmon-demo-corpus/def/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT ?decade ?estimate_type (SUM(?n) AS ?site_estimates)
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX profile: <https://w3id.org/salmon-demo-corpus/profile/>
+
+SELECT ?decade ?estimate_type ?mapping_state (SUM(?n) AS ?site_estimates)
 WHERE {
   ?obs def:estimateClassification ?code ; smn:returnYear ?y ; def:siteCount ?n .
   ?code skos:prefLabel ?code_label .
   OPTIONAL { ?code skos:exactMatch|skos:broadMatch ?t . ?t skos:prefLabel ?t_label . }
-  BIND(COALESCE(STR(?t_label), CONCAT("unmapped NuSEDS: ", STR(?code_label))) AS ?estimate_type)
+  BIND(EXISTS {
+    ?candidate a rdf:Statement ; rdf:subject ?code ; rdf:predicate ?candidate_predicate ;
+      profile:reviewStatus profile:awaitingReview .
+    FILTER(?candidate_predicate IN (skos:exactMatch, skos:broadMatch, skos:closeMatch))
+  } AS ?has_pending)
+  BIND(COALESCE(STR(?t_label), CONCAT("NuSEDS source label: ", STR(?code_label))) AS ?estimate_type)
+  BIND(IF(BOUND(?t_label), "live inherited mapping; no human-review status asserted",
+       IF(?has_pending, "pending agent interpretation", "no live target mapping")) AS ?mapping_state)
   BIND(FLOOR(xsd:integer(STR(?y)) / 10) * 10 AS ?decade)
 }
-GROUP BY ?decade ?estimate_type
-ORDER BY ?decade DESC(?site_estimates)
+GROUP BY ?decade ?estimate_type ?mapping_state
+ORDER BY ?decade DESC(?site_estimates) ?estimate_type ?mapping_state

@@ -21,6 +21,7 @@ import datetime as dt
 import gzip
 import hashlib
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -31,7 +32,7 @@ import pyoxigraph as ox
 ROOT = Path(__file__).resolve().parents[1]
 
 # Provisional: not yet registered with w3id.org.
-BASE = "https://w3id.org/salmon-demo-corpus/"
+BASE = os.environ.get("SALMONGRAPH_BASE", "https://w3id.org/salmon-demo-corpus/").rstrip("/") + "/"
 
 NS = {
     "corpus": BASE,
@@ -87,7 +88,8 @@ VOCAB_FILES = {
               ROOT / "data/raw/_vocab/gcdfo.ttl"),
     # smn: local flattened build of ~/code/salmon-domain-ontology (w3id.org/smn/
     # serves HTML by default).
-    "smn": (None, Path.home() / "code/salmon-domain-ontology/salmon-domain-ontology.ttl"),
+    "smn": (None, (ROOT / "data/raw/_vocab/smn.ttl") if (ROOT / "data/raw/_vocab/smn.ttl").exists()
+            else Path.home() / "code/salmon-domain-ontology/salmon-domain-ontology.ttl"),
 }
 
 
@@ -330,7 +332,7 @@ def run_queries(store: ox.Store, qdir: Path, prefixes: str = "") -> dict[str, in
     """Run every NN-*.rq in qdir, write NN-*.csv next to it. Returns row counts."""
     counts = {}
     for rq in sorted(qdir.glob("*.rq")):
-        text = rq.read_text()
+        text = rq.read_text().replace("https://w3id.org/salmon-demo-corpus/", BASE)
         res = store.query(text, use_default_graph_as_union=True)
         vars_ = [v.value for v in res.variables]
         rows = []

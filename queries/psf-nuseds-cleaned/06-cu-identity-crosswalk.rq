@@ -1,4 +1,6 @@
-# CQ6: Where do PSF (PSE) Conservation Units differ from DFO CUs? (identity nodes; joins to DFO datasets)
+# CQ6: Pending PSF-to-DFO CU correspondence candidates from source pairings.
+# This is a review inventory, not an accepted identity join. Candidates are
+# RDF 1.1 statements; no live closeMatch/exactMatch bridge is asserted.
 PREFIX qb: <http://purl.org/linked-data/cube#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -9,9 +11,21 @@ PREFIX gcdfo: <https://w3id.org/gcdfo/salmon#>
 PREFIX def: <https://w3id.org/salmon-demo-corpus/def/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT ?dfo_cu_index (COUNT(DISTINCT ?cu) AS ?psf_cus) (GROUP_CONCAT(DISTINCT ?psf_label; separator=" | ") AS ?psf_cu_names)
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX profile: <https://w3id.org/salmon-demo-corpus/profile/>
+
+SELECT ?dfo_cu_index ?psf_cu_index ?psf_label ?candidate_predicate
+       ?review_status ?confidence ?source ?source_context ?statement
 WHERE {
-  ?cu skos:broadMatch ?dfo ; skos:prefLabel ?psf_label .
+  GRAPH ?graph {
+    ?statement a rdf:Statement ; rdf:subject ?cu ; rdf:predicate ?candidate_predicate ; rdf:object ?dfo ;
+      profile:criticality profile:critical ; profile:reviewStatus ?review_status ;
+      profile:confidence ?confidence ; dcterms:source ?source ; rdfs:comment ?source_context .
+  }
+  FILTER(?graph = <https://w3id.org/salmon-demo-corpus/graph/psf-nuseds-cleaned/crosswalk>)
+  FILTER(?candidate_predicate IN (skos:exactMatch, skos:broadMatch, skos:closeMatch))
+  FILTER(?source = <https://doi.org/10.5281/zenodo.19959144>)
+  ?cu skos:prefLabel ?psf_label ; def:pseCuIndex ?psf_cu_index .
   ?dfo skos:notation ?dfo_cu_index .
 }
-GROUP BY ?dfo_cu_index ORDER BY ?dfo_cu_index
+ORDER BY ?dfo_cu_index ?psf_cu_index ?psf_label ?statement
