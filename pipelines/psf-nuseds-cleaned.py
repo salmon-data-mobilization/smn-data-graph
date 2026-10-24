@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import hashlib
+from importlib import metadata as importlib_metadata
 import json
 import os
 import shutil
@@ -26,6 +27,8 @@ import tempfile
 import time
 import warnings
 from pathlib import Path
+import re
+from urllib.parse import urlsplit
 
 import duckdb
 import pandas as pd
@@ -70,6 +73,100 @@ PROFILE = C.BASE + "profile/"
 AGENT = C.BASE + "agent/software/psf-nuseds-cleaned-pipeline"
 SEMAPV_AGENT = "https://w3id.org/semapv/vocab/AgentBasedMatching"
 PSC_EFS = "https://w3id.org/psc/vocab/concept/PSC-CV-000035"
+
+
+def sdk_provenance(*, module=None, distribution=None) -> dict:
+    """Recorded installation source, kept separate from the SDK version label.
+
+    PEP 610 metadata describes the installed distribution, so it is usable only
+    when that distribution owns the SDK actually imported by this process.
+    Tags, branch names and editable checkouts do not prove a source commit.
+    No project dependency declaration or reported version fills that gap.
+    """
+    module = ms if module is None else module
+    result = {"reported_version": str(getattr(module, "__version__", "unknown")),
+              "source_commit": None, "source_url": None, "archive_sha256": None,
+              "install_kind": "metadata-unavailable"}
+    try:
+        distribution = distribution or importlib_metadata.distribution("metasalmonpy")
+        imported = Path(module.__file__).resolve()
+        package = Path(distribution.locate_file("metasalmonpy")).resolve()
+        if not imported.is_relative_to(package):
+            result["install_kind"] = "metadata-mismatch"
+            return result
+        raw = distribution.read_text("direct_url.json")
+    except (importlib_metadata.PackageNotFoundError, OSError, AttributeError, TypeError, ValueError):
+        return result
+    if not raw:
+        result["install_kind"] = "index-or-unknown"
+        return result
+    try:
+        record = json.loads(raw)
+        if not isinstance(record, dict) or not isinstance(record.get("url"), str):
+            raise ValueError("invalid direct URL record")
+        url = urlsplit(record["url"])
+    except (ValueError, TypeError):
+        result["install_kind"] = "metadata-invalid"
+        return result
+    # Local paths and credential/query-bearing URLs are not exported into
+    # reproducible metadata. Their source commit remains explicitly unknown.
+    public_url = (url.scheme in ("http", "https") and url.netloc and not
+                  (url.username or url.password or url.query or url.fragment))
+    if public_url:
+        result["source_url"] = record["url"]
+    if isinstance(record.get("dir_info"), dict):
+        result["install_kind"] = "editable" if record["dir_info"].get("editable") else "local-directory"
+    elif isinstance(record.get("vcs_info"), dict):
+        result["install_kind"] = "git" if record["vcs_info"].get("vcs") == "git" else "other-vcs"
+        commit = record["vcs_info"].get("commit_id")
+        if result["install_kind"] == "git" and isinstance(commit, str) and re.fullmatch(r"[0-9a-fA-F]{40}|[0-9a-fA-F]{64}", commit):
+            result["source_commit"] = commit.lower()
+    elif isinstance(record.get("archive_info"), dict):
+        result["install_kind"] = "archive"
+        commit = None
+        if public_url and url.netloc.lower() == "github.com":
+            commit = re.fullmatch(r"/salmon-data-mobilization/metasalmonpy/archive/([0-9a-fA-F]{40})(?:\.tar\.gz|\.zip)", url.path)
+        elif public_url and url.netloc.lower() == "codeload.github.com":
+            commit = re.fullmatch(r"/salmon-data-mobilization/metasalmonpy/(?:tar\.gz|zip)/([0-9a-fA-F]{40})", url.path)
+        if commit:
+            result["source_commit"] = commit[1].lower()
+        archive = record["archive_info"]
+        hashes = archive.get("hashes", {})
+        digest = hashes.get("sha256") if isinstance(hashes, dict) else None
+        if digest is None and isinstance(archive.get("hash"), str) and archive["hash"].startswith("sha256="):
+            digest = archive["hash"].partition("=")[2]
+        if isinstance(digest, str) and re.fullmatch(r"[0-9a-fA-F]{64}", digest):
+            result["archive_sha256"] = digest.lower()
+    else:
+        result["install_kind"] = "unknown"
+    return result
+
+
+def sdk_source_label(source=None) -> str:
+    source = sdk_provenance() if source is None else source
+    identity = ("git commit " + source["source_commit"] if source["source_commit"] else
+                "source commit unknown; " + source["install_kind"] + " installation")
+    return f"metasalmonpy ({identity}; reported version {source['reported_version']})"
+
+
+def add_sdk_provenance(g, activity, graph, source=None) -> str:
+    """Associate the build with the recorded SDK source, without a release claim."""
+    source = sdk_provenance() if source is None else source
+    suffix = "commit-" + source["source_commit"] if source["source_commit"] else "source-unknown"
+    agent = f"{C.BASE}agent/software/metasalmonpy-{suffix}"
+    g.add(activity, "prov:wasAssociatedWith", agent, graph)
+    g.add(agent, "rdf:type", "prov:SoftwareAgent", graph)
+    g.add(agent, "rdfs:label", L(sdk_source_label(source)), graph)
+    g.add(agent, "schema:softwareVersion", L(source["reported_version"]), graph)
+    if source["source_commit"]:
+        g.add(agent, "dcterms:identifier", L("git commit " + source["source_commit"]), graph)
+    if source["source_url"]:
+        g.add(agent, "prov:hadPrimarySource", source["source_url"], graph)
+    if source["archive_sha256"]:
+        g.add(agent, "dcterms:identifier", L("archive sha256:" + source["archive_sha256"]), graph)
+    g.add(agent, "rdfs:comment", L("Installation-source provenance, not a release or review assertion. "
+                                   "The SDK's reported version does not identify its source commit."), graph)
+    return agent
 
 # --------------------------------------------------------------------------
 # Column specification. Descriptions come from PSF's METADATA_2_nuseds_cuid_streamid.csv
@@ -352,7 +449,8 @@ def stage_profile() -> dict:
 def crosswalks(vocab=None) -> dict[str, pd.DataFrame]:
     """metasalmonpy NuSEDS crosswalks + documented corpus corrections/additions."""
     en = ms.nuseds_enumeration_method_crosswalk().copy()
-    en["source"] = "metasalmonpy 0.6.0 nuseds_enumeration_method_crosswalk"
+    sdk = sdk_source_label()
+    en["source"] = sdk + " nuseds_enumeration_method_crosswalk"
     # B-76 retains this target. It is usable only after the pinned ontology
     # declares it; a policy ruling alone does not make an undeclared IRI valid.
     vocab = vocab or C.VocabIndex()
@@ -365,7 +463,7 @@ def crosswalks(vocab=None) -> dict[str, pd.DataFrame]:
         "notes": "[corpus addition] Value in data, absent from crosswalk; no concept found.",
         "source": "corpus agent"}])], ignore_index=True)
     em = ms.nuseds_estimate_method_crosswalk().copy()
-    em["source"] = "metasalmonpy 0.6.0 nuseds_estimate_method_crosswalk"
+    em["source"] = sdk + " nuseds_estimate_method_crosswalk"
     em = pd.concat([em, pd.DataFrame([
         {"nuseds_value": "Fence Count", "method_family": "FS", "guidance_interpretation": "Enumeration device/mode",
          "ontology_term": "gcdfo:FixedStationTally",
@@ -376,7 +474,7 @@ def crosswalks(vocab=None) -> dict[str, pd.DataFrame]:
          "notes": "[corpus addition] Value in data (6 rows), absent from crosswalk; gcdfo:AerialSurveyCount is an enumeration (field) method, not an estimate method, so left unmapped.",
          "source": "corpus agent"}])], ignore_index=True)
     ec = ms.nuseds_estimate_classification_crosswalk().copy()
-    ec["source"] = "metasalmonpy 0.6.0 nuseds_estimate_classification_crosswalk"
+    ec["source"] = sdk + " nuseds_estimate_classification_crosswalk"
     ec = pd.concat([ec, pd.DataFrame([
         {"nuseds_value": "NO SURVEY", "estimate_type": pd.NA, "ontology_term": pd.NA,
          "notes": "[corpus addition] Value in data (50 rows), absent from crosswalk; treated like 'NO SURVEY THIS YEAR'.",
@@ -507,6 +605,7 @@ def observation_structures(dict_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Data
 
 def write_sssom(codes: pd.DataFrame, outdir: Path, gcdfo_sha: str, vocab=None) -> list[Path]:
     xw = crosswalks(vocab)
+    sdk = sdk_source_label()
     paths = []
     for col, (path, scheme) in CODE_SCHEMES.items():
         x = xw[col]
@@ -523,7 +622,7 @@ def write_sssom(codes: pd.DataFrame, outdir: Path, gcdfo_sha: str, vocab=None) -
             f"# license: {LICENCE}",
             f"# mapping_set_id: {C.BASE}mapping/{SLUG}/{path.split('/')[1]}",
             "# mapping_set_version: '2026-10-22'",
-            f"# mapping_set_description: NuSEDS {col} values in {SLUG} mapped to gcdfo concepts; from metasalmonpy 0.6.0 crosswalks plus corpus corrections.",
+            f"# mapping_set_description: NuSEDS {col} values in {SLUG} mapped to gcdfo concepts; from {sdk} crosswalks plus corpus corrections.",
             "# sssom_version: '1.1'",
             f"# subject_source: {C.BASE}code/{path}/",
             f"# subject_source_version: '{SLUG} 2026-02-20'",
@@ -550,7 +649,7 @@ def write_sssom(codes: pd.DataFrame, outdir: Path, gcdfo_sha: str, vocab=None) -
             by_agent = r.source == "corpus agent"
             lines.append("\t".join([f"{pfx}:{C.slug_iri(r.nuseds_value)}", r.nuseds_value, pred, obj, "",
                                     "semapv:AgentBasedMatching" if by_agent else "semapv:ManualMappingCuration",
-                                    card, "agent-authored corpus pipeline" if by_agent else "metasalmonpy 0.6.0 NuSEDS crosswalk",
+                                    card, "agent-authored corpus pipeline" if by_agent else sdk + " NuSEDS crosswalk",
                                     AGENT if by_agent else "", note]))
         p = outdir / f"{SLUG}-{path.split('/')[1]}.sssom.tsv"
         p.write_text("\n".join(lines) + "\n")
@@ -939,9 +1038,7 @@ def stage_graph() -> dict:
     g.add(act, "prov:used", f"{C.BASE}distribution/{SLUG}/source-csv", PV)
     g.add(act, "dcterms:date", L(build_reference_time(), "xsd:dateTime"), PV)
     g.add(act, "rdfs:comment", L("Pinned build reference timestamp, not actual execution start or end; real run events are retained outside reproducible artifacts."), PV)
-    g.add(act, "prov:wasAssociatedWith", f"{C.BASE}agent/software/metasalmonpy-{ms.__version__}", PV)
-    g.add(f"{C.BASE}agent/software/metasalmonpy-{ms.__version__}", "rdf:type", "prov:SoftwareAgent", PV)
-    g.add(f"{C.BASE}agent/software/metasalmonpy-{ms.__version__}", "rdfs:label", L(f"metasalmonpy {ms.__version__}"), PV)
+    add_sdk_provenance(g, act, PV)
     g.add(DS, "prov:wasGeneratedBy", act, PV)
     g.add(DS, "prov:wasDerivedFrom", SRC_DS, PV)
     for key, info in vocab.sources.items():
