@@ -88,6 +88,10 @@ compound variable is given an smn or gcdfo IRI it does not have; every
 measure has a unit and a year basis; every age-class column has an age
 notation; ``redistribution`` is present; each ``mark`` has a known aspect, a
 confidence and at least one evidence item; no ``def:`` IRI anywhere.
+The age-name screen exempts only a whole lexical metadata-only spec: no
+observations, identities, semantic bindings/codes or marks, and every column
+an unmarked string attribute. This admits source descriptions, not age values
+or age interpretations.
 """
 
 from __future__ import annotations
@@ -340,6 +344,14 @@ def _column_requires_critical_mark(column: Mapping[str, Any], *, referenced_year
             or any(column.get(name) is not None for name in semantic_fields))
 
 
+def _is_lexical_metadata_only(data: Mapping[str, Any]) -> bool:
+    """Recognize the whole-spec source-inventory boundary, without assigning semantics."""
+    return (not data["observations"] and not data["identity"]
+            and all(column["role"] == "attribute" and column["datatype"] == "string"
+                    and "mark" not in column and not _column_requires_critical_mark(column)
+                    for table in data["tables"] for column in table["columns"]))
+
+
 def validate_spec(spec: DatasetSpec, vocab: "VocabIndex") -> list[str]:
     """Problems with ``spec``, one message each, sorted; empty means valid.
 
@@ -356,6 +368,7 @@ def validate_spec(spec: DatasetSpec, vocab: "VocabIndex") -> list[str]:
         return [str(exc)]
     # This also covers DatasetSpec objects constructed directly by callers.
     source, spec_tables = data["source"], data["tables"]
+    lexical_metadata_only = _is_lexical_metadata_only(data)
     year_columns = {(block["table"], block["year_column"]) for block in data["observations"]}
     legacy = {config.current().legacy_ns["def"], config.DEFAULT_BASE + "def/"}
     for path, key, value in _leaves(data):
@@ -401,7 +414,9 @@ def validate_spec(spec: DatasetSpec, vocab: "VocabIndex") -> list[str]:
                     errors.append(f"{cp}.year_basis: expected smn:broodYear or smn:returnYear")
             # Age-class semantics must be explicit. This lexical screen catches
             # common source names; validate_spec cannot infer biology from data.
-            if re.search(r"(^|[_ -])age([_ -]|[0-9]|$)|ageclass", column["name"], re.I) and not column.get("age_notation"):
+            if (not lexical_metadata_only
+                    and re.search(r"(^|[_ -])age([_ -]|[0-9]|$)|ageclass", column["name"], re.I)
+                    and not column.get("age_notation")):
                 errors.append(f"{cp}.age_notation: required for an age-class column")
             decomp = column.get("decomposition")
             if decomp is not None and not column.get("concept", "").startswith(config.current().profile_base):

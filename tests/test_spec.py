@@ -423,3 +423,60 @@ def test_explicit_critical_year_mark_remains_pending_and_valid(tmp_path, documen
     assert validate_spec(spec, vocab) == []
     mark = spec.tables[0]["columns"][1]["mark"]
     assert provenance.review_status(mark["confidence"], provenance.criticality_of(mark["aspect"])) == "awaitingReview"
+
+
+def lexical_metadata_document(document):
+    data = copy.deepcopy(document)
+    data.update(identity=[], observations=[])
+    data["tables"] = [{"id": "source", "file": "fish.csv", "keys": ["native_name", "native_year"], "columns": [
+        {"name": "native_name", "role": "attribute", "datatype": "string"},
+        {"name": "native_year", "role": "attribute", "datatype": "string"},
+        {"name": "Age 1 Returns", "role": "attribute", "datatype": "string", "label": "Age 1 Returns",
+         "description": "Verbatim source dictionary wording; no age notation assigned."},
+    ]}]
+    return data
+
+
+def test_whole_lexical_metadata_spec_preserves_age_name_without_admitting_age_semantics(tmp_path, document, vocab):
+    data = lexical_metadata_document(document)
+    spec = load_spec(saved(tmp_path, data))
+    before = copy.deepcopy(spec)
+    assert validate_spec(spec, vocab) == []
+    assert spec == before and spec.identity == spec.observations == ()
+    age = spec.tables[0]["columns"][2]
+    assert age["name"] == "Age 1 Returns" and age["datatype"] == "string" and age["role"] == "attribute"
+    assert "age_notation" not in age and "mark" not in age and age["codes"] == {}
+
+
+@pytest.mark.parametrize("boundary", [
+    "observations", "identity", "numeric-column", "nonattribute-column", "second-table-numeric",
+    "concept", "unit", "year_basis", "age_notation", "estimate_type", "method", "decomposition", "codes", "mark",
+])
+def test_any_nonlexical_metadata_boundary_restores_age_notation_requirement(tmp_path, document, vocab, boundary):
+    data = lexical_metadata_document(document)
+    other = data["tables"][0]["columns"][0]
+    if boundary == "observations":
+        data["observations"] = [{"table": "source", "key": ["native_name"], "year_column": "native_year",
+                                 "dimensions": ["native_year"], "measures": ["native_name"]}]
+    elif boundary == "identity":
+        data["identity"] = [{"table": "source", "column": "native_name", "kind": "stock", "authority": "fixture"}]
+    elif boundary == "numeric-column":
+        other["datatype"] = "integer"
+    elif boundary == "nonattribute-column":
+        other["role"] = "identifier"
+    elif boundary == "second-table-numeric":
+        data["tables"].append({"id": "other", "file": "fish.csv", "keys": ["counter"], "columns": [
+            {"name": "counter", "role": "attribute", "datatype": "number"}]})
+    elif boundary == "codes":
+        other["codes"] = {"source-code": None}
+    elif boundary == "mark":
+        other["mark"] = {"aspect": "label", "confidence": "high", "evidence": ["Exact source heading."]}
+    elif boundary == "decomposition":
+        other.update(concept="corp:variable/source-attribute", decomposition={
+            "property": "smn:TermA", "object_of_interest": "smn:TermB", "constraints": []})
+    else:
+        other[boundary] = {"concept": "smn:TermA", "unit": "unit:NUM", "year_basis": "smn:broodYear",
+                           "age_notation": "smn:EuropeanAgeNotation", "estimate_type": "gcdfo:MethodX",
+                           "method": "gcdfo:MethodX"}[boundary]
+    problems = validate_spec(load_spec(saved(tmp_path, data)), vocab)
+    assert any("columns[2].age_notation: required for an age-class column" in p for p in problems)

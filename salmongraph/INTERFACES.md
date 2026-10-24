@@ -385,6 +385,13 @@ columns with explicit concept/unit/year-basis/age/type/method/decomposition
 bindings require a critical mark when marked. A label-only evidence record is
 refused rather than reused to approve a critical interpretation.
 
+The age-name screen has one source-catalogue exception: the entire spec must
+have no observations or identities, and every column must be an unmarked string
+attribute with no semantic bindings or code mappings. Its age field names and
+values remain uninterpreted source text. Any observation, identity, typed value,
+semantic binding, code mapping or mark restores the age-notation requirement.
+This exception admits no biological age interpretation or measured observation.
+
 The initial parsers are typed CSV and XLSX. XLSX requires an explicit
 `tables[].sheet`; CSV and bespoke parsers cannot silently select a sheet.
 Custom `module:function` parsers resolve to verified project-local source and
