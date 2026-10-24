@@ -22,7 +22,7 @@ name is missing from this file.
 | `spec` | **working (bounded v1)** | local schema/YAML parsing, deterministic CURIE expansion, semantic/vocabulary validation; no source fetch or review decisions |
 | `executor` | **working (bounded)** | private deterministic dataset build, genuine SDP round trip, graph compiler, observation Parquet, validation and review queue |
 | `identity` | stub | authority nodes, published membership, crosswalks, selection sets |
-| `combine` | stub | one corpus store, shared graphs, cross-source checks |
+| `combine` | **partial** | guarded corpus path and verified dataset loading; corpus assembly/shared graphs/cross-source checks remain stubs |
 | `shapes/`, `validate` | **working (bounded)** | local SHACL + original-quad structural gates; not scientific approval |
 | `review` | **partial** | pending queues/CSV/status counts work; human decisions and views remain stubs |
 | `ledger` | stub | `runs/ledger.csv` |
@@ -466,6 +466,22 @@ always report publication readiness as false. No build uploads an artifact.
 `load_dataset_build(store, build_dir) -> manifest`,
 `combine(build_dirs, *, corpus_version, build_date, vocab=None, out_dir=None) -> CombineResult`,
 `run_cross_source_checks(store, *, corpus_version, build_date, parquet_dirs) -> dict`.
+
+Only `corpus_build_dir` and `load_dataset_build` currently work. The loader
+recognizes the current private `salmongraph-build/1` manifest, verifies closed
+file/directory inventories and hashes, parses captured RDF into a temporary
+store, and checks dataset/configuration/graph/count/sidecar consistency before
+one atomic extension. Blank-node IDs are scoped deterministically by dataset
+release, including inside reified terms; repeated loads are idempotent and
+different content under the same release graph is refused. Reified SPOs are
+never materialized merely by loading them.
+
+The caller must own its store as a single writer. Snapshot checks detect input
+edits but do not lock the source tree. Hashes establish local artifact
+consistency, not signed authenticity, original-source/tool provenance truth,
+scientific validity, rights or publication approval. This loader does not rerun
+SHACL or perform cross-source comparisons. Required captured artifacts/RDF are
+memory-bound. Legacy/future manifest formats need an explicit adapter.
 
 ### `salmongraph.shapes` and `salmongraph.validate`
 

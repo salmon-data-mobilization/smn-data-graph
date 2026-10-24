@@ -641,6 +641,7 @@ STUB_MODULES = ["salmongraph.identity", "salmongraph.combine",
 # Implemented portions have substantive fixture tests. Keep checking the
 # remaining placeholders instead of dropping an entire partially built module.
 IMPLEMENTED_PARTIAL_FUNCTIONS = {
+    "salmongraph.combine": {"corpus_build_dir", "load_dataset_build"},
     "salmongraph.review": {"review_queue", "write_review_queue", "status_counts"},
 }
 
