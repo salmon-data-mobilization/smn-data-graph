@@ -1,0 +1,51 @@
+{
+  "no_contact": "Maintainer advice to coordinate research was read; no person contacted, analysis/model or external upload performed.",
+  "publisher_source": {
+    "archive_bytes": 63370,
+    "archive_member_prefix": "pink-chum-database-1.1/",
+    "archive_sha256": "1428be29011afff2fb17bac694aefe7998a2b5188f23b771be17de7643cfc9b5",
+    "archive_url": "https://zenodo.org/api/records/6478751/files/pink-chum-database-1.1.zip/content",
+    "licence_id": "cc-zero",
+    "member_sha256": {
+      "LICENSE": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673",
+      "README.md": "59055172590e068a6151c24baedb7d9c4e7ff20c737f14441e36ad709a5fb621",
+      "chum_data.csv": "9dcb799bca4595f1d215d3b38d92c86dcf8f373beda401c7318ffc7b3d915bd0",
+      "chum_info.csv": "f2f05843ca418a4f3a0ccb75fe97e7d5fb2b5f6a274a6333484e555bbf0396d7",
+      "chum_sources.csv": "08022d86651cd22b4da8a9e59d856217a9bce689d6a7dd0c8e9002b957190ae1"
+    },
+    "metadata_snapshot_sha256": "5fa5384a566b37887667279d893b2d95d278908ec206fd64936a59ce74170024",
+    "metadata_url": "https://zenodo.org/api/records/6478751",
+    "publication_date": "2022-04-22",
+    "record": "https://zenodo.org/records/6478751",
+    "version": "v1.1"
+  },
+  "rights_scope": "Explicit CC0 for this deposited source, not a grant for other data or a scientific/release approval. Root decides any derived-output transfer after privacy/fidelity review.",
+  "schema": "malick-anvik-phase1-source-evidence/1",
+  "selection": {
+    "data_columns": 16,
+    "data_rows": 22,
+    "info_columns": 10,
+    "info_rows": 1,
+    "key": "native stock.id + brood.yr, without year/use/age/value filtering",
+    "linked_source_ids": [
+      "16",
+      "18"
+    ],
+    "native_stock_id": "349",
+    "parsed_cells": 366,
+    "source_columns": 2,
+    "source_rows": 2
+  },
+  "semantics": {
+    "blocking_gap": "No documented formal age convention; do not appease the native age-name gate with a generic or invented notation",
+    "formal_age_notation": null,
+    "identity": [],
+    "measured_intake_complete": false,
+    "observations": [],
+    "source_age_flag_not_age_class_encoding": true,
+    "source_evidence_supports": "README states brood year/numbers and total spawners/recruits; those remain source descriptions, not admitted ontology mappings",
+    "whole_lexical_metadata_only": true,
+    "zero_imputation": false
+  },
+  "source_vs_build_version": "Spec uses frozen publisher source version v1.1; executor build_date is explicit derived execution date, not publication/retrieval/stock-data date."
+}

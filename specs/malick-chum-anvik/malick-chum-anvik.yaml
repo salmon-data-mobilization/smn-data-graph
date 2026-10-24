@@ -1,0 +1,223 @@
+spec_version: 1
+slug: malick-chum-anvik
+version: v1.1
+title: Malick Anvik native source records (stock.id349), lexical discovery
+description: '[agent] Derived source-discovery slice of Malick pink-chum-database
+  v1.1 (Zenodo6478751), preserving all 22 native stock349 rows/16 fields plus native
+  information/source links16,18. Every field remains lexical text. No observations,
+  identity mappings, age convention, biological semantics or scientific acceptance
+  is admitted. Measured intake remains blocked by unresolved formal age notation and
+  the current age-name gate.'
+source:
+  publisher: Michael Malick
+  landing_page: https://zenodo.org/records/6478751
+  doi: 10.5281/zenodo.6478751
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: Michael Malick (2022). pink-chum-database, v1.1. Zenodo. DOI10.5281/zenodo.6478751.
+    CC0 is explicit in deposit metadata and included LICENSE. This Anvik source-local
+    slice is derived, not a new publisher release; native source providers/publications
+    remain in chum_sources.
+  files:
+  - name: pink-chum-database-1.1.zip
+    url: https://zenodo.org/api/records/6478751/files/pink-chum-database-1.1.zip/content
+    sha256: 1428be29011afff2fb17bac694aefe7998a2b5188f23b771be17de7643cfc9b5
+parser: specs.malick_anvik_parser:parse
+tables:
+- id: chum_data
+  file: pink-chum-database-1.1.zip
+  keys:
+  - stock.id
+  - brood.yr
+  columns:
+  - name: stock.id
+    role: attribute
+    datatype: string
+    label: stock.id
+    description: 'Source README: unique stock identifier linking the source files.
+      [agent] Retained as a source-local text key; no cross-dataset identity.'
+  - name: species
+    role: attribute
+    datatype: string
+    label: species
+    description: 'Source README: species of salmon. [agent] Original source text;
+      no taxonomic class mapping.'
+  - name: stock
+    role: attribute
+    datatype: string
+    label: stock
+    description: 'Source README: name of the salmon stock. [agent] Source label only.'
+  - name: region
+    role: attribute
+    datatype: string
+    label: region
+    description: 'Source README: geographic region in the source compilation. [agent]
+      Original source text; no geographic equivalence.'
+  - name: sub.region
+    role: attribute
+    datatype: string
+    label: sub.region
+    description: 'Source README: geographic sub-region, species-specific. [agent]
+      Original source text.'
+  - name: brood.yr
+    role: attribute
+    datatype: string
+    label: brood.yr
+    description: 'Source README: brood year, the year spawners were enumerated on
+      their way to spawning grounds. [agent] Retained as original text; no year-basis
+      RDF binding.'
+  - name: spawners
+    role: attribute
+    datatype: string
+    label: spawners
+    description: 'Source README: total spawners for the brood year, in number of salmon.
+      [agent] Retained as original numeric text, without an ontology measure/unit
+      mapping.'
+  - name: recruits
+    role: attribute
+    datatype: string
+    label: recruits
+    description: 'Source README: total recruitment resulting from the brood-year spawners;
+      for chum, sum of recruit-age columns. [agent] Retained as original text; no
+      recomputation or completeness claim.'
+  - name: use
+    role: attribute
+    datatype: string
+    label: use
+    description: 'Source README: 1 identifies author-usable points; blank means excluded
+      from analyses. [agent] Source flag retained verbatim; no filtering or scientific
+      acceptance.'
+  - name: recruits.2
+    role: attribute
+    datatype: string
+    label: recruits.2
+    description: 'Source README: number of recruits returning at age 2. [agent] Original
+      text and blanks retained; formal age convention remains unresolved, no zero
+      imputation.'
+  - name: recruits.3
+    role: attribute
+    datatype: string
+    label: recruits.3
+    description: 'Source README: number of recruits returning at age 3. [agent] Original
+      text and blanks retained; formal age convention remains unresolved, no zero
+      imputation.'
+  - name: recruits.4
+    role: attribute
+    datatype: string
+    label: recruits.4
+    description: 'Source README: number of recruits returning at age 4. [agent] Original
+      text and blanks retained; formal age convention remains unresolved, no zero
+      imputation.'
+  - name: recruits.5
+    role: attribute
+    datatype: string
+    label: recruits.5
+    description: 'Source README: number of recruits returning at age 5. [agent] Original
+      text and blanks retained; formal age convention remains unresolved, no zero
+      imputation.'
+  - name: recruits.6
+    role: attribute
+    datatype: string
+    label: recruits.6
+    description: 'Source README: number of recruits returning at age 6. [agent] Original
+      text and blanks retained; formal age convention remains unresolved, no zero
+      imputation.'
+  - name: recruits.7
+    role: attribute
+    datatype: string
+    label: recruits.7
+    description: 'Source README: number of recruits returning at age 7. [agent] Original
+      text and blanks retained; formal age convention remains unresolved, no zero
+      imputation.'
+  - name: age
+    role: attribute
+    datatype: string
+    label: age
+    description: 'Source README: age-assumption flag data/avg/age4 describes reconstruction
+      inputs. [agent] Not a Gilbert-Rich or European encoding; no formal age convention
+      assigned.'
+- id: chum_info
+  file: pink-chum-database-1.1.zip
+  keys:
+  - stock.id
+  columns:
+  - name: stock.id
+    role: attribute
+    datatype: string
+    label: stock.id
+    description: 'Source README: unique stock identifier linking the source files.
+      [agent] Retained as a source-local text key; no cross-dataset identity.'
+  - name: species
+    role: attribute
+    datatype: string
+    label: species
+    description: 'Source README: species of salmon. [agent] Original source text;
+      no taxonomic class mapping.'
+  - name: stock
+    role: attribute
+    datatype: string
+    label: stock
+    description: 'Source README: name of the salmon stock. [agent] Source label only.'
+  - name: region
+    role: attribute
+    datatype: string
+    label: region
+    description: 'Source README: geographic region in the source compilation. [agent]
+      Original source text; no geographic equivalence.'
+  - name: sub.region
+    role: attribute
+    datatype: string
+    label: sub.region
+    description: 'Source README: geographic sub-region, species-specific. [agent]
+      Original source text.'
+  - name: jurisdiction
+    role: attribute
+    datatype: string
+    label: jurisdiction
+    description: 'Source README: jurisdiction primarily responsible for the stock.
+      [agent] Source text, no agency equivalence.'
+  - name: lat
+    role: attribute
+    datatype: string
+    label: lat
+    description: 'Source README: latitude of ocean entry location. [agent] Retained
+      as original text.'
+  - name: lon
+    role: attribute
+    datatype: string
+    label: lon
+    description: 'Source README: longitude of ocean entry location. [agent] Retained
+      as original text.'
+  - name: source.id
+    role: attribute
+    datatype: string
+    label: source.id
+    description: 'Source README: source identifier linking stock information to the
+      source table. [agent] Original literal links are preserved.'
+  - name: comment
+    role: attribute
+    datatype: string
+    label: comment
+    description: 'Source README: additional source comments about the stock. [agent]
+      Retained verbatim as source content.'
+- id: chum_sources
+  file: pink-chum-database-1.1.zip
+  keys:
+  - source.id
+  columns:
+  - name: source.id
+    role: attribute
+    datatype: string
+    label: source.id
+    description: 'Source README: source identifier linking stock information to the
+      source table. [agent] Original literal links are preserved.'
+  - name: source
+    role: attribute
+    datatype: string
+    label: source
+    description: 'Source README: provider name/work location or publication citation.
+      [agent] Source statement; not evidence of independent biological lineage.'
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []
