@@ -1,0 +1,37 @@
+name: Portable connected-discovery wheel
+
+on:
+  pull_request:
+    paths: ['python/**', '.github/workflows/portable-query.yml']
+  push:
+    branches: [main]
+    paths: ['python/**', '.github/workflows/portable-query.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  installed-wheel:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Build only the standalone reader wheel
+        run: python -I -m pip wheel --no-deps --wheel-dir "$RUNNER_TEMP/query-wheel" ./python
+      - name: Check exact public wheel inventory and hashes
+        run: python -I python/scripts/check_wheel.py "$RUNNER_TEMP"/query-wheel/smn_data_graph-0.1.0-py3-none-any.whl
+      - name: Install wheel and explicit test dependencies into a fresh environment
+        run: |
+          python -I -m venv "$RUNNER_TEMP/query-env"
+          "$RUNNER_TEMP/query-env/bin/python" -I -m pip install "$RUNNER_TEMP"/query-wheel/smn_data_graph-0.1.0-py3-none-any.whl pytest==9.1.1 rdflib==7.6.0 pyparsing==3.3.3
+      - name: Run unchanged discovery checks against installed artifact
+        run: |
+          cp -R python/tests "$RUNNER_TEMP/query-tests"
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/query-env/bin/python" -I -m pytest query-tests --import-mode=importlib -q -s -W error

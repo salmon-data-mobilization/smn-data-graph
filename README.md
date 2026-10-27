@@ -7,6 +7,13 @@ Agents run through the Claude Agent SDK and are paid by the monthly
 promotional API credit of the Console organization "Brett's Individual Org"
 (not by a Claude subscription).
 
+## Read-only connected discovery
+
+For the standalone local query library, use [python/README.md](python/README.md).
+It discovers connections in an already admitted graph and needs PyOxigraph only;
+no Claude account, API key or private SDK is required. The corpus-building setup
+below is a separate workflow.
+
 ## Setup
 
 1. Store the Console API key in the macOS Keychain (one time):
