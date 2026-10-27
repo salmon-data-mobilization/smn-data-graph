@@ -11,7 +11,7 @@ import zipfile
 MODULES = {
     "salmongraph/__init__.py", "salmongraph/config.py", "salmongraph/iri.py",
     "salmongraph/graph.py", "salmongraph/provenance.py", "salmongraph/review.py",
-    "salmongraph/discovery.py", "salmongraph/io/__init__.py", "salmongraph/io/det.py",
+    "salmongraph/discovery.py", "salmongraph/contribution.py", "salmongraph/io/__init__.py", "salmongraph/io/det.py",
     "salmongraph/_stub.py", "salmongraph/serve/__init__.py", "salmongraph/serve/sparql_server.py",
 }
 DIST = "smn_data_graph-0.1.0.dist-info/"

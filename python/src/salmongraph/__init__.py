@@ -1,12 +1,12 @@
-"""Read-only connected discovery over an already admitted local graph store.
+"""Local connected discovery and pure confirmed-column contribution compilation.
 
-The supported entrypoint is ``salmongraph.discovery.discover``. Configuration,
-review, provenance and RDF helpers preserve the existing graph's namespace and
-criticality rules; they are internal support for that query.
+``discovery.discover`` queries an already admitted store. The separate
+``contribution.preview`` / ``contribution.admit`` functions compile explicitly
+selected D01 understanding to pending RDF with exact-preview consent. They do
+not authenticate, verify an SDK runtime, persist or load a store, or publish.
 
-This standalone package does not build or admit source packages, publish data,
-run an SDK bridge, or start a listener. The caller supplies the already admitted
-store and enforces fresh permissions and project bindings.
+Configuration, review and provenance retain existing namespace/criticality rules.
+Callers own fresh permissions, verified native bindings and durable admission.
 """
 
 __version__ = "0.1.0"

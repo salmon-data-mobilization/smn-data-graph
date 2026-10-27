@@ -1,0 +1,338 @@
+{
+  "schema": "fictional-d01-native-fixture/1",
+  "notice": "Entirely fictional cells/current authority. Genuine pinned SDK943 native artifact; no real research, account or graph authorization. Static artifact verification is not runtime attestation.",
+  "sourceCsv": "record_id,temperature,procedure_code,private_note\n001,7.2,NO SURVEY,FICTIONAL_RAW_PRIVATE_CELL\n002,NA,FIELD_A,FICTIONAL_OTHER_PRIVATE_CELL\n003,,,\n",
+  "nativeResult": {
+    "schema": "research-metasalmonpy-package/2",
+    "status": "executed",
+    "engine": {
+      "name": "metasalmonpy",
+      "version": "0.6.0",
+      "sourceCommit": "943fe1f50d7ac5b88b8be81250dca2e7aeb0f632",
+      "sourceArchiveUrl": "https://github.com/salmon-data-mobilization/metasalmonpy/archive/943fe1f50d7ac5b88b8be81250dca2e7aeb0f632.tar.gz",
+      "sourceSha256": "e6d5285e222673d5e786fa4c97c2655072bc722305500d020e763e18596a3f8e",
+      "schemaSource": "vendored",
+      "sourceReferenceKind": "declared_pinned_build_source",
+      "sourceHashScope": "Complete installed metasalmonpy Python file paths and bytes; not dependency or data-resource inventory.",
+      "pythonFileCount": 52,
+      "originMetadata": "present_verified",
+      "semanticSeeding": false,
+      "llmAssessment": false
+    },
+    "sourceSha256": "c6e7d13fdf44d012e4bf87948d022dd582553bc8b07e0e6758dd3dbb4120cec4",
+    "sourceHashScope": "Exact UTF-8 csvText bytes received; leading BOM included when supplied.",
+    "originalFileName": "fictional-ocean-d05.csv",
+    "datasetId": "dataset-c6e7d13fdf44",
+    "tableId": "source",
+    "summary": {
+      "rows": 3,
+      "columns": 4,
+      "files": 6,
+      "literalNACells": 1,
+      "blankCells": 3
+    },
+    "files": [
+      {
+        "path": ".sdp-package",
+        "content": "sdp-owned\n",
+        "bytes": 10,
+        "sha256": "0772f8c9d22f02d76030f93b07f1706ccf4a7c69cbeff4396d69a667ee687b3a"
+      },
+      {
+        "path": "data/source.csv",
+        "content": "record_id,temperature,procedure_code,private_note\n001,7.2,NO SURVEY,FICTIONAL_RAW_PRIVATE_CELL\n002,NA,FIELD_A,FICTIONAL_OTHER_PRIVATE_CELL\n003,,,\n",
+        "bytes": 146,
+        "sha256": "c6e7d13fdf44d012e4bf87948d022dd582553bc8b07e0e6758dd3dbb4120cec4"
+      },
+      {
+        "path": "datapackage.json",
+        "content": "{\n  \"profile\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/profiles/salmon-data-package/v0.3/profile.json\",\n  \"name\": \"dataset-c6e7d13fdf44\",\n  \"id\": \"dataset-c6e7d13fdf44\",\n  \"title\": \"Entirely fictional D05 ocean software fixture\",\n  \"description\": \"Generated cells for source tests; no research or publication claim.\",\n  \"sdp\": {\n    \"specVersion\": \"sdp-0.3.2\",\n    \"profile\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/profiles/salmon-data-package/v0.3/profile.json\",\n    \"rules\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/schema/sdp.rules.yaml\",\n    \"metadata\": {\n      \"dataset\": \"metadata/dataset.csv\",\n      \"tables\": \"metadata/tables.csv\",\n      \"columnDictionary\": \"metadata/column_dictionary.csv\",\n      \"codes\": null\n    }\n  },\n  \"resources\": [\n    {\n      \"profile\": \"tabular-data-resource\",\n      \"name\": \"sdp_dataset\",\n      \"path\": \"metadata/dataset.csv\",\n      \"title\": \"SDP dataset metadata\",\n      \"description\": \"Dataset-level metadata.\",\n      \"schema\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/dataset.schema.json\"\n    },\n    {\n      \"profile\": \"tabular-data-resource\",\n      \"name\": \"sdp_tables\",\n      \"path\": \"metadata/tables.csv\",\n      \"title\": \"SDP tables metadata\",\n      \"description\": \"Table-level metadata.\",\n      \"schema\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/tables.schema.json\"\n    },\n    {\n      \"profile\": \"tabular-data-resource\",\n      \"name\": \"sdp_column_dictionary\",\n      \"path\": \"metadata/column_dictionary.csv\",\n      \"title\": \"SDP column dictionary metadata\",\n      \"description\": \"Column-level metadata.\",\n      \"schema\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/column_dictionary.schema.json\"\n    },\n    {\n      \"name\": \"source\",\n      \"path\": \"data/source.csv\",\n      \"profile\": \"tabular-data-resource\",\n      \"schema\": {\n        \"fields\": [\n          {\n            \"name\": \"record_id\",\n            \"title\": \"record_id\",\n            \"type\": \"string\",\n            \"description\": \"MISSING DESCRIPTION: define what 'record_id' means in table 'source'.\"\n          },\n          {\n            \"name\": \"temperature\",\n            \"title\": \"temperature\",\n            \"type\": \"string\",\n            \"description\": \"MISSING DESCRIPTION: define what 'temperature' means in table 'source'.\",\n            \"term_iri\": \"https://example.test/fictional-d05/meaning/temperature\",\n            \"term_type\": \"skos_concept\"\n          },\n          {\n            \"name\": \"procedure_code\",\n            \"title\": \"procedure_code\",\n            \"type\": \"string\",\n            \"description\": \"MISSING DESCRIPTION: define what 'procedure_code' means in table 'source'.\"\n          },\n          {\n            \"name\": \"private_note\",\n            \"title\": \"private_note\",\n            \"type\": \"string\",\n            \"description\": \"MISSING DESCRIPTION: define what 'private_note' means in table 'source'.\"\n          }\n        ]\n      },\n      \"title\": \"Source\",\n      \"description\": \"MISSING DESCRIPTION: describe what each row in table 'source' represents.\"\n    }\n  ],\n  \"contributors\": [\n    {\n      \"title\": \"MISSING METADATA: add creator, team, or originating program.\",\n      \"role\": \"creator\"\n    },\n    {\n      \"title\": \"MISSING METADATA: add primary contact name or team.\",\n      \"role\": \"contact\",\n      \"email\": \"MISSING METADATA: add primary contact email.\"\n    }\n  ]\n}\n",
+        "bytes": 3470,
+        "sha256": "a0f983a53bf3d4c5aefdbfb08056a88027d5a26c4ddb1f731613ee0da9ab6bc6"
+      },
+      {
+        "path": "metadata/column_dictionary.csv",
+        "content": "dataset_id,table_id,column_name,column_label,column_description,column_role,value_type,required,unit_label,unit_iri,term_iri,term_type,property_iri,entity_iri,constraint_iri,statistical_modifier_iri\ndataset-c6e7d13fdf44,source,record_id,record_id,MISSING DESCRIPTION: define what 'record_id' means in table 'source'.,attribute,string,,,,,,,,,\ndataset-c6e7d13fdf44,source,temperature,temperature,MISSING DESCRIPTION: define what 'temperature' means in table 'source'.,attribute,string,,,,https://example.test/fictional-d05/meaning/temperature,skos_concept,,,,\ndataset-c6e7d13fdf44,source,procedure_code,procedure_code,MISSING DESCRIPTION: define what 'procedure_code' means in table 'source'.,attribute,string,,,,,,,,,\ndataset-c6e7d13fdf44,source,private_note,private_note,MISSING DESCRIPTION: define what 'private_note' means in table 'source'.,attribute,string,,,,,,,,,\n",
+        "bytes": 871,
+        "sha256": "188b7a296fc8fdaf2fab300926f997acb15e955381278b9c7a049871467366d1"
+      },
+      {
+        "path": "metadata/dataset.csv",
+        "content": "dataset_id,title,description,creator,contact_name,contact_email,license,contact_org,contact_position,temporal_start,temporal_end,spatial_extent,dataset_type,source_citation,update_frequency,topic_categories,keywords,security_classification,provenance_note,created,modified,spec_version,protocol_iri,protocol_citation\ndataset-c6e7d13fdf44,Entirely fictional D05 ocean software fixture,Generated cells for source tests; no research or publication claim.,\"MISSING METADATA: add creator, team, or originating program.\",MISSING METADATA: add primary contact name or team.,MISSING METADATA: add primary contact email.,,,,,,,,,,,,,,,,sdp-0.3.2,,\n",
+        "bytes": 639,
+        "sha256": "a9a9df98a67e7c7f9564eaa4fcfced507154b819c94692cf1cdf91b7b1e89a22"
+      },
+      {
+        "path": "metadata/tables.csv",
+        "content": "dataset_id,table_id,file_name,table_label,description,observation_unit,observation_unit_iri,primary_key,protocol_iri,protocol_citation,method_iri\ndataset-c6e7d13fdf44,source,data/source.csv,Source,MISSING DESCRIPTION: describe what each row in table 'source' represents.,MISSING METADATA: describe the observation unit for table 'source'.,,,,,\n",
+        "bytes": 344,
+        "sha256": "092b21be2b1d93928b4912a7c36f8945f3a6810cbc775a23c85942e167fc131d"
+      }
+    ],
+    "validation": {
+      "structural": {
+        "status": "passed",
+        "issues": []
+      },
+      "semantic": {
+        "status": "draft",
+        "issues": [],
+        "missingTerms": [],
+        "missingSemantics": [],
+        "warnings": [
+          "6 metadata fields still hold a placeholder: column_dictionary.csv$column_description, dataset.csv$contact_email, dataset.csv$contact_name, dataset.csv$creator, tables.csv$description, tables.csv$observation_unit. Replace them before publication; require_iris=True reports these as errors."
+        ]
+      },
+      "strict": {
+        "status": "blocked",
+        "issues": [],
+        "message": "Final validation failed with 10 unresolved review issues.\nmetadata/dataset.csv row 1 (dataset_id=dataset-c6e7d13fdf44) field creator still contains an unresolved review placeholder (MISSING METADATA: add creator, team, or originating program.). Replace it before final validation.\nmetadata/dataset.csv row 1 (dataset_id=dataset-c6e7d13fdf44) field contact_name still contains an unresolved review placeholder (MISSING METADATA: add primary contact name or team.). Replace it before final validation.\nmetadata/dataset.csv row 1 (dataset_id=dataset-c6e7d13fdf44) field contact_email still contains an unresolved review placeholder (MISSING METADATA: add primary contact email.). Replace it before final validation.\nmetadata/tables.csv row 1 (table_id=source, file_name=data/source.csv) field description still contains an unresolved review placeholder (MISSING DESCRIPTION: describe what each row in table 'source' represents.). Replace it before final validation.\nmetadata/tables.csv row 1 (table_id=source, file_name=data/source.csv) field observation_unit still contains an unresolved review placeholder (MISSING METADATA: describe the observation unit for table 'source'.). Replace it before final validation.\nmetadata/tables.csv row 1 (table_id=source, file_name=data/source.csv) field observation_unit_iri is blank. Final validation requires a resolved table observation-unit IRI.\nmetadata/column_dictionary.csv row 1 (table_id=source, column_name=record_id) field column_description still contains an unresolved review placeholder (MISSING DESCRIPTION: define what 'record_id' means in table 'source'.). Replace it before final validation.\nmetadata/column_dictionary.csv row 2 (table_id=source, column_name=temperature) field column_description still contains an unresolved review placeholder (MISSING DESCRIPTION: define what 'temperature' means in table 'source'.). Replace it before final validation.\nmetadata/column_dictionary.csv row 3 (table_id=source, column_name=procedure_code) field column_description still contains an unresolved review placeholder (MISSING DESCRIPTION: define what 'procedure_code' means in table 'source'.). Replace it before final validation.\nmetadata/column_dictionary.csv row 4 (table_id=source, column_name=private_note) field column_description still contains an unresolved review placeholder (MISSING DESCRIPTION: define what 'private_note' means in table 'source'.). Replace it before final validation.\nResolve placeholder metadata, blank schema-required fields, blank table observation-unit IRIs, malformed metadata IRIs, and any REVIEW-prefixed IRIs before strict validation."
+      },
+      "sourceRoundTrip": {
+        "status": "passed"
+      },
+      "rdf": {
+        "status": "not_run"
+      },
+      "shacl": {
+        "status": "not_run"
+      },
+      "publicationReady": false,
+      "scientificApproval": false,
+      "licenceProvided": false
+    },
+    "privacy": {
+      "rawPersisted": false,
+      "published": false
+    },
+    "networkAttempts": 0,
+    "confirmedSemantics": {
+      "schema": "confirmed-column-semantics/1",
+      "sourceSha256": "c6e7d13fdf44d012e4bf87948d022dd582553bc8b07e0e6758dd3dbb4120cec4",
+      "vocabulary": {
+        "id": "smn-0.0.3-3bd2b2a0-selected-v2",
+        "sha256": "4916b9aedaf01f8927f5c952548fc5f78e56ac737c97872226f823cf962ee6a4"
+      },
+      "columns": [
+        {
+          "columnOrdinal": 1,
+          "columnName": "temperature",
+          "columnRole": "attribute",
+          "valueType": "string",
+          "termType": "skos_concept",
+          "termIri": "https://example.test/fictional-d05/meaning/temperature",
+          "propertyIri": "",
+          "entityIri": "",
+          "unitIri": "",
+          "constraintIri": "",
+          "statisticalModifierIri": ""
+        }
+      ],
+      "sharedRelationshipEligible": false
+    },
+    "semanticCoverage": {
+      "columnCount": 4,
+      "confirmedColumnOrdinals": [
+        1
+      ],
+      "lexicalDefaults": [
+        {
+          "columnOrdinal": 0,
+          "columnName": "record_id",
+          "fields": {
+            "column_role": "attribute",
+            "value_type": "string"
+          }
+        },
+        {
+          "columnOrdinal": 2,
+          "columnName": "procedure_code",
+          "fields": {
+            "column_role": "attribute",
+            "value_type": "string"
+          }
+        },
+        {
+          "columnOrdinal": 3,
+          "columnName": "private_note",
+          "fields": {
+            "column_role": "attribute",
+            "value_type": "string"
+          }
+        }
+      ]
+    }
+  },
+  "current": {
+    "schema": "current-d01-contribution/1",
+    "projection": {
+      "schema": "confirmed-column-semantics/1",
+      "sourceSha256": "c6e7d13fdf44d012e4bf87948d022dd582553bc8b07e0e6758dd3dbb4120cec4",
+      "vocabulary": {
+        "id": "smn-0.0.3-3bd2b2a0-selected-v2",
+        "sha256": "4916b9aedaf01f8927f5c952548fc5f78e56ac737c97872226f823cf962ee6a4"
+      },
+      "columns": [
+        {
+          "columnOrdinal": 1,
+          "columnName": "temperature",
+          "columnRole": "attribute",
+          "valueType": "string",
+          "termType": "skos_concept",
+          "termIri": "https://example.test/fictional-d05/meaning/temperature",
+          "propertyIri": "",
+          "entityIri": "",
+          "unitIri": "",
+          "constraintIri": "",
+          "statisticalModifierIri": ""
+        }
+      ],
+      "sharedRelationshipEligible": false
+    },
+    "understanding": [
+      {
+        "columnOrdinal": 1,
+        "evidence": {
+          "citation": "Fictional generated dictionary cell; software-test evidence only.",
+          "sha256": "c6e7d13fdf44d012e4bf87948d022dd582553bc8b07e0e6758dd3dbb4120cec4"
+        },
+        "scope": {
+          "kind": "dataset-column",
+          "note": "This fictional source column only; no compatibility or shared acceptance."
+        }
+      }
+    ],
+    "semanticRevision": 2,
+    "semanticBasisSha256": "fb8f34101e33f65da69c4d7993853226302eb809c203dd207ec653fa315b03de",
+    "semanticStateSha256": "5146106694062ea34df9c45d43c97f82abc83c27df4645b55e02bf6274187feb",
+    "documentationRevision": 1,
+    "selectionRevision": 1,
+    "projectRevision": 2,
+    "nativeArtifacts": [
+      {
+        "path": ".sdp-package",
+        "bytes": 10,
+        "sha256": "0772f8c9d22f02d76030f93b07f1706ccf4a7c69cbeff4396d69a667ee687b3a"
+      },
+      {
+        "path": "data/source.csv",
+        "bytes": 146,
+        "sha256": "c6e7d13fdf44d012e4bf87948d022dd582553bc8b07e0e6758dd3dbb4120cec4"
+      },
+      {
+        "path": "datapackage.json",
+        "bytes": 3470,
+        "sha256": "a0f983a53bf3d4c5aefdbfb08056a88027d5a26c4ddb1f731613ee0da9ab6bc6"
+      },
+      {
+        "path": "metadata/column_dictionary.csv",
+        "bytes": 871,
+        "sha256": "188b7a296fc8fdaf2fab300926f997acb15e955381278b9c7a049871467366d1"
+      },
+      {
+        "path": "metadata/dataset.csv",
+        "bytes": 639,
+        "sha256": "a9a9df98a67e7c7f9564eaa4fcfced507154b819c94692cf1cdf91b7b1e89a22"
+      },
+      {
+        "path": "metadata/tables.csv",
+        "bytes": 344,
+        "sha256": "092b21be2b1d93928b4912a7c36f8945f3a6810cbc775a23c85942e167fc131d"
+      }
+    ],
+    "sourceAuthorityIri": "https://example.test/fictional-d05/source"
+  },
+  "candidate": {
+    "schema": "confirmed-column-contribution/1",
+    "dataset": {
+      "slug": "fictional-d05-project",
+      "version": "fixture-v1",
+      "iri": "https://w3id.org/salmon-demo-corpus/dataset/fictional-d05-project/fixture-v1"
+    },
+    "source": {
+      "sha256": "c6e7d13fdf44d012e4bf87948d022dd582553bc8b07e0e6758dd3dbb4120cec4",
+      "authorityIri": "https://example.test/fictional-d05/source"
+    },
+    "audience": {
+      "kind": "private-project"
+    },
+    "binding": {
+      "semanticRevision": 2,
+      "semanticBasisSha256": "fb8f34101e33f65da69c4d7993853226302eb809c203dd207ec653fa315b03de",
+      "semanticStateSha256": "5146106694062ea34df9c45d43c97f82abc83c27df4645b55e02bf6274187feb",
+      "documentationRevision": 1,
+      "selectionRevision": 1,
+      "projectRevision": 2,
+      "projectionSha256": "2f9b974191a2ce551018ff0ebd5a959d5a43c91e25b2978e1b85ef7d00deed06",
+      "nativeArtifactsSha256": "bf83d815c3b7712b3e89df9de120b9bf698aefd89e0ffa75ee345b17d47ccfc2"
+    },
+    "nativeArtifacts": [
+      {
+        "path": ".sdp-package",
+        "bytes": 10,
+        "sha256": "0772f8c9d22f02d76030f93b07f1706ccf4a7c69cbeff4396d69a667ee687b3a"
+      },
+      {
+        "path": "data/source.csv",
+        "bytes": 146,
+        "sha256": "c6e7d13fdf44d012e4bf87948d022dd582553bc8b07e0e6758dd3dbb4120cec4"
+      },
+      {
+        "path": "datapackage.json",
+        "bytes": 3470,
+        "sha256": "a0f983a53bf3d4c5aefdbfb08056a88027d5a26c4ddb1f731613ee0da9ab6bc6"
+      },
+      {
+        "path": "metadata/column_dictionary.csv",
+        "bytes": 871,
+        "sha256": "188b7a296fc8fdaf2fab300926f997acb15e955381278b9c7a049871467366d1"
+      },
+      {
+        "path": "metadata/dataset.csv",
+        "bytes": 639,
+        "sha256": "a9a9df98a67e7c7f9564eaa4fcfced507154b819c94692cf1cdf91b7b1e89a22"
+      },
+      {
+        "path": "metadata/tables.csv",
+        "bytes": 344,
+        "sha256": "092b21be2b1d93928b4912a7c36f8945f3a6810cbc775a23c85942e167fc131d"
+      }
+    ],
+    "columns": [
+      {
+        "annotation": {
+          "columnOrdinal": 1,
+          "columnName": "temperature",
+          "columnRole": "attribute",
+          "valueType": "string",
+          "termType": "skos_concept",
+          "termIri": "https://example.test/fictional-d05/meaning/temperature",
+          "propertyIri": "",
+          "entityIri": "",
+          "unitIri": "",
+          "constraintIri": "",
+          "statisticalModifierIri": ""
+        },
+        "evidence": {
+          "citation": "Fictional generated dictionary cell; software-test evidence only.",
+          "sha256": "c6e7d13fdf44d012e4bf87948d022dd582553bc8b07e0e6758dd3dbb4120cec4"
+        },
+        "scope": {
+          "kind": "dataset-column",
+          "note": "This fictional source column only; no compatibility or shared acceptance."
+        },
+        "sourceAuthority": "depositor_confirmed",
+        "status": "awaitingReview"
+      }
+    ],
+    "review": {
+      "confidence": "high",
+      "attributionIri": "https://example.test/fictional-d05/explicit-test-person",
+      "activityIri": "https://example.test/fictional-d05/explicit-test-confirmation",
+      "date": "2026-10-27",
+      "evidence": [
+        "Fictional contribution-time confidence and provenance explicitly selected for this test."
+      ]
+    }
+  }
+}
