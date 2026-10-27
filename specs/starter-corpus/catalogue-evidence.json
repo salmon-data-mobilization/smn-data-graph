@@ -1,0 +1,872 @@
+{
+  "schema": "starter-corpus-catalogue-evidence/1",
+  "observed_at": "2026-10-27T16:52:15.852401Z",
+  "purpose": "Metadata-only preparation for source discovery and provenance review; no observation rows, graph load, analytical bridge or destination implementation.",
+  "curated_counts": {
+    "collections": 1,
+    "datasets": 4
+  },
+  "sources": [
+    {
+      "id": "npafc-ipsdl-catalogue",
+      "url": "https://data.npafc.org/api/3/action/package_show?id=ca-cioos_7d6e7505-fdd7-4cbe-abbf-0f17c5c16113",
+      "format": "json",
+      "observed_at": "2026-10-27T16:52:15.852401Z",
+      "sha256": "40c82da94994dbf83db716bfb4dbf7c8029643fb3230818984a370d7b47ca2e6",
+      "bytes": 26374,
+      "snapshot_file": "npafc-ipsdl-catalogue.json"
+    },
+    {
+      "id": "npafc-ipsdl-publisher",
+      "url": "https://www.npafc.org/psdld/",
+      "format": "html",
+      "observed_at": "2026-10-27T16:52:15.852401Z",
+      "sha256": "508ad3df1b67d4eb98ec05af23967549186bf4fae81d14427fdb501f06489b01",
+      "bytes": 148139,
+      "snapshot_file": "npafc-ipsdl-publisher.html"
+    },
+    {
+      "id": "npafc-ipsdl-methods",
+      "url": "https://www.npafc.org/wp-content/uploads/IPSDL/IPSDL_metadata_v1.5.1.pdf",
+      "format": "pdf",
+      "observed_at": "2026-10-27T16:52:15.852401Z",
+      "sha256": "511b302cf8f33daab1bf30406b4eec9298c3225433fb1e28da765482dbb8ab53",
+      "bytes": 642643,
+      "snapshot_file": "npafc-ipsdl-methods.pdf"
+    },
+    {
+      "id": "sasap-portal",
+      "url": "https://alaskasalmonandpeople.org/about/about-the-salmon-data-portal/",
+      "format": "html",
+      "observed_at": "2026-10-27T16:52:15.852401Z",
+      "sha256": "1f37ed75f50000dd011dd2f3562dc559fc59f3e263269293c696a99cd4b03d94",
+      "bytes": 120213,
+      "snapshot_file": "sasap-portal.html"
+    },
+    {
+      "id": "dataone-record-index",
+      "url": "https://cn.dataone.org/cn/v2/query/solr/?q=id%3A%28%22doi%3A10.5063%2FF1707ZTM%22+OR+%22doi%3A10.5063%2FF1N29V9T%22+OR+%22doi%3A10.5063%2FQV3JZW%22%29&fl=id%2Ctitle%2CdatePublished%2CdateUploaded%2CauthoritativeMN%2Corigin%2CrightsHolder%2CresourceMap%2CseriesId%2Cobsoletes%2CobsoletedBy%2CbeginDate%2CendDate%2Cproject%2CreadPermission&wt=json&rows=10",
+      "format": "json",
+      "observed_at": "2026-10-27T16:52:15.852401Z",
+      "sha256": "fab871003a742a497d5c5c2289d9fc9ffb94ade33060e2c4d5a8cb1e7d4329d8",
+      "bytes": 2721,
+      "snapshot_file": "dataone-record-index.json"
+    },
+    {
+      "id": "sasap-asl-eml",
+      "url": "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/doi%3A10.5063%2FF1707ZTM",
+      "format": "xml",
+      "observed_at": "2026-10-27T16:52:15.852401Z",
+      "sha256": "d942918b755402c04c4f2f52f4bff857a35f8c008b25b5d91fccee0f5615bdca",
+      "bytes": 54037,
+      "snapshot_file": "sasap-asl-eml.xml"
+    },
+    {
+      "id": "sasap-covariates-eml",
+      "url": "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/doi%3A10.5063%2FF1N29V9T",
+      "format": "xml",
+      "observed_at": "2026-10-27T16:52:15.852401Z",
+      "sha256": "95324fb2d2907db7ce3215988f5d3f08dd247dc2fe85b8a45066d7d2e49109c2",
+      "bytes": 46478,
+      "snapshot_file": "sasap-covariates-eml.xml"
+    },
+    {
+      "id": "sasap-abundance-eml",
+      "url": "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/doi%3A10.5063%2FQV3JZW",
+      "format": "xml",
+      "observed_at": "2026-10-27T16:52:15.852401Z",
+      "sha256": "3e5db609fea6e852680a2417c8dde5adea92971d441db4d8977ab44e55c39d58",
+      "bytes": 28224,
+      "snapshot_file": "sasap-abundance-eml.xml"
+    }
+  ],
+  "records": [
+    {
+      "key": "sasap",
+      "kind": "collection",
+      "title": {
+        "value": "State of Alaska Salmon and People",
+        "source_refs": [
+          "sasap-portal"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "identifiers": {
+        "doi": null,
+        "provider_record": "https://alaskasalmonandpeople.org/"
+      },
+      "version": {
+        "value": null,
+        "source_refs": [
+          "sasap-portal"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "publisher": {
+        "value": {
+          "name": "NCEAS Data Task Force",
+          "role": "portal development"
+        },
+        "source_refs": [
+          "sasap-portal"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "declared_coverage": {
+        "value": {
+          "spatial": [
+            "Alaska"
+          ],
+          "temporal": null,
+          "species": [],
+          "measurements": [
+            "fish productivity",
+            "habitat",
+            "human dimensions"
+          ],
+          "spatial_bounds_verbatim": []
+        },
+        "source_refs": [
+          "sasap-portal"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "rights": {
+        "license_uri": null,
+        "label": null,
+        "scope": "No collection-wide licence inferred; constituent records retain their own rights.",
+        "source_refs": [
+          "sasap-portal"
+        ]
+      },
+      "provenance": [],
+      "access": {
+        "landing_url": "https://alaskasalmonandpeople.org/",
+        "metadata_url": "https://alaskasalmonandpeople.org/about/about-the-salmon-data-portal/"
+      },
+      "quality_flags": [
+        {
+          "code": "collection_not_harmonized_dataset",
+          "note": "Portal membership does not certify shared measurement semantics, methods or independent provenance.",
+          "source_refs": [
+            "sasap-portal"
+          ]
+        },
+        {
+          "code": "collection_version_and_licence_unspecified",
+          "note": "No invented release version or blanket grant.",
+          "source_refs": [
+            "sasap-portal"
+          ]
+        },
+        {
+          "code": "portal_membership_unverified",
+          "note": "EML project association is not proof of portal membership; no inverse collection membership is asserted.",
+          "source_refs": [
+            "sasap-asl-eml",
+            "sasap-abundance-eml"
+          ]
+        }
+      ],
+      "readiness": {
+        "catalogue_status": "prepared_for_review",
+        "observation_files_fetched": false,
+        "observation_rows_in_fixture": 0,
+        "graph_loaded": false,
+        "semantic_mappings_accepted": false,
+        "publication_approved": false
+      }
+    },
+    {
+      "key": "npafc-ipsdl",
+      "kind": "dataset",
+      "title": {
+        "value": "International Pacific Salmon Data Legacy Database",
+        "source_refs": [
+          "npafc-ipsdl-catalogue"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "identifiers": {
+        "doi": "10.23849/t1wb-y481",
+        "provider_record": "https://data.npafc.org/dataset/ca-cioos_7d6e7505-fdd7-4cbe-abbf-0f17c5c16113"
+      },
+      "version": {
+        "value": "1.5.1",
+        "source_refs": [
+          "npafc-ipsdl-catalogue",
+          "npafc-ipsdl-publisher"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "publisher": {
+        "value": {
+          "name": "North Pacific Anadromous Fish Commission",
+          "role": "publisher and custodian"
+        },
+        "source_refs": [
+          "npafc-ipsdl-catalogue"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "declared_coverage": {
+        "value": {
+          "spatial": [
+            "North Pacific Ocean and marginal seas"
+          ],
+          "temporal": {
+            "begin": "1953-05-21",
+            "end": "2008-09-04"
+          },
+          "species": [
+            "sockeye",
+            "chum",
+            "pink",
+            "coho",
+            "chinook",
+            "steelhead trout"
+          ],
+          "measurements": [
+            "fishing position/date",
+            "catch",
+            "effort",
+            "sea surface temperature",
+            "fork length",
+            "weight",
+            "sex",
+            "freshwater/saltwater annuli",
+            "gonad measurements"
+          ],
+          "spatial_bounds_verbatim": [
+            {
+              "bbox-east-long": "-131.0",
+              "bbox-north-lat": "34.21",
+              "bbox-south-lat": "57.64",
+              "bbox-west-long": "-217.1"
+            }
+          ],
+          "reference_dates_verbatim": [
+            {
+              "type": "creation",
+              "value": "1953-05-21"
+            },
+            {
+              "type": "publication",
+              "value": "2024-08-23"
+            },
+            {
+              "type": "revision",
+              "value": "2025-07-14"
+            }
+          ]
+        },
+        "source_refs": [
+          "npafc-ipsdl-catalogue",
+          "npafc-ipsdl-methods"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "rights": {
+        "license_uri": "https://creativecommons.org/licenses/by/4.0/",
+        "label": "Creative Commons Attribution 4.0",
+        "scope": "Dataset-level catalogue assertion for this archive; not a grant for unrelated NPAFC material.",
+        "source_refs": [
+          "npafc-ipsdl-catalogue"
+        ]
+      },
+      "provenance": [
+        {
+          "relation": "compiled_from",
+          "target": "historical agency and cruise records",
+          "source_refs": [
+            "npafc-ipsdl-methods"
+          ],
+          "assertion": "publisher_declared",
+          "note": "Common formatting and codes are reported, not demonstrated analytical equivalence."
+        },
+        {
+          "relation": "largerWorkCitation",
+          "target": "https://doi.org/10.1111/faf.12825",
+          "source_refs": [
+            "npafc-ipsdl-catalogue"
+          ],
+          "assertion": "publisher_declared"
+        },
+        {
+          "relation": "described_by",
+          "target": "https://www.npafc.org/wp-content/uploads/IPSDL/IPSDL_metadata_v1.5.1.pdf",
+          "source_refs": [
+            "npafc-ipsdl-publisher"
+          ],
+          "assertion": "publisher_declared"
+        }
+      ],
+      "access": {
+        "landing_url": "https://data.npafc.org/dataset/ca-cioos_7d6e7505-fdd7-4cbe-abbf-0f17c5c16113",
+        "metadata_url": "https://data.npafc.org/api/3/action/package_show?id=ca-cioos_7d6e7505-fdd7-4cbe-abbf-0f17c5c16113"
+      },
+      "quality_flags": [
+        {
+          "code": "publisher_bounds_need_review",
+          "note": "North/south values are reversed and longitude is below -180; source values retained verbatim, no canonical geometry emitted.",
+          "source_refs": [
+            "npafc-ipsdl-catalogue"
+          ]
+        },
+        {
+          "code": "sampling_and_missingness",
+          "note": "Gear, place, time and missingness limit inference; archive has no stock/population field.",
+          "source_refs": [
+            "npafc-ipsdl-methods"
+          ]
+        },
+        {
+          "code": "environmental_provenance",
+          "note": "Some SST and depth entries are secondary estimates; do not treat all environmental values as in situ.",
+          "source_refs": [
+            "npafc-ipsdl-methods"
+          ]
+        }
+      ],
+      "readiness": {
+        "catalogue_status": "prepared_for_review",
+        "observation_files_fetched": false,
+        "observation_rows_in_fixture": 0,
+        "graph_loaded": false,
+        "semantic_mappings_accepted": false,
+        "publication_approved": false
+      }
+    },
+    {
+      "key": "sasap-asl",
+      "kind": "dataset",
+      "title": {
+        "value": "Compiled age, sex, and length data for Alaskan salmon, 1922-2017",
+        "source_refs": [
+          "sasap-asl-eml"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "identifiers": {
+        "doi": "10.5063/F1707ZTM",
+        "provider_record": "doi:10.5063/F1707ZTM"
+      },
+      "version": {
+        "value": null,
+        "source_refs": [
+          "sasap-asl-eml"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "publisher": {
+        "value": {
+          "name": "Knowledge Network for Biocomplexity",
+          "role": "repository",
+          "creators": [
+            "Jeanette Clark",
+            "Rich Brenner",
+            "Bert Lewis"
+          ]
+        },
+        "source_refs": [
+          "sasap-asl-eml",
+          "dataone-record-index"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "declared_coverage": {
+        "value": {
+          "spatial": [
+            "Alaska"
+          ],
+          "temporal": {
+            "begin": "1922",
+            "end": "2017"
+          },
+          "species": [
+            "Oncorhynchus tshawytscha",
+            "Oncorhynchus keta",
+            "Oncorhynchus kisutch",
+            "Oncorhynchus gorbuscha",
+            "Oncorhynchus nerka"
+          ],
+          "measurements": [
+            "age",
+            "sex",
+            "length"
+          ],
+          "spatial_bounds_verbatim": [
+            {
+              "westBoundingCoordinate": "-146.0000",
+              "eastBoundingCoordinate": "-146.0000",
+              "northBoundingCoordinate": "65.0000",
+              "southBoundingCoordinate": "65.0000"
+            }
+          ],
+          "publication_date_index": "2018-01-30T00:00:00Z",
+          "metadata_uploaded": "2020-07-02T22:20:16.550Z"
+        },
+        "source_refs": [
+          "sasap-asl-eml",
+          "dataone-record-index"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "rights": {
+        "license_uri": "https://creativecommons.org/licenses/by/4.0/",
+        "label": "Creative Commons Attribution 4.0",
+        "scope": "Provider statement applies to the deposited record; preparation is not data-transfer, scientific or publication approval.",
+        "source_refs": [
+          "sasap-asl-eml"
+        ]
+      },
+      "provenance": [
+        {
+          "relation": "obsoletes",
+          "target": "urn:uuid:5d8cde66-0900-40c5-9a22-fd0171291f30",
+          "source_refs": [
+            "dataone-record-index"
+          ],
+          "assertion": "publisher_declared",
+          "note": "Metadata revision relationship; do not count predecessor as an independent dataset."
+        },
+        {
+          "relation": "project_association",
+          "target": "sasap",
+          "source_refs": [
+            "sasap-asl-eml"
+          ],
+          "assertion": "publisher_declared"
+        }
+      ],
+      "access": {
+        "landing_url": "https://knb.ecoinformatics.org/view/doi:10.5063/F1707ZTM",
+        "metadata_url": "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/doi%3A10.5063%2FF1707ZTM"
+      },
+      "quality_flags": [
+        {
+          "code": "sampling_and_flags",
+          "note": "Harvest and research samples differ by project; QA flags and varied length methods remain material.",
+          "source_refs": [
+            "sasap-asl-eml"
+          ]
+        },
+        {
+          "code": "representative_point_not_footprint",
+          "note": "EML provides a single Alaska point; do not present it as the sampling footprint.",
+          "source_refs": [
+            "sasap-asl-eml"
+          ]
+        }
+      ],
+      "readiness": {
+        "catalogue_status": "prepared_for_review",
+        "observation_files_fetched": false,
+        "observation_rows_in_fixture": 0,
+        "graph_loaded": false,
+        "semantic_mappings_accepted": false,
+        "publication_approved": false
+      }
+    },
+    {
+      "key": "sasap-covariates",
+      "kind": "dataset",
+      "title": {
+        "value": "Collated dataset of covariates that could influence body size of Alaska salmon",
+        "source_refs": [
+          "sasap-covariates-eml"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "identifiers": {
+        "doi": "10.5063/F1N29V9T",
+        "provider_record": "doi:10.5063/F1N29V9T"
+      },
+      "version": {
+        "value": null,
+        "source_refs": [
+          "sasap-covariates-eml"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "publisher": {
+        "value": {
+          "name": "Knowledge Network for Biocomplexity",
+          "role": "repository",
+          "creators": [
+            "Krista B Oke",
+            "Curry Cunningham",
+            "Peter Westley"
+          ]
+        },
+        "source_refs": [
+          "sasap-covariates-eml",
+          "dataone-record-index"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "declared_coverage": {
+        "value": {
+          "spatial": [
+            "Alaska, North Pacific, and Bering Sea"
+          ],
+          "temporal": {
+            "begin": "1950",
+            "end": "2017"
+          },
+          "species": [],
+          "measurements": [
+            "ocean climate indices",
+            "Bering Sea ice cover",
+            "nearshore SST",
+            "air temperature proxy",
+            "salmon abundance covariates",
+            "predator abundance covariates"
+          ],
+          "spatial_bounds_verbatim": [
+            {
+              "westBoundingCoordinate": "-180",
+              "eastBoundingCoordinate": "-130",
+              "northBoundingCoordinate": "53",
+              "southBoundingCoordinate": "71"
+            }
+          ],
+          "publication_date_index": "2020-07-03T00:00:00Z",
+          "metadata_uploaded": "2020-07-07T15:51:31.651Z"
+        },
+        "source_refs": [
+          "sasap-covariates-eml",
+          "dataone-record-index"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "rights": {
+        "license_uri": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "label": "CC0 1.0 Universal",
+        "scope": "Provider statement applies to the deposited record; preparation is not data-transfer, scientific or publication approval.",
+        "source_refs": [
+          "sasap-covariates-eml"
+        ]
+      },
+      "provenance": [
+        {
+          "relation": "obsoletes",
+          "target": "urn:uuid:812dc11d-3b74-4bff-a811-d64ad2bc0db7",
+          "source_refs": [
+            "dataone-record-index"
+          ],
+          "assertion": "publisher_declared",
+          "note": "Metadata revision relationship; do not count predecessor as an independent dataset."
+        },
+        {
+          "relation": "cited_input",
+          "target": "https://doi.org/10.7289/V5KD1VVF",
+          "source_refs": [
+            "sasap-covariates-eml"
+          ],
+          "assertion": "publisher_declared",
+          "note": "Provider-reported collation lineage, not an independent original measurement stream."
+        },
+        {
+          "relation": "cited_input",
+          "target": "https://doi.org/10.5063/F1RX997V",
+          "source_refs": [
+            "sasap-covariates-eml"
+          ],
+          "assertion": "publisher_declared",
+          "note": "Provider-reported collation lineage, not an independent original measurement stream."
+        },
+        {
+          "relation": "cited_input",
+          "target": "Ruggerone and Irvine (2018), Numbers and biomass of natural- and hatchery-origin Pink Salmon, Chum Salmon, and Sockeye Salmon in the North Pacific Ocean, 1925-2015",
+          "source_refs": [
+            "sasap-covariates-eml"
+          ],
+          "assertion": "publisher_declared",
+          "note": "Provider-reported collation lineage, not an independent original measurement stream."
+        },
+        {
+          "relation": "initiative_acknowledgement",
+          "target": "sasap",
+          "source_refs": [
+            "sasap-covariates-eml"
+          ],
+          "assertion": "publisher_declared",
+          "note": "EML funding mentions SASAP; this is not an inferred portal contains relation."
+        }
+      ],
+      "access": {
+        "landing_url": "https://knb.ecoinformatics.org/view/doi:10.5063/F1N29V9T",
+        "metadata_url": "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/doi%3A10.5063%2FF1N29V9T"
+      },
+      "quality_flags": [
+        {
+          "code": "collated_not_original_measurements",
+          "note": "Upstream conditions and methods remain relevant; CC0 for this deposited collation does not override unrelated upstream rights.",
+          "source_refs": [
+            "sasap-covariates-eml"
+          ]
+        },
+        {
+          "code": "publisher_bounds_need_review",
+          "note": "EML north/south bounds are reversed; retain exact values and do not emit corrected geometry.",
+          "source_refs": [
+            "sasap-covariates-eml"
+          ]
+        }
+      ],
+      "readiness": {
+        "catalogue_status": "prepared_for_review",
+        "observation_files_fetched": false,
+        "observation_rows_in_fixture": 0,
+        "graph_loaded": false,
+        "semantic_mappings_accepted": false,
+        "publication_approved": false
+      }
+    },
+    {
+      "key": "sasap-abundance",
+      "kind": "dataset",
+      "title": {
+        "value": "Estimate of total Alaskan salmon abundance by region, 2000-2015",
+        "source_refs": [
+          "sasap-abundance-eml"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "identifiers": {
+        "doi": "10.5063/QV3JZW",
+        "provider_record": "doi:10.5063/QV3JZW"
+      },
+      "version": {
+        "value": null,
+        "source_refs": [
+          "sasap-abundance-eml"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "publisher": {
+        "value": {
+          "name": "Knowledge Network for Biocomplexity",
+          "role": "repository",
+          "creators": [
+            "Jeanette Clark",
+            "Robyn Thiessen-Bock"
+          ]
+        },
+        "source_refs": [
+          "sasap-abundance-eml",
+          "dataone-record-index"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "declared_coverage": {
+        "value": {
+          "spatial": [
+            "Alaska Peninsula and Aleutian Islands, Alaska",
+            "Arctic, Alaska",
+            "Bristol Bay, Alaska",
+            "Chignik, Alaska",
+            "Copper River, Alaska",
+            "Kodiak, Alaska",
+            "Kotzebue, Alaska",
+            "Kuskokwim, Alaska",
+            "Cook Inlet, Alaska",
+            "Norton Sound, Alaska",
+            "Prince William Sound, Alaska",
+            "Southeast, Alaska",
+            "Yukon, Alaska"
+          ],
+          "temporal": {
+            "begin": "2000",
+            "end": "2015"
+          },
+          "species": [
+            "Oncorhynchus nerka",
+            "Oncorhynchus keta",
+            "Oncorhynchus gorbuscha",
+            "Oncorhynchus tshawytscha",
+            "Oncorhynchus kisutch"
+          ],
+          "measurements": [
+            "regional harvest plus escapement accounting"
+          ],
+          "spatial_bounds_verbatim": [
+            {
+              "westBoundingCoordinate": "179.8567",
+              "eastBoundingCoordinate": "-153.6282",
+              "northBoundingCoordinate": "57.2997",
+              "southBoundingCoordinate": "51.1568"
+            },
+            {
+              "westBoundingCoordinate": "-166.311",
+              "eastBoundingCoordinate": "-136.684",
+              "northBoundingCoordinate": "71.4396",
+              "southBoundingCoordinate": "67.7408"
+            },
+            {
+              "westBoundingCoordinate": "-162.2713",
+              "eastBoundingCoordinate": "-152.7319",
+              "northBoundingCoordinate": "60.9278",
+              "southBoundingCoordinate": "56.8716"
+            },
+            {
+              "westBoundingCoordinate": "-159.6479",
+              "eastBoundingCoordinate": "-155.4645",
+              "northBoundingCoordinate": "57.142",
+              "southBoundingCoordinate": "55.5261"
+            },
+            {
+              "westBoundingCoordinate": "-147.8251",
+              "eastBoundingCoordinate": "-139.6942",
+              "northBoundingCoordinate": "63.3227",
+              "southBoundingCoordinate": "59.7112"
+            },
+            {
+              "westBoundingCoordinate": "-156.7838",
+              "eastBoundingCoordinate": "-151.6884",
+              "northBoundingCoordinate": "59.0261",
+              "southBoundingCoordinate": "56.3492"
+            },
+            {
+              "westBoundingCoordinate": "-169.0513",
+              "eastBoundingCoordinate": "-153.8437",
+              "northBoundingCoordinate": "68.9178",
+              "southBoundingCoordinate": "65.3082"
+            },
+            {
+              "westBoundingCoordinate": "-173.2164",
+              "eastBoundingCoordinate": "-151.5105",
+              "northBoundingCoordinate": "64.4166",
+              "southBoundingCoordinate": "58.6262"
+            },
+            {
+              "westBoundingCoordinate": "-154.7415",
+              "eastBoundingCoordinate": "-146.1503",
+              "northBoundingCoordinate": "63.638",
+              "southBoundingCoordinate": "58.6157"
+            },
+            {
+              "westBoundingCoordinate": "-171.9762",
+              "eastBoundingCoordinate": "-159.1906",
+              "northBoundingCoordinate": "65.8544",
+              "southBoundingCoordinate": "62.8268"
+            },
+            {
+              "westBoundingCoordinate": "-149.1761",
+              "eastBoundingCoordinate": "-145.1013",
+              "northBoundingCoordinate": "61.5189",
+              "southBoundingCoordinate": "59.357"
+            },
+            {
+              "westBoundingCoordinate": "-143.8874",
+              "eastBoundingCoordinate": "-126.7735",
+              "northBoundingCoordinate": "61.6887",
+              "southBoundingCoordinate": "54.2508"
+            },
+            {
+              "westBoundingCoordinate": "-166.281",
+              "eastBoundingCoordinate": "-129.1775",
+              "northBoundingCoordinate": "69.0792",
+              "southBoundingCoordinate": "58.8686"
+            }
+          ],
+          "publication_date_index": null,
+          "metadata_uploaded": "2021-08-13T21:48:33.764Z"
+        },
+        "source_refs": [
+          "sasap-abundance-eml",
+          "dataone-record-index"
+        ],
+        "assertion": "publisher_declared"
+      },
+      "rights": {
+        "license_uri": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "label": "CC0 1.0 Universal",
+        "scope": "Provider statement applies to the deposited record; preparation is not data-transfer, scientific or publication approval.",
+        "source_refs": [
+          "sasap-abundance-eml"
+        ]
+      },
+      "provenance": [
+        {
+          "relation": "obsoletes",
+          "target": "doi:10.5063/F1BR8QG4",
+          "source_refs": [
+            "dataone-record-index"
+          ],
+          "assertion": "publisher_declared",
+          "note": "Metadata revision relationship; do not count predecessor as an independent dataset."
+        },
+        {
+          "relation": "cited_input",
+          "target": "doi:10.5063/F1TT4P73",
+          "source_refs": [
+            "sasap-abundance-eml"
+          ],
+          "assertion": "publisher_declared"
+        },
+        {
+          "relation": "cited_input",
+          "target": "doi:10.5063/F1416VB4",
+          "source_refs": [
+            "sasap-abundance-eml"
+          ],
+          "assertion": "publisher_declared"
+        },
+        {
+          "relation": "cited_input",
+          "target": "doi:10.5063/F1GX48V4",
+          "source_refs": [
+            "sasap-abundance-eml"
+          ],
+          "assertion": "publisher_declared"
+        },
+        {
+          "relation": "cited_input",
+          "target": "doi:10.5063/F1G15Z4D",
+          "source_refs": [
+            "sasap-abundance-eml"
+          ],
+          "assertion": "publisher_declared"
+        },
+        {
+          "relation": "project_association",
+          "target": "sasap",
+          "source_refs": [
+            "sasap-abundance-eml"
+          ],
+          "assertion": "publisher_declared"
+        }
+      ],
+      "access": {
+        "landing_url": "https://knb.ecoinformatics.org/view/doi:10.5063/QV3JZW",
+        "metadata_url": "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/doi%3A10.5063%2FQV3JZW"
+      },
+      "quality_flags": [
+        {
+          "code": "regional_accounting_not_natal_origin",
+          "note": "Commercial catches are assigned by fishing region, not natal origin; some escapement years are missing.",
+          "source_refs": [
+            "sasap-abundance-eml"
+          ]
+        },
+        {
+          "code": "upstream_overlap_not_independence",
+          "note": "Harvest and escapement inputs are reused in this derived product; keep dataset/version/lineage distinct.",
+          "source_refs": [
+            "sasap-abundance-eml"
+          ]
+        }
+      ],
+      "readiness": {
+        "catalogue_status": "prepared_for_review",
+        "observation_files_fetched": false,
+        "observation_rows_in_fixture": 0,
+        "graph_loaded": false,
+        "semantic_mappings_accepted": false,
+        "publication_approved": false
+      }
+    }
+  ]
+}
