@@ -22,3 +22,27 @@ promotional API credit of the Console organization "Brett's Individual Org"
 
 `corpus_auth.py` reads the key from the Keychain and clears any Claude session
 variables inherited from the shell, so a run never uses a session's account.
+
+## Starter catalogue evidence
+
+[The prepared catalogue](specs/starter-corpus/catalogue-evidence.json) records
+four source datasets and one collection: the NPAFC International Pacific Salmon
+Data Legacy Database, SASAP, and three Alaska salmon records. It retains primary
+metadata URLs and hashes, record-level rights, revision lineage, unknown release
+versions and publisher coverage-quality flags. Project association does not
+assert portal membership or biological equivalence.
+
+This file is metadata preparation, not observation data, graph ingestion,
+accepted semantic mappings or publication approval. Its snapshot filenames refer
+to the preparation evidence; this repository does not contain those snapshots.
+
+The standalone checks require Python 3.13 and pytest 9.1.1 and need no corpus API
+key, graph runtime, source download or model call:
+
+```sh
+python -m pytest -q tests/test_starter_catalogue_evidence.py
+```
+
+The Catalogue evidence workflow runs these checks for relevant pull requests
+and changes to main. It validates the prepared artifact; it does not fetch or
+reconfirm the live publishers' records or certify their scientific content.

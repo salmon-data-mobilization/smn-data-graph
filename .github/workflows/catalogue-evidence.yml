@@ -1,0 +1,31 @@
+name: Catalogue evidence
+
+on:
+  pull_request:
+    paths:
+      - 'specs/starter-corpus/**'
+      - 'tests/test_starter_catalogue_evidence.py'
+      - '.github/workflows/catalogue-evidence.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'specs/starter-corpus/**'
+      - 'tests/test_starter_catalogue_evidence.py'
+      - '.github/workflows/catalogue-evidence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - run: python -m pip install pytest==9.1.1
+      - run: python -m pytest -q tests/test_starter_catalogue_evidence.py
