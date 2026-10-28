@@ -142,10 +142,11 @@ def _validate(candidate, current, cfg):
     # arbitrary triples, actor IDs or hidden private state can be spread out.
     if len(_wire(candidate)) > MAX_BYTES or len(_wire(current)) > MAX_BYTES:
         _refuse("contribution_limit")
-    rich = type(current) is dict and current.get("schema") == "current-source-contribution/2"
+    pending = type(current) is dict and current.get("schema") == "current-source-contribution/3"
+    rich = type(current) is dict and current.get("schema") in ("current-source-contribution/2", "current-source-contribution/3")
     _object(current, ("schema", "projection", "understanding", "sourceAuthorityIri", *_REVISIONS,
-                      "semanticBasisSha256", "semanticStateSha256", "nativeArtifacts", *(("procedureUnderstanding", "identifierUnderstanding") if rich else ())))
-    if current["schema"] not in ("current-d01-contribution/1", "current-source-contribution/2"):
+                      "semanticBasisSha256", "semanticStateSha256", "nativeArtifacts", *(("procedureUnderstanding", "identifierUnderstanding") if rich else ()), *(("pendingEvidence",) if pending else ())))
+    if current["schema"] not in ("current-d01-contribution/1", "current-source-contribution/2", "current-source-contribution/3"):
         _refuse()
     p = current["projection"]
     extended = type(p) is dict and p.get("schema") == "confirmed-source-semantics/2"
@@ -158,7 +159,7 @@ def _validate(candidate, current, cfg):
     # Never downgrade it or silently drop nonempty procedure/identifier content.
     if extended and not rich and (p["procedure"] is not None or type(p["identifiers"]) is not list or p["identifiers"]):
         _refuse("unsupported_contribution")
-    if rich and not extended: _refuse()
+    if rich and not extended and not pending: _refuse()
     _sha(p["sourceSha256"]); _iri(current["sourceAuthorityIri"])
     vocab = _object(p["vocabulary"], ("id", "sha256")); _text(vocab["id"], 200); _sha(vocab["sha256"])
     if type(p["columns"]) is not list or not (0 if rich else 1) <= len(p["columns"]) <= 128:
@@ -186,8 +187,8 @@ def _validate(candidate, current, cfg):
     for field in ("semanticBasisSha256", "semanticStateSha256"):
         _sha(current[field])
     _artifacts(current["nativeArtifacts"], rich)
-    _object(candidate, ("schema", "dataset", "source", "audience", "binding", "nativeArtifacts", "columns", "review", *(("procedure", "identifiers") if rich else ())))
-    if candidate["schema"] != ("confirmed-source-contribution/2" if rich else "confirmed-column-contribution/1"):
+    _object(candidate, ("schema", "dataset", "source", "audience", "binding", "nativeArtifacts", "columns", "review", *(("procedure", "identifiers") if rich else ()), *(("pendingEvidence",) if pending else ())))
+    if candidate["schema"] != ("confirmed-source-contribution/3" if pending else "confirmed-source-contribution/2" if rich else "confirmed-column-contribution/1"):
         _refuse()
     dataset = _object(candidate["dataset"], ("slug", "version", "iri"))
     _text(dataset["slug"], 80); _text(dataset["version"], 80); _iri(dataset["iri"])
@@ -272,7 +273,7 @@ def _compile(candidate, cfg):
         b.add(node, "rdfs:label", L(record["path"]), pg)
         b.add(node, "dcterms:identifier", L("sha256:" + record["sha256"]), pg)
     provenance.activity_node(b, context["activityIri"], graph=pg,
-        label=("Explicit native reference contribution context; shared review not performed" if candidate["schema"] == "confirmed-source-contribution/2" else "Explicit column contribution context; shared review not performed"), date=context["date"],
+        label=("Explicit saved-source evidence; not SDK-authored or shared-reviewed" if candidate["schema"] == "confirmed-source-contribution/3" else "Explicit native reference contribution context; shared review not performed" if candidate["schema"] == "confirmed-source-contribution/2" else "Explicit column contribution context; shared review not performed"), date=context["date"],
         used=used, associated_with=[context["attributionIri"]])
     pending = []
     for selected in candidate["columns"]:
@@ -298,10 +299,12 @@ def _compile(candidate, cfg):
             b.add(assertion, "dcterms:identifier", L("evidence sha256:" + selected["evidence"]["sha256"]), mg)
         pending.append((column, annotation["termIri"]))
     extra_pending = []
-    if candidate["schema"] == "confirmed-source-contribution/2":
+    if candidate["schema"] in ("confirmed-source-contribution/2", "confirmed-source-contribution/3"):
         from .native_references import compile_references
         extra_generated, extra_pending = compile_references(b, candidate, cfg, mg, table, schema, source_record, projection_record)
         generated.update(extra_generated)
+        if any(row[side]["termIri"] in generated for row in candidate.get("pendingEvidence", []) for side in ("source", "target")):
+            _refuse("unsupported_contribution")
     if any(value in generated for value in (source["authorityIri"], context["activityIri"], context["attributionIri"])):
         _refuse()
     if any(annotation["annotation"]["termIri"] in generated for annotation in candidate["columns"]) or any(target in generated or target in (context["activityIri"], context["attributionIri"]) for _, _, target in extra_pending):
@@ -335,7 +338,8 @@ def preview(candidate, *, current):
         raise
     except (ValueError, TypeError, KeyError, OverflowError, RuntimeError):
         _refuse()
-    result = {"schema": "confirmed-source-contribution-preview/2" if candidate["schema"] == "confirmed-source-contribution/2" else "confirmed-column-contribution-preview/1", "candidate": deepcopy(candidate),
+    version = "3" if candidate["schema"] == "confirmed-source-contribution/3" else "2" if candidate["schema"] == "confirmed-source-contribution/2" else None
+    result = {"schema": "confirmed-source-contribution-preview/" + version if version else "confirmed-column-contribution-preview/1", "candidate": deepcopy(candidate),
         "namespace": {"base": cfg.base, "profileBase": cfg.profile_base, "sdpv": cfg.sdpv},
         "generatedIris": generated, "graph": {"mediaType": "application/n-quads", "content": data.decode("utf-8"),
             "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}, "pendingRelationships": pending,
@@ -347,12 +351,12 @@ def admit(candidate, *, current, consent):
     """Compile exactly reviewed content; persistence/auth/idempotency are external."""
     result = preview(candidate, current=current)
     _object(consent, ("version", "accepted", "previewSha256"))
-    rich = candidate["schema"] == "confirmed-source-contribution/2"
-    if (consent["version"] != ("confirmed-source-contribution-consent/2" if rich else "confirmed-column-contribution-consent/1") or consent["accepted"] is not True
+    version = "3" if candidate["schema"] == "confirmed-source-contribution/3" else "2" if candidate["schema"] == "confirmed-source-contribution/2" else None
+    if (consent["version"] != ("confirmed-source-contribution-consent/" + version if version else "confirmed-column-contribution-consent/1") or consent["accepted"] is not True
             or consent["previewSha256"] != result["sha256"]):
         _refuse("contribution_preview_changed")
-    return {"schema": "compiled-source-contribution/2" if rich else "compiled-column-contribution/1", "graphBytes": result["graph"]["content"].encode("utf-8"),
-        "receipt": {"schema": "compiled-source-contribution-receipt/2" if rich else "compiled-column-contribution-receipt/1", "status": "compiled_not_persisted",
+    return {"schema": "compiled-source-contribution/" + version if version else "compiled-column-contribution/1", "graphBytes": result["graph"]["content"].encode("utf-8"),
+        "receipt": {"schema": "compiled-source-contribution-receipt/" + version if version else "compiled-column-contribution-receipt/1", "status": "compiled_not_persisted",
             "previewSha256": result["sha256"], "graphSha256": result["graph"]["sha256"],
             "sourceSha256": candidate["source"]["sha256"], "binding": deepcopy(candidate["binding"]),
             "audience": deepcopy(candidate["audience"]), "datasetIri": candidate["dataset"]["iri"],

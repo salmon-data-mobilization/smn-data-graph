@@ -11,8 +11,55 @@ from . import iri, provenance
 from .graph import L
 
 CONTEXT_TYPE = "sdp-native-reference/1"
+PENDING_TYPE = "saved-source-pending-mapping/1"
 ID_FIELDS = ("columnOrdinal", "columnName", "nativeKey", "label", "vocabularyIri", "termIri", "termType", "description", "authorityName", "authorityVersion", "mappings")
 MAPPING_FIELDS = ("mappingSetId", "mappingSetVersion", "licenseIri", "subjectSource", "subjectSourceVersion", "objectSource", "objectSourceVersion", "subjectId", "objectId", "predicateId", "mappingJustification", "mappingSource", "evidenceCitation", "evidenceSha256", "uncertainty", "scopeNote")
+
+
+def pending_evidence(value):
+    """A closed saved-source record, explicitly separate from SDK output/review."""
+    c._object(value, ("index", "columnOrdinal", "columnName", "source", "target",
+        "predicateIri", "evidence", "uncertainty", "scope", "sourceDecision", "origin"))
+    if type(value["index"]) is not int or not 0 <= value["index"] < 256: c._refuse()
+    _coordinates(value)
+    if value["origin"] != "current-saved-source-mapping" or value["sourceDecision"] not in ("unresolved", "reviewed-scoped"): c._refuse()
+    for side in (value["source"], value["target"]):
+        c._object(side, ("nativeKey", "termIri", "termType", "authorityName", "authorityVersion", "vocabularyIri", "evidence"))
+        for key in ("nativeKey", "authorityName", "authorityVersion"): c._text(side[key])
+        for key in ("termIri", "vocabularyIri"): c._iri(side[key])
+        if side["termType"] not in ("owl_named_individual", "skos_concept"): c._refuse()
+        c._evidence(side["evidence"])
+    c._iri(value["predicateIri"]); c._evidence(value["evidence"])
+    c._sha(value["evidence"]["sha256"])
+    c._text(value["uncertainty"]); _scope(value["scope"], "dataset-identifier")
+    return value
+
+
+def validate_pending(candidate, current):
+    rows = current["pendingEvidence"]
+    selected = candidate["pendingEvidence"]
+    if type(rows) is not list or not 1 <= len(rows) <= 256 or type(selected) is not list or not 1 <= len(selected) <= 256: c._refuse()
+    known, previous = {}, -1
+    for row in rows:
+        pending_evidence(row)
+        if row["index"] <= previous: c._refuse()
+        previous = row["index"]; known[row["index"]] = row
+    previous = -1
+    for row in selected:
+        pending_evidence(row)
+        if row["index"] <= previous or row != known.get(row["index"]): c._refuse("contribution_changed")
+        previous = row["index"]
+
+
+def parse_pending_context(text):
+    if not isinstance(text, ox.Literal): return None
+    try:
+        value = json.loads(text.value)
+        c._object(value, ("schema", "row"))
+        if value["schema"] != PENDING_TYPE: return None
+        pending_evidence(value["row"])
+        return value["row"]
+    except (ValueError, TypeError, AttributeError, KeyError): return None
 
 
 def _scope(value, kind, required=True):
@@ -60,10 +107,11 @@ def _identifier(value):
 
 
 def validate(candidate, current):
-    p = current["projection"]; _procedure(p["procedure"])
-    if type(p["identifiers"]) is not list or len(p["identifiers"]) > 64: c._refuse()
+    p = current["projection"]; _procedure(p.get("procedure"))
+    native_identifiers = p.get("identifiers", [])
+    if type(native_identifiers) is not list or len(native_identifiers) > 64: c._refuse()
     slots, sets = set(), set()
-    for item in p["identifiers"]:
+    for item in native_identifiers:
         _identifier(item); slot = (item["columnOrdinal"], item["nativeKey"])
         if slot in slots: c._refuse()
         slots.add(slot)
@@ -71,13 +119,13 @@ def validate(candidate, current):
             if mapping["mappingSetId"] in sets or len(sets) >= 256: c._refuse()
             sets.add(mapping["mappingSetId"])
     known = current["identifierUnderstanding"]
-    if type(known) is not list or len(known) != len(p["identifiers"]): c._refuse()
+    if type(known) is not list or len(known) != len(native_identifiers): c._refuse()
     for index, item in enumerate(known):
         c._object(item, ("index", "evidence", "scope"))
         if type(item["index"]) is not int or item["index"] != index: c._refuse()
         c._evidence(item["evidence"]); _scope(item["scope"], "dataset-identifier", required=False)
     pu = current["procedureUnderstanding"]
-    if p["procedure"] is None:
+    if p.get("procedure") is None:
         if pu is not None: c._refuse()
     else:
         c._object(pu, ("evidence", "scope")); c._evidence(pu["evidence"])
@@ -91,15 +139,16 @@ def validate(candidate, current):
     prior = -1
     for item in identifiers:
         c._object(item, ("index", "annotation", "evidence", "scope", "sourceAuthority", "status")); index = item["index"]
-        if type(index) is not int or not prior < index < len(p["identifiers"]): c._refuse()
+        if type(index) is not int or not prior < index < len(native_identifiers): c._refuse()
         prior = index
-        _selection({k:v for k,v in item.items() if k != "index"}, p["identifiers"][index], known[index])
+        _selection({k:v for k,v in item.items() if k != "index"}, native_identifiers[index], known[index])
         if not item["annotation"]["termIri"]: c._refuse("unsupported_contribution")
-    if not (candidate["columns"] or selected or identifiers): c._refuse()
+    if not (candidate["columns"] or selected or identifiers or candidate.get("pendingEvidence")): c._refuse()
     paths = {f["path"] for f in current["nativeArtifacts"]}
-    if ("metadata/codes.csv" in paths) != bool(p["identifiers"]): c._refuse("contribution_changed")
+    if ("metadata/codes.csv" in paths) != bool(native_identifiers): c._refuse("contribution_changed")
     semantic = {path for path in paths if path.startswith("metadata/semantic/")}
     if len(semantic) != (len(sets) + 1 if sets else 0) or bool(sets) != ("metadata/semantic/mapping-sets.json" in paths): c._refuse("contribution_changed")
+    if candidate["schema"] == "confirmed-source-contribution/3": validate_pending(candidate, current)
 
 
 def _selection(value, native, understanding):
@@ -147,6 +196,16 @@ def compile_references(b, candidate, cfg, graph, table, schema, source_record, p
             selection = {"evidence":{"citation":mapping["evidenceCitation"],"sha256":mapping["evidenceSha256"]},"scope":{"note":mapping["scopeNote"]}}
             assertion = marked(mapping["subjectId"], mapping["predicateId"], mapping["objectId"], "mapping-"+mapping["mappingSetId"], selection)
             b.add(assertion, "prov:value", L(c._wire(mapping).decode()), graph)
+    for row in candidate.get("pendingEvidence", []):
+        # This is saved source evidence, never relabelled as an SDK-authored file.
+        column = iri.column(dataset["slug"], dataset["version"], "source", f"ordinal-{row['columnOrdinal']}", cfg=cfg)
+        generated.add(column); b.add(schema, "csvw:column", column, graph); b.type(column, "csvw:Column", graph)
+        b.add(column, "csvw:name", L(row["columnName"]), graph); b.add(column, "csvw:number", L(row["columnOrdinal"] + 1), graph)
+        assertion = marked(row["source"]["termIri"], row["predicateIri"], row["target"]["termIri"],
+            "saved-mapping-" + c._digest(row), row)
+        b.add(assertion, "dcterms:isPartOf", column, graph)
+        b.add(assertion, "dcterms:type", L(PENDING_TYPE), graph)
+        b.add(assertion, "prov:value", L(c._wire({"schema": PENDING_TYPE, "row": row}).decode()), graph)
     return generated, pending
 
 

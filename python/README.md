@@ -120,6 +120,34 @@ needs no mandatory SDO promotion. The existing namespace configuration and
 exact dataset IRI must agree; configuration and existing graphs are not changed.
 Only the previewed metadata/statement record IRIs are minted.
 
+`current-source-contribution/3` and `confirmed-source-contribution/3` add an
+explicitly selected `pendingEvidence` list from the caller's current saved
+source mappings. The matching preview, consent and receipt versions end in
+`/3`. Each closed row retains its stable source index, column, both qualified
+authority/version identities, declared predicate, citation and actual evidence
+SHA-256, uncertainty, dataset scope and source decision. The selected row must
+equal its current saved record. Rejected, incomplete or changed records cannot
+be contributed. These rows are application-saved evidence, not SDK-authored
+artifacts; the verified native projection and artifact hashes remain unchanged.
+
+Every selected relationship remains critical and pending in the graph.
+`sourceDecision="reviewed-scoped"` means only a source/dataset review;
+`sourceDecision="unresolved"` carries no inferred model authorship or acceptance.
+Neither decision completes shared graph review. The compiler stores the exact
+relationship and context in a reified record, with no live relationship triple.
+
+The optional `discovery.discover(..., relationship_kinds=[...])` parameter accepts
+only `exact_iri`, `scoped_mapping` and `suggestion`. Omitting it preserves the
+existing exact-IRI query and response. The latter two kinds additionally require
+`include_pending=True` and the population family. They return one directly
+recorded saved-source relationship to an actual native identity reference with
+the exact target authority tuple. A source-reviewed row is a `scoped_mapping`;
+an unresolved row is a `suggestion`. Both remain visibly awaiting shared review.
+Their discriminated response includes the actual subject, predicate, object,
+direction and source context instead of inventing a `shared_iri`. An incoming
+match preserves the original predicate direction. No transitive, symmetric,
+inverse, equivalence or normalization rule is applied.
+
 Each selected field must match the trusted current citation/scope exactly. An
 explicit contribution-time confidence, attribution IRI, activity IRI, date and
 evidence are mandatory. They are recorded as supplied, never inferred from a
