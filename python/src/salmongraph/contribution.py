@@ -1,4 +1,4 @@
-"""Pure confirmed-column preview/compilation; not storage or authorization.
+"""Pure confirmed-source preview/compilation; not storage or authorization.
 
 The trusted caller verifies the genuine native artifact and fresh D01 state.
 This boundary compares that independently supplied state with a closed explicit
@@ -37,7 +37,7 @@ class ContributionError(ValueError):
         self.code = code
         super().__init__({"invalid_contribution": "Supply the closed, explicit contribution content and review context.",
             "contribution_changed": "Current source, native binding or confirmed understanding differs; review again.",
-            "unsupported_contribution": "This slice accepts private, pending column-concept contributions only.",
+            "unsupported_contribution": "Select supported private, pending native concepts or exact metadata references.",
             "contribution_preview_changed": "Review and authorize the exact current contribution preview.",
             "contribution_limit": "The contribution exceeds its declared bounded capacity."}[code])
 
@@ -122,18 +122,18 @@ def _native_column(value):
             _iri(value[field])
 
 
-def _artifacts(value):
-    if type(value) is not list or len(value) != len(_FILES):
+def _artifacts(value, rich=False):
+    if type(value) is not list or not len(_FILES) <= len(value) <= 263 or not rich and len(value) != len(_FILES):
         _refuse("unsupported_contribution")
     paths, size = [], 0
     for record in value:
         _object(record, ("path", "bytes", "sha256"))
-        if type(record["path"]) is not str or record["path"] not in _FILES:
+        if type(record["path"]) is not str or (record["path"] not in _FILES and not (rich and (record["path"] in ("metadata/codes.csv", "metadata/semantic/mapping-sets.json") or re.fullmatch(r"metadata/semantic/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.sssom\.tsv", record["path"]) and ".." not in record["path"]))):
             _refuse("unsupported_contribution")
         if type(record["bytes"]) is not int or not 0 <= record["bytes"] <= 32 * 1024 * 1024:
             _refuse()
         _sha(record["sha256"]); paths.append(record["path"]); size += record["bytes"]
-    if paths != sorted(_FILES) or size > 32 * 1024 * 1024:
+    if paths != sorted(set(paths)) or not _FILES <= set(paths) or size > 32 * 1024 * 1024:
         _refuse()
 
 
@@ -142,9 +142,10 @@ def _validate(candidate, current, cfg):
     # arbitrary triples, actor IDs or hidden private state can be spread out.
     if len(_wire(candidate)) > MAX_BYTES or len(_wire(current)) > MAX_BYTES:
         _refuse("contribution_limit")
+    rich = type(current) is dict and current.get("schema") == "current-source-contribution/2"
     _object(current, ("schema", "projection", "understanding", "sourceAuthorityIri", *_REVISIONS,
-                      "semanticBasisSha256", "semanticStateSha256", "nativeArtifacts"))
-    if current["schema"] != "current-d01-contribution/1":
+                      "semanticBasisSha256", "semanticStateSha256", "nativeArtifacts", *(("procedureUnderstanding", "identifierUnderstanding") if rich else ())))
+    if current["schema"] not in ("current-d01-contribution/1", "current-source-contribution/2"):
         _refuse()
     p = current["projection"]
     extended = type(p) is dict and p.get("schema") == "confirmed-source-semantics/2"
@@ -155,11 +156,12 @@ def _validate(candidate, current, cfg):
     # The current app retains its v2 envelope after clearing the extra families.
     # Accept that exact empty shape, while hashing the ACTUAL v2 projection.
     # Never downgrade it or silently drop nonempty procedure/identifier content.
-    if extended and (p["procedure"] is not None or type(p["identifiers"]) is not list or p["identifiers"]):
+    if extended and not rich and (p["procedure"] is not None or type(p["identifiers"]) is not list or p["identifiers"]):
         _refuse("unsupported_contribution")
+    if rich and not extended: _refuse()
     _sha(p["sourceSha256"]); _iri(current["sourceAuthorityIri"])
     vocab = _object(p["vocabulary"], ("id", "sha256")); _text(vocab["id"], 200); _sha(vocab["sha256"])
-    if type(p["columns"]) is not list or not 1 <= len(p["columns"]) <= 128:
+    if type(p["columns"]) is not list or not (0 if rich else 1) <= len(p["columns"]) <= 128:
         _refuse()
     previous, native = -1, {}
     for column in p["columns"]:
@@ -183,9 +185,9 @@ def _validate(candidate, current, cfg):
             _refuse()
     for field in ("semanticBasisSha256", "semanticStateSha256"):
         _sha(current[field])
-    _artifacts(current["nativeArtifacts"])
-    _object(candidate, ("schema", "dataset", "source", "audience", "binding", "nativeArtifacts", "columns", "review"))
-    if candidate["schema"] != "confirmed-column-contribution/1":
+    _artifacts(current["nativeArtifacts"], rich)
+    _object(candidate, ("schema", "dataset", "source", "audience", "binding", "nativeArtifacts", "columns", "review", *(("procedure", "identifiers") if rich else ())))
+    if candidate["schema"] != ("confirmed-source-contribution/2" if rich else "confirmed-column-contribution/1"):
         _refuse()
     dataset = _object(candidate["dataset"], ("slug", "version", "iri"))
     _text(dataset["slug"], 80); _text(dataset["version"], 80); _iri(dataset["iri"])
@@ -205,7 +207,7 @@ def _validate(candidate, current, cfg):
             _refuse()
     for field in ("semanticBasisSha256", "semanticStateSha256", "projectionSha256", "nativeArtifactsSha256"):
         _sha(binding[field])
-    _artifacts(candidate["nativeArtifacts"])
+    _artifacts(candidate["nativeArtifacts"], rich)
     expected_binding = {key: current[key] for key in (*_REVISIONS, "semanticBasisSha256", "semanticStateSha256")}
     # These two hashes use the existing D01 JSON.stringify field order, not a
     # silently substituted graph-specific canonicalization or repinned snapshot.
@@ -215,7 +217,7 @@ def _validate(candidate, current, cfg):
             or candidate["nativeArtifacts"] != current["nativeArtifacts"]):
         _refuse("contribution_changed")
     columns = candidate["columns"]
-    if type(columns) is not list or not 1 <= len(columns) <= 128:
+    if type(columns) is not list or not (0 if rich else 1) <= len(columns) <= 128:
         _refuse()
     previous = -1
     for column in columns:
@@ -238,6 +240,9 @@ def _validate(candidate, current, cfg):
         _refuse()
     for item in context["evidence"]:
         _text(item)
+    if rich:
+        from .native_references import validate
+        validate(candidate, current)
 
 
 def _compile(candidate, cfg):
@@ -267,7 +272,7 @@ def _compile(candidate, cfg):
         b.add(node, "rdfs:label", L(record["path"]), pg)
         b.add(node, "dcterms:identifier", L("sha256:" + record["sha256"]), pg)
     provenance.activity_node(b, context["activityIri"], graph=pg,
-        label="Explicit column contribution context; shared review not performed", date=context["date"],
+        label=("Explicit native reference contribution context; shared review not performed" if candidate["schema"] == "confirmed-source-contribution/2" else "Explicit column contribution context; shared review not performed"), date=context["date"],
         used=used, associated_with=[context["attributionIri"]])
     pending = []
     for selected in candidate["columns"]:
@@ -292,16 +297,22 @@ def _compile(candidate, cfg):
         if selected["evidence"]["sha256"]:
             b.add(assertion, "dcterms:identifier", L("evidence sha256:" + selected["evidence"]["sha256"]), mg)
         pending.append((column, annotation["termIri"]))
+    extra_pending = []
+    if candidate["schema"] == "confirmed-source-contribution/2":
+        from .native_references import compile_references
+        extra_generated, extra_pending = compile_references(b, candidate, cfg, mg, table, schema, source_record, projection_record)
+        generated.update(extra_generated)
     if any(value in generated for value in (source["authorityIri"], context["activityIri"], context["attributionIri"])):
         _refuse()
-    if any(annotation["annotation"]["termIri"] in generated for annotation in candidate["columns"]):
+    if any(annotation["annotation"]["termIri"] in generated for annotation in candidate["columns"]) or any(target in generated or target in (context["activityIri"], context["attributionIri"]) for _, _, target in extra_pending):
         _refuse("unsupported_contribution")
     # Existing review validation, not a parallel acceptance policy. This raises
     # for malformed/missing marks and retains the reifiers without asserting SPOs.
     queue = review.review_queue(b.quads)
     rows = review.view_quads(b.quads)
-    if len(queue) != len(pending) or any(q.subject == N(s) and q.predicate == N("qb:concept") and q.object == N(o)
-                                       for s, o in pending for q in rows):
+    pending_triples = [(s, "qb:concept", o) for s, o in pending] + extra_pending
+    if len(queue) != len(pending_triples) or any(q.subject == N(s) and q.predicate == N(p) and q.object == N(o)
+                                       for s, p, o in pending_triples for q in rows):
         _refuse()
     data = det.nquads_bytes(rows)
     if len(data) > MAX_GRAPH_BYTES:
@@ -324,7 +335,7 @@ def preview(candidate, *, current):
         raise
     except (ValueError, TypeError, KeyError, OverflowError, RuntimeError):
         _refuse()
-    result = {"schema": "confirmed-column-contribution-preview/1", "candidate": deepcopy(candidate),
+    result = {"schema": "confirmed-source-contribution-preview/2" if candidate["schema"] == "confirmed-source-contribution/2" else "confirmed-column-contribution-preview/1", "candidate": deepcopy(candidate),
         "namespace": {"base": cfg.base, "profileBase": cfg.profile_base, "sdpv": cfg.sdpv},
         "generatedIris": generated, "graph": {"mediaType": "application/n-quads", "content": data.decode("utf-8"),
             "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}, "pendingRelationships": pending,
@@ -336,11 +347,12 @@ def admit(candidate, *, current, consent):
     """Compile exactly reviewed content; persistence/auth/idempotency are external."""
     result = preview(candidate, current=current)
     _object(consent, ("version", "accepted", "previewSha256"))
-    if (consent["version"] != "confirmed-column-contribution-consent/1" or consent["accepted"] is not True
+    rich = candidate["schema"] == "confirmed-source-contribution/2"
+    if (consent["version"] != ("confirmed-source-contribution-consent/2" if rich else "confirmed-column-contribution-consent/1") or consent["accepted"] is not True
             or consent["previewSha256"] != result["sha256"]):
         _refuse("contribution_preview_changed")
-    return {"schema": "compiled-column-contribution/1", "graphBytes": result["graph"]["content"].encode("utf-8"),
-        "receipt": {"schema": "compiled-column-contribution-receipt/1", "status": "compiled_not_persisted",
+    return {"schema": "compiled-source-contribution/2" if rich else "compiled-column-contribution/1", "graphBytes": result["graph"]["content"].encode("utf-8"),
+        "receipt": {"schema": "compiled-source-contribution-receipt/2" if rich else "compiled-column-contribution-receipt/1", "status": "compiled_not_persisted",
             "previewSha256": result["sha256"], "graphSha256": result["graph"]["sha256"],
             "sourceSha256": candidate["source"]["sha256"], "binding": deepcopy(candidate["binding"]),
             "audience": deepcopy(candidate["audience"]), "datasetIri": candidate["dataset"]["iri"],

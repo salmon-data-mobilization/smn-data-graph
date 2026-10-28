@@ -1,0 +1,569 @@
+{
+  "sourceCsv": "population,count,token\nN-7,2,NA\nN-7,3,NO SURVEY\n",
+  "nativeResult": {
+    "schema": "research-metasalmonpy-package/3",
+    "status": "executed",
+    "engine": {
+      "name": "metasalmonpy",
+      "version": "0.6.0",
+      "sourceCommit": "943fe1f50d7ac5b88b8be81250dca2e7aeb0f632",
+      "sourceArchiveUrl": "https://github.com/salmon-data-mobilization/metasalmonpy/archive/943fe1f50d7ac5b88b8be81250dca2e7aeb0f632.tar.gz",
+      "sourceSha256": "e6d5285e222673d5e786fa4c97c2655072bc722305500d020e763e18596a3f8e",
+      "schemaSource": "vendored",
+      "sourceReferenceKind": "declared_pinned_build_source",
+      "sourceHashScope": "Complete installed metasalmonpy Python file paths and bytes; not dependency or data-resource inventory.",
+      "pythonFileCount": 52,
+      "originMetadata": "present_verified",
+      "semanticSeeding": false,
+      "llmAssessment": false
+    },
+    "sourceSha256": "74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8",
+    "sourceHashScope": "Exact UTF-8 csvText bytes received; leading BOM included when supplied.",
+    "originalFileName": "fictional-rich.csv",
+    "datasetId": "dataset-74596f6ed42c",
+    "tableId": "source",
+    "summary": {
+      "rows": 2,
+      "columns": 3,
+      "files": 9,
+      "literalNACells": 1,
+      "blankCells": 0
+    },
+    "files": [
+      {
+        "path": ".sdp-package",
+        "content": "sdp-owned\n",
+        "bytes": 10,
+        "sha256": "0772f8c9d22f02d76030f93b07f1706ccf4a7c69cbeff4396d69a667ee687b3a"
+      },
+      {
+        "path": "data/source.csv",
+        "content": "population,count,token\nN-7,2,NA\nN-7,3,NO SURVEY\n",
+        "bytes": 48,
+        "sha256": "74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8"
+      },
+      {
+        "path": "datapackage.json",
+        "content": "{\n  \"profile\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/profiles/salmon-data-package/v0.3/profile.json\",\n  \"name\": \"dataset-74596f6ed42c\",\n  \"id\": \"dataset-74596f6ed42c\",\n  \"title\": \"Fictional rich native graph fixture\",\n  \"description\": \"MISSING DESCRIPTION: describe the contents and purpose of dataset 'dataset-74596f6ed42c'.\",\n  \"sdp\": {\n    \"specVersion\": \"sdp-0.3.2\",\n    \"profile\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/profiles/salmon-data-package/v0.3/profile.json\",\n    \"rules\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/schema/sdp.rules.yaml\",\n    \"metadata\": {\n      \"dataset\": \"metadata/dataset.csv\",\n      \"tables\": \"metadata/tables.csv\",\n      \"columnDictionary\": \"metadata/column_dictionary.csv\",\n      \"codes\": \"metadata/codes.csv\"\n    }\n  },\n  \"resources\": [\n    {\n      \"profile\": \"tabular-data-resource\",\n      \"name\": \"sdp_dataset\",\n      \"path\": \"metadata/dataset.csv\",\n      \"title\": \"SDP dataset metadata\",\n      \"description\": \"Dataset-level metadata.\",\n      \"schema\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/dataset.schema.json\"\n    },\n    {\n      \"profile\": \"tabular-data-resource\",\n      \"name\": \"sdp_tables\",\n      \"path\": \"metadata/tables.csv\",\n      \"title\": \"SDP tables metadata\",\n      \"description\": \"Table-level metadata.\",\n      \"schema\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/tables.schema.json\"\n    },\n    {\n      \"profile\": \"tabular-data-resource\",\n      \"name\": \"sdp_column_dictionary\",\n      \"path\": \"metadata/column_dictionary.csv\",\n      \"title\": \"SDP column dictionary metadata\",\n      \"description\": \"Column-level metadata.\",\n      \"schema\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/column_dictionary.schema.json\"\n    },\n    {\n      \"profile\": \"tabular-data-resource\",\n      \"name\": \"sdp_codes\",\n      \"path\": \"metadata/codes.csv\",\n      \"title\": \"SDP codes metadata\",\n      \"description\": \"Controlled code list metadata.\",\n      \"schema\": \"https://salmon-data-mobilization.github.io/smn-data-pkg/schema/frictionless/metadata/codes.schema.json\"\n    },\n    {\n      \"name\": \"source\",\n      \"path\": \"data/source.csv\",\n      \"profile\": \"tabular-data-resource\",\n      \"schema\": {\n        \"fields\": [\n          {\n            \"name\": \"population\",\n            \"title\": \"population\",\n            \"type\": \"string\",\n            \"description\": \"MISSING DESCRIPTION: define what 'population' means in table 'source'.\"\n          },\n          {\n            \"name\": \"count\",\n            \"title\": \"count\",\n            \"type\": \"integer\",\n            \"description\": \"MISSING DESCRIPTION: define what 'count' means in table 'source'.\",\n            \"term_iri\": \"https://w3id.org/smn/Abundance\",\n            \"term_type\": \"owl_class\"\n          },\n          {\n            \"name\": \"token\",\n            \"title\": \"token\",\n            \"type\": \"string\",\n            \"description\": \"MISSING DESCRIPTION: define what 'token' means in table 'source'.\"\n          }\n        ]\n      },\n      \"title\": \"Source\",\n      \"description\": \"MISSING DESCRIPTION: describe what each row in table 'source' represents.\"\n    }\n  ],\n  \"contributors\": [\n    {\n      \"title\": \"MISSING METADATA: add creator, team, or originating program.\",\n      \"role\": \"creator\"\n    },\n    {\n      \"title\": \"MISSING METADATA: add primary contact name or team.\",\n      \"role\": \"contact\",\n      \"email\": \"MISSING METADATA: add primary contact email.\"\n    }\n  ]\n}\n",
+        "bytes": 3531,
+        "sha256": "972d3155f6059c3919a8dc8495dc8b528e6f4d5e38b76e24da8dc5f5d8b82bd6"
+      },
+      {
+        "path": "metadata/codes.csv",
+        "content": "dataset_id,table_id,column_name,code_value,code_label,code_description,vocabulary_iri,term_iri,term_type\ndataset-74596f6ed42c,source,population,N-7,Same River,\"Authority: Fictional North Authority; Authority version: 2026-1; Description: Explicit fictional code reference, no biological type claim\",https://example.invalid/fictional-north,https://example.invalid/fictional-north/N-7,owl_named_individual\n",
+        "bytes": 404,
+        "sha256": "043e9bb324b4646680a88d222c7a3d03f8345e6b452d507d3b35f04c3832129a"
+      },
+      {
+        "path": "metadata/column_dictionary.csv",
+        "content": "dataset_id,table_id,column_name,column_label,column_description,column_role,value_type,required,unit_label,unit_iri,term_iri,term_type,property_iri,entity_iri,constraint_iri,statistical_modifier_iri\ndataset-74596f6ed42c,source,population,population,MISSING DESCRIPTION: define what 'population' means in table 'source'.,categorical,string,,,,,,,,,\ndataset-74596f6ed42c,source,count,count,MISSING DESCRIPTION: define what 'count' means in table 'source'.,measurement,integer,,,,https://w3id.org/smn/Abundance,owl_class,,,,\ndataset-74596f6ed42c,source,token,token,MISSING DESCRIPTION: define what 'token' means in table 'source'.,attribute,string,,,,,,,,,\n",
+        "bytes": 654,
+        "sha256": "82b1b42d11db22b26c244829af1e78e6b7f2fc07ad52322bf8c65e12adbeb9ae"
+      },
+      {
+        "path": "metadata/dataset.csv",
+        "content": "dataset_id,title,description,creator,contact_name,contact_email,license,contact_org,contact_position,temporal_start,temporal_end,spatial_extent,dataset_type,source_citation,update_frequency,topic_categories,keywords,security_classification,provenance_note,created,modified,spec_version,protocol_iri,protocol_citation\ndataset-74596f6ed42c,Fictional rich native graph fixture,MISSING DESCRIPTION: describe the contents and purpose of dataset 'dataset-74596f6ed42c'.,\"MISSING METADATA: add creator, team, or originating program.\",MISSING METADATA: add primary contact name or team.,MISSING METADATA: add primary contact email.,,,,,,,,,,,,,,,,sdp-0.3.2,,\n",
+        "bytes": 651,
+        "sha256": "0750a549741f92a3220ff8fc0568e2c53c83889b0a1d8c027b23a84b3b8e710f"
+      },
+      {
+        "path": "metadata/semantic/mapping-sets.json",
+        "content": "{\n  \"schema_version\": \"1.0\",\n  \"sssom_version\": \"1.1\",\n  \"mapping_sets\": [\n    {\n      \"path\": \"metadata/semantic/rich-one.sssom.tsv\",\n      \"sha256\": \"9341c1bd3f931e5e917ffd116c59957275367569309312740bfc3e535f3bf803\",\n      \"row_count\": 1,\n      \"mapping_set_id\": \"https://example.invalid/mappings/rich-one\",\n      \"mapping_set_version\": \"2026-1\",\n      \"license\": \"https://creativecommons.org/licenses/by/4.0/\",\n      \"subject_source\": \"https://example.invalid/fictional-north\",\n      \"subject_source_version\": \"2026-1\",\n      \"object_source\": \"https://example.invalid/south/2025\",\n      \"object_source_version\": \"2025-2\"\n    }\n  ],\n  \"provenance\": {\n    \"generated_by\": \"metasalmonpy.write_sdp_sssom\",\n    \"metasalmonpy_version\": \"0.6.0\",\n    \"specification\": \"https://mapping-commons.github.io/sssom/1.1/\"\n  }\n}\n",
+        "bytes": 816,
+        "sha256": "36127569ccb590eaa985c212ab4291086d9cb903eebcb13884e230e0b18e3081"
+      },
+      {
+        "path": "metadata/semantic/rich-one.sssom.tsv",
+        "content": "#sssom_version: \"1.1\"\n#mapping_set_id: https://example.invalid/mappings/rich-one\n#mapping_set_version: 2026-1\n#license: https://creativecommons.org/licenses/by/4.0/\n#subject_source: https://example.invalid/fictional-north\n#subject_source_version: 2026-1\n#object_source: https://example.invalid/south/2025\n#object_source_version: 2025-2\nsubject_id\tpredicate_id\tobject_id\tmapping_justification\tmapping_source\tcomment\nhttps://example.invalid/fictional-north/N-7\thttps://example.invalid/scoped-relation\thttps://example.invalid/south/S-7\tsemapv:ManualMappingCuration\thttps://example.invalid/crosswalk/one\tDataset-scoped depositor relationship; not shared graph admission or pooling approval. Source table SHA-256: 74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8; Scope: Only this source, key and stated period; not global equivalence; Uncertainty: Only documented sampling frame; Evidence: Explicit public fictional crosswalk evidence; Evidence SHA-256: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n",
+        "bytes": 1031,
+        "sha256": "9341c1bd3f931e5e917ffd116c59957275367569309312740bfc3e535f3bf803"
+      },
+      {
+        "path": "metadata/tables.csv",
+        "content": "dataset_id,table_id,file_name,table_label,description,observation_unit,observation_unit_iri,primary_key,protocol_iri,protocol_citation,method_iri\ndataset-74596f6ed42c,source,data/source.csv,Source,MISSING DESCRIPTION: describe what each row in table 'source' represents.,MISSING METADATA: describe the observation unit for table 'source'.,,,https://example.invalid/fictional-protocol/v1,\"Fictional protocol version1, table scope\",https://w3id.org/smn/FishForkLengthMeasurementMethod\n",
+        "bytes": 483,
+        "sha256": "1505074570aedcd91e597e361325b958880def6841b2a1c489b3e2a6d5cfc0f2"
+      }
+    ],
+    "validation": {
+      "structural": {
+        "status": "passed",
+        "issues": []
+      },
+      "semantic": {
+        "status": "draft",
+        "issues": [],
+        "missingTerms": [],
+        "missingSemantics": [
+          {
+            "field": "property_iri",
+            "table_id": "source",
+            "column_name": "count"
+          },
+          {
+            "field": "entity_iri",
+            "table_id": "source",
+            "column_name": "count"
+          },
+          {
+            "field": "unit_iri",
+            "table_id": "source",
+            "column_name": "count"
+          },
+          {
+            "field": "constraint_iri",
+            "table_id": "source",
+            "column_name": "count"
+          },
+          {
+            "field": "statistical_modifier_iri",
+            "table_id": "source",
+            "column_name": "count"
+          }
+        ],
+        "warnings": [
+          "Hey, you definitely should fill those out before publishing. Missing semantic fields for measurement columns: property_iri: count (row 2) | entity_iri: count (row 2) | unit_iri: count (row 2)\nNext step: run suggest_semantics() to generate semantic candidates, then set term_iri, property_iri, entity_iri, unit_iri for your measurement fields.\nSee docs for I-ADOPT guidance: https://salmon-data-mobilization.github.io/metasalmon/articles/reusing-standards-salmon-data-terms.html",
+          "7 metadata fields still hold a placeholder: column_dictionary.csv$column_description, dataset.csv$contact_email, dataset.csv$contact_name, dataset.csv$creator, dataset.csv$description, tables.csv$description. Replace them before publication; require_iris=True reports these as errors.",
+          "Hey, you definitely should fill those out before publishing. Missing semantic fields for measurement columns: property_iri: count (row 2) | entity_iri: count (row 2) | unit_iri: count (row 2)\nNext step: run suggest_semantics() to generate semantic candidates, then set term_iri, property_iri, entity_iri, unit_iri for your measurement fields.\nSee docs for I-ADOPT guidance: https://salmon-data-mobilization.github.io/metasalmon/articles/reusing-standards-salmon-data-terms.html",
+          "Hey, you definitely should fill those out before publishing. Missing semantic fields for measurement columns: property_iri: count (row 2) | entity_iri: count (row 2) | unit_iri: count (row 2)\nNext step: run suggest_semantics() to generate semantic candidates, then set term_iri, property_iri, entity_iri, unit_iri for your measurement fields.\nSee docs for I-ADOPT guidance: https://salmon-data-mobilization.github.io/metasalmon/articles/reusing-standards-salmon-data-terms.html"
+        ]
+      },
+      "strict": {
+        "status": "blocked",
+        "issues": [],
+        "message": "Measurement columns require property_iri; missing in rows 2."
+      },
+      "sourceRoundTrip": {
+        "status": "passed"
+      },
+      "rdf": {
+        "status": "not_run"
+      },
+      "shacl": {
+        "status": "not_run"
+      },
+      "publicationReady": false,
+      "scientificApproval": false,
+      "licenceProvided": false
+    },
+    "privacy": {
+      "rawPersisted": false,
+      "published": false
+    },
+    "networkAttempts": 0,
+    "confirmedSemantics": {
+      "schema": "confirmed-source-semantics/2",
+      "sourceSha256": "74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8",
+      "vocabulary": {
+        "id": "smn-0.0.3-3bd2b2a0-selected-v2",
+        "sha256": "4916b9aedaf01f8927f5c952548fc5f78e56ac737c97872226f823cf962ee6a4"
+      },
+      "columns": [
+        {
+          "columnOrdinal": 1,
+          "columnName": "count",
+          "columnRole": "measurement",
+          "valueType": "integer",
+          "termType": "owl_class",
+          "termIri": "https://w3id.org/smn/Abundance",
+          "propertyIri": "",
+          "entityIri": "",
+          "unitIri": "",
+          "constraintIri": "",
+          "statisticalModifierIri": ""
+        }
+      ],
+      "procedure": {
+        "kind": "table-constant",
+        "protocolIri": "https://example.invalid/fictional-protocol/v1",
+        "protocolCitation": "Fictional protocol version1, table scope",
+        "methodIri": "https://w3id.org/smn/FishForkLengthMeasurementMethod"
+      },
+      "identifiers": [
+        {
+          "columnOrdinal": 0,
+          "columnName": "population",
+          "nativeKey": "N-7",
+          "label": "Same River",
+          "vocabularyIri": "https://example.invalid/fictional-north",
+          "termIri": "https://example.invalid/fictional-north/N-7",
+          "termType": "owl_named_individual",
+          "description": "Explicit fictional code reference, no biological type claim",
+          "authorityName": "Fictional North Authority",
+          "authorityVersion": "2026-1",
+          "mappings": [
+            {
+              "mappingSetId": "https://example.invalid/mappings/rich-one",
+              "mappingSetVersion": "2026-1",
+              "licenseIri": "https://creativecommons.org/licenses/by/4.0/",
+              "subjectSource": "https://example.invalid/fictional-north",
+              "subjectSourceVersion": "2026-1",
+              "objectSource": "https://example.invalid/south/2025",
+              "objectSourceVersion": "2025-2",
+              "subjectId": "https://example.invalid/fictional-north/N-7",
+              "objectId": "https://example.invalid/south/S-7",
+              "predicateId": "https://example.invalid/scoped-relation",
+              "mappingJustification": "semapv:ManualMappingCuration",
+              "mappingSource": "https://example.invalid/crosswalk/one",
+              "evidenceCitation": "Explicit public fictional crosswalk evidence",
+              "evidenceSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "uncertainty": "Only documented sampling frame",
+              "scopeNote": "Only this source, key and stated period; not global equivalence"
+            }
+          ]
+        }
+      ],
+      "sharedRelationshipEligible": false
+    },
+    "semanticCoverage": {
+      "columnCount": 3,
+      "confirmedColumnOrdinals": [
+        1
+      ],
+      "lexicalDefaults": [
+        {
+          "columnOrdinal": 2,
+          "columnName": "token",
+          "fields": {
+            "column_role": "attribute",
+            "value_type": "string"
+          }
+        }
+      ],
+      "procedureCodeColumnOrdinals": [],
+      "identifierColumnOrdinals": [
+        0
+      ]
+    }
+  },
+  "candidate": {
+    "schema": "confirmed-source-contribution/2",
+    "dataset": {
+      "slug": "fictional-rich",
+      "version": "fixture-1",
+      "iri": "https://w3id.org/salmon-demo-corpus/dataset/fictional-rich/fixture-1"
+    },
+    "source": {
+      "sha256": "74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8",
+      "authorityIri": "urn:sha256:74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8"
+    },
+    "audience": {
+      "kind": "private-project"
+    },
+    "binding": {
+      "semanticRevision": 2,
+      "documentationRevision": 1,
+      "selectionRevision": 1,
+      "projectRevision": 1,
+      "semanticBasisSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "semanticStateSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "projectionSha256": "df1c29642981b0a29417b5756c5e4575b8d363868d6bdd3e1a68318c2fe83cf4",
+      "nativeArtifactsSha256": "ae3ffce9052efaa5103a1bce4887dc024d16c5631f6d9c6477c7d95e7263918c"
+    },
+    "nativeArtifacts": [
+      {
+        "path": ".sdp-package",
+        "bytes": 10,
+        "sha256": "0772f8c9d22f02d76030f93b07f1706ccf4a7c69cbeff4396d69a667ee687b3a"
+      },
+      {
+        "path": "data/source.csv",
+        "bytes": 48,
+        "sha256": "74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8"
+      },
+      {
+        "path": "datapackage.json",
+        "bytes": 3531,
+        "sha256": "972d3155f6059c3919a8dc8495dc8b528e6f4d5e38b76e24da8dc5f5d8b82bd6"
+      },
+      {
+        "path": "metadata/codes.csv",
+        "bytes": 404,
+        "sha256": "043e9bb324b4646680a88d222c7a3d03f8345e6b452d507d3b35f04c3832129a"
+      },
+      {
+        "path": "metadata/column_dictionary.csv",
+        "bytes": 654,
+        "sha256": "82b1b42d11db22b26c244829af1e78e6b7f2fc07ad52322bf8c65e12adbeb9ae"
+      },
+      {
+        "path": "metadata/dataset.csv",
+        "bytes": 651,
+        "sha256": "0750a549741f92a3220ff8fc0568e2c53c83889b0a1d8c027b23a84b3b8e710f"
+      },
+      {
+        "path": "metadata/semantic/mapping-sets.json",
+        "bytes": 816,
+        "sha256": "36127569ccb590eaa985c212ab4291086d9cb903eebcb13884e230e0b18e3081"
+      },
+      {
+        "path": "metadata/semantic/rich-one.sssom.tsv",
+        "bytes": 1031,
+        "sha256": "9341c1bd3f931e5e917ffd116c59957275367569309312740bfc3e535f3bf803"
+      },
+      {
+        "path": "metadata/tables.csv",
+        "bytes": 483,
+        "sha256": "1505074570aedcd91e597e361325b958880def6841b2a1c489b3e2a6d5cfc0f2"
+      }
+    ],
+    "columns": [
+      {
+        "annotation": {
+          "columnOrdinal": 1,
+          "columnName": "count",
+          "columnRole": "measurement",
+          "valueType": "integer",
+          "termType": "owl_class",
+          "termIri": "https://w3id.org/smn/Abundance",
+          "propertyIri": "",
+          "entityIri": "",
+          "unitIri": "",
+          "constraintIri": "",
+          "statisticalModifierIri": ""
+        },
+        "evidence": {
+          "citation": "Explicit fictional source evidence",
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "scope": {
+          "kind": "dataset-column",
+          "note": "Fictional count meaning only"
+        },
+        "sourceAuthority": "depositor_confirmed",
+        "status": "awaitingReview"
+      }
+    ],
+    "procedure": {
+      "annotation": {
+        "kind": "table-constant",
+        "protocolIri": "https://example.invalid/fictional-protocol/v1",
+        "protocolCitation": "Fictional protocol version1, table scope",
+        "methodIri": "https://w3id.org/smn/FishForkLengthMeasurementMethod"
+      },
+      "evidence": {
+        "citation": "Explicit fictional source evidence",
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "scope": {
+        "kind": "table",
+        "note": "Applies to this entire fictional table only"
+      },
+      "sourceAuthority": "depositor_confirmed",
+      "status": "awaitingReview"
+    },
+    "identifiers": [
+      {
+        "index": 0,
+        "annotation": {
+          "columnOrdinal": 0,
+          "columnName": "population",
+          "nativeKey": "N-7",
+          "label": "Same River",
+          "vocabularyIri": "https://example.invalid/fictional-north",
+          "termIri": "https://example.invalid/fictional-north/N-7",
+          "termType": "owl_named_individual",
+          "description": "Explicit fictional code reference, no biological type claim",
+          "authorityName": "Fictional North Authority",
+          "authorityVersion": "2026-1",
+          "mappings": [
+            {
+              "mappingSetId": "https://example.invalid/mappings/rich-one",
+              "mappingSetVersion": "2026-1",
+              "licenseIri": "https://creativecommons.org/licenses/by/4.0/",
+              "subjectSource": "https://example.invalid/fictional-north",
+              "subjectSourceVersion": "2026-1",
+              "objectSource": "https://example.invalid/south/2025",
+              "objectSourceVersion": "2025-2",
+              "subjectId": "https://example.invalid/fictional-north/N-7",
+              "objectId": "https://example.invalid/south/S-7",
+              "predicateId": "https://example.invalid/scoped-relation",
+              "mappingJustification": "semapv:ManualMappingCuration",
+              "mappingSource": "https://example.invalid/crosswalk/one",
+              "evidenceCitation": "Explicit public fictional crosswalk evidence",
+              "evidenceSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "uncertainty": "Only documented sampling frame",
+              "scopeNote": "Only this source, key and stated period; not global equivalence"
+            }
+          ]
+        },
+        "evidence": {
+          "citation": "Explicit fictional source evidence",
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "scope": {
+          "kind": "dataset-identifier",
+          "note": "Explicit fictional code reference, no biological type claim"
+        },
+        "sourceAuthority": "depositor_confirmed",
+        "status": "awaitingReview"
+      }
+    ],
+    "review": {
+      "confidence": "high",
+      "attributionIri": "urn:uuid:00000000-0000-4000-8000-000000000001",
+      "activityIri": "urn:uuid:00000000-0000-4000-8000-000000000002",
+      "date": "2026-10-27T00:00:00Z",
+      "evidence": [
+        "Fictional explicit graph context"
+      ]
+    }
+  },
+  "current": {
+    "schema": "current-source-contribution/2",
+    "projection": {
+      "schema": "confirmed-source-semantics/2",
+      "sourceSha256": "74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8",
+      "vocabulary": {
+        "id": "smn-0.0.3-3bd2b2a0-selected-v2",
+        "sha256": "4916b9aedaf01f8927f5c952548fc5f78e56ac737c97872226f823cf962ee6a4"
+      },
+      "columns": [
+        {
+          "columnOrdinal": 1,
+          "columnName": "count",
+          "columnRole": "measurement",
+          "valueType": "integer",
+          "termType": "owl_class",
+          "termIri": "https://w3id.org/smn/Abundance",
+          "propertyIri": "",
+          "entityIri": "",
+          "unitIri": "",
+          "constraintIri": "",
+          "statisticalModifierIri": ""
+        }
+      ],
+      "procedure": {
+        "kind": "table-constant",
+        "protocolIri": "https://example.invalid/fictional-protocol/v1",
+        "protocolCitation": "Fictional protocol version1, table scope",
+        "methodIri": "https://w3id.org/smn/FishForkLengthMeasurementMethod"
+      },
+      "identifiers": [
+        {
+          "columnOrdinal": 0,
+          "columnName": "population",
+          "nativeKey": "N-7",
+          "label": "Same River",
+          "vocabularyIri": "https://example.invalid/fictional-north",
+          "termIri": "https://example.invalid/fictional-north/N-7",
+          "termType": "owl_named_individual",
+          "description": "Explicit fictional code reference, no biological type claim",
+          "authorityName": "Fictional North Authority",
+          "authorityVersion": "2026-1",
+          "mappings": [
+            {
+              "mappingSetId": "https://example.invalid/mappings/rich-one",
+              "mappingSetVersion": "2026-1",
+              "licenseIri": "https://creativecommons.org/licenses/by/4.0/",
+              "subjectSource": "https://example.invalid/fictional-north",
+              "subjectSourceVersion": "2026-1",
+              "objectSource": "https://example.invalid/south/2025",
+              "objectSourceVersion": "2025-2",
+              "subjectId": "https://example.invalid/fictional-north/N-7",
+              "objectId": "https://example.invalid/south/S-7",
+              "predicateId": "https://example.invalid/scoped-relation",
+              "mappingJustification": "semapv:ManualMappingCuration",
+              "mappingSource": "https://example.invalid/crosswalk/one",
+              "evidenceCitation": "Explicit public fictional crosswalk evidence",
+              "evidenceSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "uncertainty": "Only documented sampling frame",
+              "scopeNote": "Only this source, key and stated period; not global equivalence"
+            }
+          ]
+        }
+      ],
+      "sharedRelationshipEligible": false
+    },
+    "understanding": [
+      {
+        "columnOrdinal": 1,
+        "evidence": {
+          "citation": "Explicit fictional source evidence",
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "scope": {
+          "kind": "dataset-column",
+          "note": "Fictional count meaning only"
+        }
+      }
+    ],
+    "procedureUnderstanding": {
+      "evidence": {
+        "citation": "Explicit fictional source evidence",
+        "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "scope": {
+        "kind": "table",
+        "note": "Applies to this entire fictional table only"
+      }
+    },
+    "identifierUnderstanding": [
+      {
+        "index": 0,
+        "evidence": {
+          "citation": "Explicit fictional source evidence",
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "scope": {
+          "kind": "dataset-identifier",
+          "note": "Explicit fictional code reference, no biological type claim"
+        }
+      }
+    ],
+    "sourceAuthorityIri": "urn:sha256:74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8",
+    "semanticRevision": 2,
+    "documentationRevision": 1,
+    "selectionRevision": 1,
+    "projectRevision": 1,
+    "semanticBasisSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "semanticStateSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "nativeArtifacts": [
+      {
+        "path": ".sdp-package",
+        "bytes": 10,
+        "sha256": "0772f8c9d22f02d76030f93b07f1706ccf4a7c69cbeff4396d69a667ee687b3a"
+      },
+      {
+        "path": "data/source.csv",
+        "bytes": 48,
+        "sha256": "74596f6ed42cc8d96014d5419491a84bba78d7e3760042d3a01bd7ee07ae71f8"
+      },
+      {
+        "path": "datapackage.json",
+        "bytes": 3531,
+        "sha256": "972d3155f6059c3919a8dc8495dc8b528e6f4d5e38b76e24da8dc5f5d8b82bd6"
+      },
+      {
+        "path": "metadata/codes.csv",
+        "bytes": 404,
+        "sha256": "043e9bb324b4646680a88d222c7a3d03f8345e6b452d507d3b35f04c3832129a"
+      },
+      {
+        "path": "metadata/column_dictionary.csv",
+        "bytes": 654,
+        "sha256": "82b1b42d11db22b26c244829af1e78e6b7f2fc07ad52322bf8c65e12adbeb9ae"
+      },
+      {
+        "path": "metadata/dataset.csv",
+        "bytes": 651,
+        "sha256": "0750a549741f92a3220ff8fc0568e2c53c83889b0a1d8c027b23a84b3b8e710f"
+      },
+      {
+        "path": "metadata/semantic/mapping-sets.json",
+        "bytes": 816,
+        "sha256": "36127569ccb590eaa985c212ab4291086d9cb903eebcb13884e230e0b18e3081"
+      },
+      {
+        "path": "metadata/semantic/rich-one.sssom.tsv",
+        "bytes": 1031,
+        "sha256": "9341c1bd3f931e5e917ffd116c59957275367569309312740bfc3e535f3bf803"
+      },
+      {
+        "path": "metadata/tables.csv",
+        "bytes": 483,
+        "sha256": "1505074570aedcd91e597e361325b958880def6841b2a1c489b3e2a6d5cfc0f2"
+      }
+    ]
+  }
+}

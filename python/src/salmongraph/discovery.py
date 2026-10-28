@@ -2,7 +2,8 @@
 
 The caller supplies an already admitted, access-appropriate named-graph store.
 Only existing RDF slots are read: DCAT datasets/CSVW columns, QB observations,
-``qb:concept``, ``sosa:usedProcedure`` and explicitly typed population identities.
+``qb:concept``, ``sosa:usedProcedure`` and explicitly typed population identities,
+plus separately labelled, closed native metadata reference records.
 An exact shared IRI is a discovery connection, never a pooling recommendation.
 No query text, remote endpoint, review decision or write operation is accepted.
 """
@@ -17,6 +18,7 @@ import pyoxigraph as ox
 
 from . import provenance, review
 from .graph import N, RDF_REIFIES
+from .native_references import CONTEXT_TYPE, parse_context, match_key
 
 __all__ = ["discover", "FAMILIES", "MAX_SCAN_QUADS", "MAX_READ_PATTERNS"]
 
@@ -169,6 +171,39 @@ class _Reader:
         return predicate == N("sosa:hasFeatureOfInterest") or bool(
             self.values(predicate, "rdf:type") & {N("qb:DimensionProperty"), N("qb:AttributeProperty")})
 
+    def native_context(self, subject, obj):
+        contexts = []
+        for row in self.find(None, N(RDF_REIFIES), ox.Triple(subject, N("dcterms:references"), obj)):
+            record = row.subject
+            if ox.Literal(CONTEXT_TYPE) not in self.values(record, "dcterms:type"):
+                continue
+            if N(provenance.terms().values["critical"]) not in self.values(record, provenance.terms().criticality):
+                continue
+            values = self.values(record, "prov:value")
+            if len(values) != 1:
+                return None
+            context = parse_context(next(iter(values)))
+            if context is None:
+                return None
+            contexts.append(context)
+        # Ambiguous field/authority descriptions never become one proof.
+        return contexts[0] if len(contexts) == 1 else None
+
+    def native_memberships(self, subject, context):
+        parents = self.values(subject, "dcterms:isPartOf")
+        if len(parents) != 1:
+            return {}
+        parent = next(iter(parents))
+        if not isinstance(parent, ox.NamedNode):
+            return {}
+        if context["family"] == "procedure":
+            paths = self.ancestors(parent)
+        else:
+            if self.values(parent, "csvw:number") != {ox.Literal(context["columnOrdinal"] + 1)}:
+                return {}
+            paths = self.memberships(parent, "measurement")
+        return {dataset: [(subject, N("dcterms:isPartOf"), parent), *path] for dataset, path in paths.items()}
+
     def ancestors(self, table):
         # Exact inverse membership edges, not an IRI-prefix or label match.
         paths, todo = {table: []}, [table]
@@ -227,20 +262,36 @@ class _Reader:
                 for predicate, obj in sorted(possible, key=str):
                     if isinstance(obj, ox.NamedNode) and self.population_slot(predicate) and self.population_types(obj):
                         facts.append((dataset, "population", obj, subject, predicate))
+        # Native metadata references are a separate evidentiary basis. A code
+        # entry is not an observation and a method reference is not its use.
+        for parent in sorted(members | columns, key=str):
+            subjects = {q.subject for q in self.find(None, N("dcterms:isPartOf"), parent)}
+            for subject in sorted(subjects, key=str):
+                if not isinstance(subject, ox.NamedNode):
+                    continue
+                for obj in sorted(self.semantic(subject, N("dcterms:references"), include_pending), key=str):
+                    context = self.native_context(subject, obj)
+                    if context and context["family"] in families:
+                        facts.append((dataset, context["family"], obj, subject, N("dcterms:references")))
         return facts
 
     def candidates(self, family, obj, include_pending):
+        refs = {(q.subject, N("dcterms:references")) for q in self.find(None, N("dcterms:references"), obj)}
+        if include_pending:
+            refs |= {(s, p) for s, p in self.pending_o[obj] if p == N("dcterms:references")}
+        refs = {(s, p) for s, p in refs if isinstance(s, ox.NamedNode) and
+                (context := self.native_context(s, obj)) and context["family"] == family}
         if family == "population":
             pairs = {(q.subject, q.predicate) for q in self.find(None, None, obj)}
             if include_pending:
                 pairs |= self.pending_o[obj]
-            return sorted(((s, p) for s, p in pairs if isinstance(s, ox.NamedNode)
-                           and self.population_slot(p)), key=str)
+            return sorted({(s, p) for s, p in pairs if isinstance(s, ox.NamedNode)
+                           and self.population_slot(p)} | refs, key=str)
         predicate = N("qb:concept" if family == "measurement" else "sosa:usedProcedure")
         subjects = {q.subject for q in self.find(None, predicate, obj)}
         if include_pending:
             subjects |= self.pending_po[predicate, obj]
-        return [(s, predicate) for s in sorted(subjects, key=str) if isinstance(s, ox.NamedNode)]
+        return sorted({(s, predicate) for s in subjects if isinstance(s, ox.NamedNode)} | refs, key=str)
 
 
 class _Proof:
@@ -321,11 +372,16 @@ def discover(store_dir: Path, *, project_datasets: Sequence[str], families: Sequ
                 for f in reader.project_facts(d, families, include_pending)), key=str)
             matches, seen = [], set()
             for dataset, family, obj, subject, predicate in facts:
-                membership = reader.memberships(subject, family).get(dataset)
+                context = reader.native_context(subject, obj) if predicate == N("dcterms:references") else None
+                membership = (reader.native_memberships(subject, context) if context else reader.memberships(subject, family)).get(dataset)
                 if membership is None:
                     continue
                 for other_subject, other_predicate in reader.candidates(family, obj, include_pending):
-                    for other, other_membership in sorted(reader.memberships(other_subject, family).items(), key=lambda row: str(row[0])):
+                    other_context = reader.native_context(other_subject, obj) if other_predicate == N("dcterms:references") else None
+                    if bool(context) != bool(other_context) or context and match_key(context) != match_key(other_context):
+                        continue
+                    memberships = reader.native_memberships(other_subject, other_context) if other_context else reader.memberships(other_subject, family)
+                    for other, other_membership in sorted(memberships.items(), key=lambda row: str(row[0])):
                         if other in projects:
                             continue
                         key = (dataset, family, obj, subject, other, other_subject, predicate, other_predicate)
@@ -355,7 +411,11 @@ def discover(store_dir: Path, *, project_datasets: Sequence[str], families: Sequ
                         "membership": [evidence.edge(*triple) for triple in membership]}
                 candidate = {**evidence.edge(other_subject, other_predicate, obj),
                              "membership": [evidence.edge(*triple) for triple in other_membership]}
-                if family == "population":
+                context = reader.native_context(subject, obj) if predicate == N("dcterms:references") else None
+                if context:
+                    edge["native_reference"] = context
+                    candidate["native_reference"] = reader.native_context(other_subject, obj)
+                elif family == "population":
                     types = sorted(v.value for v in reader.population_types(obj))
                     edge["identity_types"] = candidate["identity_types"] = types
                 is_pending = not edge["asserted"] or not candidate["asserted"]
@@ -363,6 +423,7 @@ def discover(store_dir: Path, *, project_datasets: Sequence[str], families: Sequ
                     "family": family, "shared_iri": obj.value, "match": "exact_iri",
                     "path_state": "awaiting_review" if is_pending else "asserted",
                     "project": edge, "candidate": candidate,
+                    **({"match_basis": "native_metadata_reference"} if context else {}),
                     "project_source": evidence.source(dataset), "candidate_source": evidence.source(other)})
         except _ReadLimit as exc:
             response.update(paths=[], has_more=True, scan_truncated=True,
