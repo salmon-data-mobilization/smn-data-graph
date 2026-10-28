@@ -18,11 +18,12 @@ import pyoxigraph as ox
 
 from . import provenance, review
 from .graph import N, RDF_REIFIES
-from .native_references import CONTEXT_TYPE, parse_context, match_key
+from .native_references import CONTEXT_TYPE, PENDING_TYPE, parse_context, parse_pending_context, match_key
 
 __all__ = ["discover", "FAMILIES", "MAX_SCAN_QUADS", "MAX_READ_PATTERNS"]
 
 FAMILIES = ("measurement", "procedure", "population")
+RELATIONSHIP_KINDS = ("exact_iri", "scoped_mapping", "suggestion")
 MAX_SCAN_QUADS = 50_000
 MAX_READ_PATTERNS = 10_000
 _POPULATION_TYPES = {N(name) for name in ("smn:Population", "smn:Deme", "smn:Stock",
@@ -132,6 +133,7 @@ class _Reader:
     """
     def __init__(self, source, selected, pending_rows):
         self.source, self.selected = source, selected
+        self.pending_targets = {N(row.target) for row in pending_rows}
         self.visited, self.pattern_count = set(), 0
         self.pending_sp, self.pending_po, self.pending_o = defaultdict(set), defaultdict(set), defaultdict(set)
         for row in pending_rows:
@@ -322,9 +324,60 @@ class _Proof:
             self.node(q.subject)
 
 
+def _saved_mapping_paths(reader, projects, kinds):
+    """One explicitly selected saved relationship, never an equivalence closure.
+
+    Only the source-bound metadata record owns the source endpoint. The other
+    endpoint must be an actual native code reference with the full target
+    authority tuple; matching a label or a term IRI alone is insufficient.
+    """
+    seen = set()
+    for q in reader.find(None, N("dcterms:type"), ox.Literal(PENDING_TYPE)):
+        record = q.subject
+        if not isinstance(record, ox.NamedNode) or record not in reader.pending_targets:
+            continue
+        values = reader.values(record, "prov:value")
+        context = parse_pending_context(next(iter(values))) if len(values) == 1 else None
+        if context is None:
+            raise _ReadLimit("incomplete_saved_mapping_evidence")
+        kind = "scoped_mapping" if context["sourceDecision"] == "reviewed-scoped" else "suggestion"
+        if kind not in kinds:
+            continue
+        triple = (N(context["source"]["termIri"]), N(context["predicateIri"]), N(context["target"]["termIri"]))
+        if reader.values(record, RDF_REIFIES) != {ox.Triple(*triple)} or reader.values(record, provenance.terms().criticality) != {N(provenance.terms().values["critical"])}:
+            raise _ReadLimit("incomplete_saved_mapping_evidence")
+        columns = reader.values(record, "dcterms:isPartOf")
+        if len(columns) != 1:
+            raise _ReadLimit("incomplete_saved_mapping_evidence")
+        column = next(iter(columns))
+        if reader.values(column, "csvw:number") != {ox.Literal(context["columnOrdinal"] + 1)}:
+            raise _ReadLimit("incomplete_saved_mapping_evidence")
+        target = context["target"]
+        target_key = tuple(target[field] for field in ("nativeKey", "authorityName", "authorityVersion", "vocabularyIri", "termType"))
+        for owner, owner_membership in reader.memberships(column, "measurement").items():
+            # The source declaration must belong to this exact dataset edition.
+            if not (reader.values(record, "dcterms:source") & reader.values(owner, "dcterms:source")):
+                raise _ReadLimit("incomplete_saved_mapping_evidence")
+            for subject, predicate in reader.candidates("population", triple[2], True):
+                native = reader.native_context(subject, triple[2]) if predicate == N("dcterms:references") else None
+                if not native or native["family"] != "population" or tuple(native[field] for field in ("nativeKey", "authorityName", "authorityVersion", "vocabularyIri", "termType")) != target_key:
+                    continue
+                for other, membership in reader.native_memberships(subject, native).items():
+                    if owner == other or (owner in projects) == (other in projects):
+                        continue
+                    key = (record, owner, other, subject)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    yield {"owner": owner, "other": other, "record": record, "row": context,
+                        "kind": kind, "triple": triple, "native": native, "subject": subject,
+                        "predicate": predicate, "owner_membership": [(record, N("dcterms:isPartOf"), column), *owner_membership],
+                        "other_membership": membership, "owner_is_project": owner in projects}
+
+
 def discover(store_dir: Path, *, project_datasets: Sequence[str], families: Sequence[str] = FAMILIES,
              graphs: Sequence[str] | None = None, include_pending: bool = False,
-             limit: int = 50) -> dict:
+              limit: int = 50, relationship_kinds: Sequence[str] | None = None) -> dict:
     """Find OTHER datasets via exact shared IRIs and indexed evidence reads.
 
     Existing global review and criticality rules run on one original read-only
@@ -339,6 +392,10 @@ def discover(store_dir: Path, *, project_datasets: Sequence[str], families: Sequ
         raise ValueError(f"discovery: families must be a nonempty subset of {FAMILIES}")
     if type(limit) is not int or not 1 <= limit <= 100 or type(include_pending) is not bool:
         raise ValueError("discovery: limit must be 1..100 and include_pending must be boolean")
+    explicit_kinds = relationship_kinds is not None
+    kinds = ("exact_iri",) if relationship_kinds is None else relationship_kinds
+    if isinstance(kinds, (str, bytes)) or not isinstance(kinds, Sequence) or not kinds or len(kinds) > 3 or len(set(kinds)) != len(kinds) or any(kind not in RELATIONSHIP_KINDS for kind in kinds):
+        raise ValueError("discovery: relationship_kinds must be a nonempty subset of the closed relationship kinds")
     try:
         path = Path(store_dir)
     except (TypeError, ValueError) as exc:
@@ -367,9 +424,12 @@ def discover(store_dir: Path, *, project_datasets: Sequence[str], families: Sequ
             "review_materialization": "global_O(total_store)", "evidence_quads": 0,
             "resource_scope": "scan_limit bounds targeted distinct quad reads, not global review or native memory",
             "scope": "Exact IRI discovery only; no scientific compatibility, admission or publication inferred."}
+        if explicit_kinds:
+            response["relationship_kinds"] = sorted(kinds)
+            response["scope"] = "Exact references or one explicit saved-source relationship; no equivalence, normalization, pooling, admission or publication inferred."
         try:
             facts = sorted((f for d in sorted(projects, key=str)
-                for f in reader.project_facts(d, families, include_pending)), key=str)
+                for f in reader.project_facts(d, families, include_pending)), key=str) if "exact_iri" in kinds else []
             matches, seen = [], set()
             for dataset, family, obj, subject, predicate in facts:
                 context = reader.native_context(subject, obj) if predicate == N("dcterms:references") else None
@@ -396,7 +456,14 @@ def discover(store_dir: Path, *, project_datasets: Sequence[str], families: Sequ
                         break
                 if len(matches) > limit:
                     break
-            response["has_more"] = len(matches) > limit
+            mapped = []
+            if include_pending and "population" in families and len(matches) <= limit and any(kind in kinds for kind in ("scoped_mapping", "suggestion")):
+                for path in _saved_mapping_paths(reader, projects, kinds):
+                    mapped.append(path)
+                    if len(matches) + len(mapped) > limit:
+                        break
+            response["has_more"] = len(matches) + len(mapped) > limit
+            mapped = mapped[:max(0, limit - len(matches))]
             proof = _Proof(reader)
             for dataset, family, obj, subject, predicate, membership, other, other_subject, other_predicate, other_membership in matches[:limit]:
                 proof.node(dataset); proof.node(other)
@@ -404,6 +471,10 @@ def discover(store_dir: Path, *, project_datasets: Sequence[str], families: Sequ
                     proof.edge(*edge)
                 if family == "population":
                     proof.node(obj)
+            for path in mapped:
+                proof.node(path["owner"]); proof.node(path["other"]); proof.node(path["record"])
+                for edge in [path["triple"], (path["subject"], path["predicate"], path["triple"][2]), *path["owner_membership"], *path["other_membership"]]:
+                    proof.edge(*edge)
             evidence = _Evidence(proof.quads, pending, selected)
             response["evidence_quads"] = len(proof.quads)
             for dataset, family, obj, subject, predicate, membership, other, other_subject, other_predicate, other_membership in matches[:limit]:
@@ -425,6 +496,19 @@ def discover(store_dir: Path, *, project_datasets: Sequence[str], families: Sequ
                     "project": edge, "candidate": candidate,
                     **({"match_basis": "native_metadata_reference"} if context else {}),
                     "project_source": evidence.source(dataset), "candidate_source": evidence.source(other)})
+            for path in mapped:
+                subject, predicate, obj = path["triple"]
+                declared = {**evidence.edge(subject, predicate, obj), "membership": [evidence.edge(*edge) for edge in path["owner_membership"]]}
+                native = {**evidence.edge(path["subject"], path["predicate"], obj), "native_reference": path["native"], "membership": [evidence.edge(*edge) for edge in path["other_membership"]]}
+                project, other = (path["owner"], path["other"]) if path["owner_is_project"] else (path["other"], path["owner"])
+                response["paths"].append({"project_dataset": project.value, "dataset": other.value,
+                    "family": "population", "match": path["kind"], "path_state": "awaiting_review",
+                    "project": declared if path["owner_is_project"] else native,
+                    "candidate": native if path["owner_is_project"] else declared,
+                    "relationship": {"subject": subject.value, "predicate": predicate.value, "object": obj.value,
+                        "record": path["record"].value, "sourceDecision": path["row"]["sourceDecision"],
+                        "sharedReview": "awaiting_review", "ownerDataset": path["owner"].value, "context": path["row"]},
+                    "project_source": evidence.source(project), "candidate_source": evidence.source(other)})
         except _ReadLimit as exc:
             response.update(paths=[], has_more=True, scan_truncated=True,
                             query_status="partial_evidence_refused", partial_reason=str(exc), evidence_quads=0)
