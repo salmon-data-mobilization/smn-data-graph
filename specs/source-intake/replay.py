@@ -20,6 +20,47 @@ SPECS = Path(__file__).resolve().parents[1]
 BATCHES = {
     1: ("dfo-rs-productivity", "nwfsc-columbia-chum-2020", "sasap-sockeye-brood"),
     2: ("dfo-smu-cu-du-lookup", "nwfsc-snake-chinook-pit-model", "sasap-alaska-harvest-sectors"),
+    3: (
+        "dfo-atlantic-salmon-watch-bc",
+        "dfo-bc-lake-acoustic-targets",
+        "dfo-cwt-release",
+        "dfo-fraser-river-flows",
+        "dfo-pacific-estuary-habitat",
+        "dfo-pacific-postseason-catch",
+        "dfo-ricker-beam-trawl",
+        "dfo-salish-sea-juvenile-trawl",
+        "dfo-sep-postseason-production",
+        "dfo-south-coast-chinook-reference-fishery",
+        "california-chinook-ecosystem-indicators",
+        "cedar-river-off-channel-fish",
+        "coleman-chinook-metabolism",
+        "ctuir-chinook-radio-tracking",
+        "elwha-chinook-outmigration",
+        "hood-canal-steelhead-monitoring",
+        "idaho-juvenile-steelhead-snorkel",
+        "lower-granite-adult-steelhead",
+        "methow-river-fish-production",
+        "puget-sound-edge-habitat-fish",
+        "adfg-copper-chinook-escapement",
+        "koyukuk-chum-en-route-mortality",
+        "pws-hatchery-origin-salmon",
+        "pws-pink-salmon-parentage",
+        "sasap-alaska-fish-passage",
+        "sasap-alaska-fishery-disasters",
+        "sasap-alaska-regional-abundance",
+        "sasap-alaska-salmon-permit-earnings",
+        "sasap-ne-pacific-coho-broods",
+        "sasap-regional-salmon-weights",
+    ),
+}
+
+
+# Sources sharing a published format can share a verifier. Each verifier reads
+# the pinned source independently and takes the actual saved Spec as input.
+SHARED_VERIFIERS = {
+    "specs.dfo_pacific_tables_parser:parse": "verify_dfo_pacific_tables.py",
+    "specs.knb_lexical_csv:parse": "verify_knb_lexical_csv.py",
+    "specs.west_coast_csv:parse": "verify_west_coast_csv.py",
 }
 
 
@@ -59,10 +100,15 @@ def main():
         source_dir = intake_dir / slug
         raw, build = source_dir / "raw", source_dir / "build"
         spec_dir = SPECS / slug
-        spec = load_spec(spec_dir / f"{slug}.yaml")
+        spec_path = spec_dir / f"{slug}.yaml"
+        spec = load_spec(spec_path)
         # The executor resolves custom parser modules inside its own source tree.
         # Compare the actual staged module before the executor fingerprints and runs it.
         verifier = spec_dir / "verify_source.py"
+        verifier_args = []
+        if spec.parser in SHARED_VERIFIERS:
+            verifier = Path(__file__).with_name(SHARED_VERIFIERS[spec.parser])
+            verifier_args = ["--spec", str(spec_path)]
         if ":" in spec.parser:
             module, _ = spec.parser.split(":", 1)
             parser_file = Path(*module.split(".")).with_suffix(".py")
@@ -77,7 +123,7 @@ def main():
             build_dataset(spec, raw_dir=raw, out_dir=staged, vocab=vocab, build_date=args.build_date)
             if verifier.is_file():
                 subprocess.run(
-                    [sys.executable, str(verifier), "--raw-dir", str(raw), "--build-dir", str(staged)],
+                    [sys.executable, str(verifier), *verifier_args, "--raw-dir", str(raw), "--build-dir", str(staged)],
                     check=True,
                 )
             else:

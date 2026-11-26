@@ -1,0 +1,33 @@
+spec_version: 1
+slug: sasap-alaska-salmon-permit-earnings
+version: lexical-f1ww7fz2
+title: "Regional commercial salmon permit earnings by residency status, Alaska, 1975-2016"
+description: "[agent] The selected table gives inflation-adjusted permit earnings by fishing region, year and residency group. The author expresses earnings in millions of 2017 US dollars using the Anchorage consumer price index."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/F1WW7FZ2
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F1WW7FZ2
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: "Tobias Schwoerer (2019). Regional commercial salmon permit earnings by residency status, Alaska, 1975-2016. KNB Data Repository. https://doi.org/10.5063/F1WW7FZ2. CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/. Published CSVs are reserialized locally with structural graph metadata."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F1WW7FZ2
+      sha256: f17ae4bae322934ec0f3d79f2b06e0fa65874b42c939e6f36a13e156fa2a7f69
+    - name: regional_earnings_residency.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:60c9b706-fd2b-4aec-8085-d31948ab28e5
+      sha256: d4d8578433c91a312cd192a962a6425a8f6681b7c0fb3c6d91d0da8cc23d4cea
+parser: csv
+tables:
+  - id: earnings
+    file: regional_earnings_residency.csv
+    keys: ["Year", "Fishing_region", "type"]
+    columns:
+      - {name: "Year", role: attribute, datatype: string, description: "Year of harvest"}
+      - {name: "Fishing_region", role: attribute, datatype: string, description: "Region in which fish was harvested"}
+      - {name: "type", role: attribute, datatype: string, description: "Residency type"}
+      - {name: "real_earnings", role: attribute, datatype: string, description: "Adjusted earnings in millions of 2017 dollars"}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

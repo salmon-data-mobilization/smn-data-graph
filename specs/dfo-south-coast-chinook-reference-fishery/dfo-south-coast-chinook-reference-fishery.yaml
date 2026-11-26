@@ -1,0 +1,267 @@
+spec_version: 1
+slug: dfo-south-coast-chinook-reference-fishery
+version: lexical-ade85db7112d
+title: South Coast BC Chinook Reference Fishery biological samples
+description: The English resource for each of 2023, 2024 and 2025 records fish sampled in the Chinook Reference Fishery. Rows include date, creel sub-area, fin-clip status, length, size class, stock-region assignment and ranked alternatives with probabilities. The three distinct files retain the date formats used in each source.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/61c8c2cd-ca46-457f-aaf2-052d20e1622d
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, South Coast Area BC Chinook Reference Fishery Biological Data, Open Government Portal record 61c8c2cd-ca46-457f-aaf2-052d20e1622d. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: Reference_Fishery_Samples_2023_Englsih.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/61c8c2cd-ca46-457f-aaf2-052d20e1622d/attachments/Reference_Fishery_Samples_2023_Englsih.csv
+    sha256: f0fc0536eda4781dc243b8826ca465e1d970839bfbac345c7042ae25e0a87fde
+  - name: Reference_Fishery_Samples_2024_English.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/61c8c2cd-ca46-457f-aaf2-052d20e1622d/attachments/Reference_Fishery_Samples_2024_English.csv
+    sha256: 0594f55f5f88aeb077c128a5de90f8a4c8dd49538ee92c40f2583c016da43c4c
+  - name: Reference_Fishery_Samples_2025_English.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/61c8c2cd-ca46-457f-aaf2-052d20e1622d/attachments/Reference_Fishery_Samples_2025_English.csv
+    sha256: 410f36d366f2e486094f94d8fddd83c30a2d0c09178ab21fab728a56b0c1c582
+  - name: Data-Dictionary-English.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/61c8c2cd-ca46-457f-aaf2-052d20e1622d/attachments/Data%20Dictionary-English.csv
+    sha256: 55922c6b2665ae281b8907bb87216c7aa53d2809396801a7c052ea8c4b67ee90
+parser: specs.dfo_pacific_tables_parser:parse
+tables:
+- id: samples_2023
+  file: Reference_Fishery_Samples_2023_Englsih.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    role: attribute
+    datatype: string
+    description: One-based original CSV record position after the source header. Derived package key, local to this pinned source file or archive member.
+  - name: Catch Date
+    role: attribute
+    datatype: string
+  - name: Creel Sub-Area
+    role: attribute
+    datatype: string
+  - name: Adipose Fin Clipped
+    role: attribute
+    datatype: string
+    description: Indicator of a clipped adipose fin as assessed by the program.
+  - name: Length (cm)
+    role: attribute
+    datatype: string
+    description: Fish length measured from nose to fork in centimetres.
+  - name: Size Class
+    role: attribute
+    datatype: string
+  - name: Resolved Stock Region
+    role: attribute
+    datatype: string
+    description: Stock region reported for the genetic assignment.
+  - name: Probability
+    role: attribute
+    datatype: string
+    description: Probability associated with the resolved stock assignment.
+  - name: DNA Stock 1
+    role: attribute
+    datatype: string
+  - name: DNA Region 1
+    role: attribute
+    datatype: string
+  - name: Probability 1
+    role: attribute
+    datatype: string
+  - name: DNA Stock 2
+    role: attribute
+    datatype: string
+  - name: DNA Region 2
+    role: attribute
+    datatype: string
+  - name: Probability 2
+    role: attribute
+    datatype: string
+  - name: DNA Stock 3
+    role: attribute
+    datatype: string
+  - name: DNA Region 3
+    role: attribute
+    datatype: string
+  - name: Probability 3
+    role: attribute
+    datatype: string
+  - name: DNA Stock 4
+    role: attribute
+    datatype: string
+  - name: DNA Region 4
+    role: attribute
+    datatype: string
+  - name: Probability 4
+    role: attribute
+    datatype: string
+  - name: DNA Stock 5
+    role: attribute
+    datatype: string
+  - name: DNA Region 5
+    role: attribute
+    datatype: string
+  - name: Probability 5
+    role: attribute
+    datatype: string
+- id: samples_2024
+  file: Reference_Fishery_Samples_2024_English.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    role: attribute
+    datatype: string
+    description: One-based original CSV record position after the source header. Derived package key, local to this pinned source file or archive member.
+  - name: Catch Date
+    role: attribute
+    datatype: string
+  - name: Creel Sub-Area
+    role: attribute
+    datatype: string
+  - name: Adipose Fin Clipped
+    role: attribute
+    datatype: string
+    description: Indicator of a clipped adipose fin as assessed by the program.
+  - name: Length (cm)
+    role: attribute
+    datatype: string
+    description: Fish length measured from nose to fork in centimetres.
+  - name: Size Class
+    role: attribute
+    datatype: string
+  - name: Resolved Stock Region
+    role: attribute
+    datatype: string
+    description: Stock region reported for the genetic assignment.
+  - name: Probability
+    role: attribute
+    datatype: string
+    description: Probability associated with the resolved stock assignment.
+  - name: DNA Stock 1
+    role: attribute
+    datatype: string
+  - name: DNA Region 1
+    role: attribute
+    datatype: string
+  - name: Probability 1
+    role: attribute
+    datatype: string
+  - name: DNA Stock 2
+    role: attribute
+    datatype: string
+  - name: DNA Region 2
+    role: attribute
+    datatype: string
+  - name: Probability 2
+    role: attribute
+    datatype: string
+  - name: DNA Stock 3
+    role: attribute
+    datatype: string
+  - name: DNA Region 3
+    role: attribute
+    datatype: string
+  - name: Probability 3
+    role: attribute
+    datatype: string
+  - name: DNA Stock 4
+    role: attribute
+    datatype: string
+  - name: DNA Region 4
+    role: attribute
+    datatype: string
+  - name: Probability 4
+    role: attribute
+    datatype: string
+  - name: DNA Stock 5
+    role: attribute
+    datatype: string
+  - name: DNA Region 5
+    role: attribute
+    datatype: string
+  - name: Probability 5
+    role: attribute
+    datatype: string
+- id: samples_2025
+  file: Reference_Fishery_Samples_2025_English.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    role: attribute
+    datatype: string
+    description: One-based original CSV record position after the source header. Derived package key, local to this pinned source file or archive member.
+  - name: Catch Date
+    role: attribute
+    datatype: string
+  - name: Creel Sub-Area
+    role: attribute
+    datatype: string
+  - name: Adipose Fin Clipped
+    role: attribute
+    datatype: string
+    description: Indicator of a clipped adipose fin as assessed by the program.
+  - name: Length (cm)
+    role: attribute
+    datatype: string
+    description: Fish length measured from nose to fork in centimetres.
+  - name: Size Class
+    role: attribute
+    datatype: string
+  - name: Resolved Stock Region
+    role: attribute
+    datatype: string
+    description: Stock region reported for the genetic assignment.
+  - name: Probability
+    role: attribute
+    datatype: string
+    description: Probability associated with the resolved stock assignment.
+  - name: DNA Stock 1
+    role: attribute
+    datatype: string
+  - name: DNA Region 1
+    role: attribute
+    datatype: string
+  - name: Probability 1
+    role: attribute
+    datatype: string
+  - name: DNA Stock 2
+    role: attribute
+    datatype: string
+  - name: DNA Region 2
+    role: attribute
+    datatype: string
+  - name: Probability 2
+    role: attribute
+    datatype: string
+  - name: DNA Stock 3
+    role: attribute
+    datatype: string
+  - name: DNA Region 3
+    role: attribute
+    datatype: string
+  - name: Probability 3
+    role: attribute
+    datatype: string
+  - name: DNA Stock 4
+    role: attribute
+    datatype: string
+  - name: DNA Region 4
+    role: attribute
+    datatype: string
+  - name: Probability 4
+    role: attribute
+    datatype: string
+  - name: DNA Stock 5
+    role: attribute
+    datatype: string
+  - name: DNA Region 5
+    role: attribute
+    datatype: string
+  - name: Probability 5
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

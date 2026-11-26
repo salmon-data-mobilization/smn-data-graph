@@ -1,0 +1,155 @@
+spec_version: 1
+slug: dfo-cwt-release
+version: lexical-dc928268dcb3
+title: Pacific Canadian coded-wire-tag release groups
+description: The complete DFO release file describes tagged release groups and untagged or unassociated groups. The source-local tag code or release ID is distinct and nonempty in these bytes. The dictionary describes release dates, tag types, numbers marked and release locations.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/09f0e153-4573-4e5d-9ba3-fd0238b4bb7a
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Salmon Coded-Wire-Tag Fishery Sampling -- Release Data, Open Government Portal record 09f0e153-4573-4e5d-9ba3-fd0238b4bb7a. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: RL042_CDFO_FULLSET.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/09f0e153-4573-4e5d-9ba3-fd0238b4bb7a/attachments/RL042_CDFO_FULLSET.csv
+    sha256: ad8fce351d413edd0e3cb0c3132fd249ead786ef3ecde64cd9ed221a52f4b4d8
+  - name: Data_Dictionary_CWT_RL042.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/09f0e153-4573-4e5d-9ba3-fd0238b4bb7a/attachments/Data_Dictionary_CWT_RL042.csv
+    sha256: 6ecf95be418aa2080b6b39bd4b22a18a14ff28069061174f9ea1e8bdcb5051e2
+parser: csv
+tables:
+- id: releases
+  file: RL042_CDFO_FULLSET.csv
+  keys:
+  - tag_code_or_release_id
+  columns:
+  - name: record_code
+    role: attribute
+    datatype: string
+  - name: format_version
+    role: attribute
+    datatype: string
+  - name: submission_date
+    role: attribute
+    datatype: string
+  - name: reporting_agency
+    role: attribute
+    datatype: string
+  - name: release_agency
+    role: attribute
+    datatype: string
+  - name: coordinator
+    role: attribute
+    datatype: string
+  - name: tag_code_or_release_id
+    role: attribute
+    datatype: string
+    description: The source’s tag code for a tagged group or release identifier for an unassociated group.
+  - name: tag_type
+    role: attribute
+    datatype: string
+  - name: first_sequential_number
+    role: attribute
+    datatype: string
+  - name: last_sequential_number
+    role: attribute
+    datatype: string
+  - name: related_group_type
+    role: attribute
+    datatype: string
+  - name: related_group_id
+    role: attribute
+    datatype: string
+  - name: species
+    role: attribute
+    datatype: string
+  - name: run
+    role: attribute
+    datatype: string
+  - name: brood_year
+    role: attribute
+    datatype: string
+  - name: first_release_date
+    role: attribute
+    datatype: string
+    description: First date reported for the source release group.
+  - name: last_release_date
+    role: attribute
+    datatype: string
+    description: Last date reported for the source release group.
+  - name: release_location_code
+    role: attribute
+    datatype: string
+  - name: hatchery_location_code
+    role: attribute
+    datatype: string
+  - name: stock_location_code
+    role: attribute
+    datatype: string
+  - name: release_stage
+    role: attribute
+    datatype: string
+  - name: rearing_type
+    role: attribute
+    datatype: string
+  - name: study_type
+    role: attribute
+    datatype: string
+  - name: release_strategy
+    role: attribute
+    datatype: string
+  - name: avg_weight
+    role: attribute
+    datatype: string
+  - name: avg_length
+    role: attribute
+    datatype: string
+  - name: study_integrity
+    role: attribute
+    datatype: string
+  - name: cwt_1st_mark
+    role: attribute
+    datatype: string
+  - name: cwt_1st_mark_count
+    role: attribute
+    datatype: string
+  - name: cwt_2nd_mark
+    role: attribute
+    datatype: string
+  - name: cwt_2nd_mark_count
+    role: attribute
+    datatype: string
+  - name: non_cwt_1st_mark
+    role: attribute
+    datatype: string
+  - name: non_cwt_1st_mark_count
+    role: attribute
+    datatype: string
+  - name: non_cwt_2nd_mark
+    role: attribute
+    datatype: string
+  - name: non_cwt_2nd_mark_count
+    role: attribute
+    datatype: string
+  - name: counting_method
+    role: attribute
+    datatype: string
+  - name: tag_loss_rate
+    role: attribute
+    datatype: string
+  - name: tag_loss_days
+    role: attribute
+    datatype: string
+  - name: tag_loss_sample_size
+    role: attribute
+    datatype: string
+  - name: tag_reused
+    role: attribute
+    datatype: string
+  - name: comments
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

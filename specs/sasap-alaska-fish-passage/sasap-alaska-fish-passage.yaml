@@ -1,0 +1,36 @@
+spec_version: 1
+slug: sasap-alaska-fish-passage
+version: lexical-f1qz287t
+title: "Regional fish passage assessment, Alaska, 2000-2017"
+description: "[agent] The published regional table counts assessed culverts by passage classification. It gives one row for each of 13 SASAP regions. The classification describes how suitable a crossing is likely to be for fish passage."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/F1QZ287T
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F1QZ287T
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: "Leslie Jones, Jared Kibele, Marie Johnson (2019). Regional fish passage assessment, Alaska, 2000-2017. KNB Data Repository. https://doi.org/10.5063/F1QZ287T. CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/. Published CSVs are reserialized locally with structural graph metadata."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F1QZ287T
+      sha256: 1c9b7994c7f70c93acb9d712ab7653652d04d2b9f5dcf503ebfef7413ea35a12
+    - name: RegFishPass_2010-2017.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:4e78b33e-0b24-4d9d-9e30-8cc0c26e4eb9
+      sha256: 202e7d50a57ddf14cbc1a27614df0429d0d2f2935368b13874a7f617dd001149
+parser: csv
+tables:
+  - id: passage
+    file: RegFishPass_2010-2017.csv
+    keys: ["region_id"]
+    columns:
+      - {name: "region", role: attribute, datatype: string, description: "SASAP region where culvert is located"}
+      - {name: "region_id", role: attribute, datatype: string, description: "SASAP region ID number where culvert is located."}
+      - {name: "Black", role: attribute, datatype: string, description: "Number of classified culverts. Black indicates culvert status is unknown."}
+      - {name: "Green", role: attribute, datatype: string, description: "Number of classified culverts. Green indicates culvert is likely adequate for fish passage."}
+      - {name: "Gray", role: attribute, datatype: string, description: "Number of classified culverts. Gray indicates culvert might be inadequate for fish passage."}
+      - {name: "Red", role: attribute, datatype: string, description: "Number of classified culverts. Red indicates culvert is likely inadequate for fish passage."}
+      - {name: "RedandGray", role: attribute, datatype: string, description: "Number of red and gray classified culverts. Red and gray indicates there is some uncertainty of the adequacy for fish passage but that it is likely inadequate."}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

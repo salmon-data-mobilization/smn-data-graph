@@ -1,0 +1,328 @@
+spec_version: 1
+slug: ctuir-chinook-radio-tracking
+version: v2-lexical-ce76ca0c0069
+title: Chinook salmon radio-tracking detections from the CTUIR study
+description: '[agent] The Confederated Tribes of the Umatilla Indian Reservation collected the radio-tracking data. The complete detection table includes fish identifiers, dates, river positions, body measurements and environmental covariates. The record credits Casey Justice of the Columbia River Inter-Tribal Fish Commission for the water-temperature inputs. Other covariate files, figures and analysis scripts remain in the deposit.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.6084/m9.figshare.27122838.v2
+  doi: 10.6084/m9.figshare.27122838.v2
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: 'Tara Blackman. R script and data: CTUIR Chinook radio-tagging study. Figshare, version 2. https://doi.org/10.6084/m9.figshare.27122838.v2. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. The selected table is reserialized as text with a source row number and structural metadata. The Confederated Tribes of the Umatilla Indian Reservation collected the tracking data. Casey Justice of the Columbia River Inter-Tribal Fish Commission provided water-temperature inputs.'
+  files:
+  - name: detection_data.csv
+    url: https://ndownloader.figshare.com/files/52045754
+    sha256: ce76ca0c006958e845f2c61db46de2929af47e08dd2374345753439d5ea68186
+parser: specs.west_coast_csv:parse
+tables:
+- id: detections
+  file: detection_data.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: rkm
+    label: rkm
+    role: attribute
+    datatype: string
+  - name: y
+    label: y
+    role: attribute
+    datatype: string
+  - name: date
+    label: date
+    role: attribute
+    datatype: string
+  - name: ID
+    label: ID
+    role: attribute
+    datatype: string
+  - name: days_after_tag
+    label: days_after_tag
+    role: attribute
+    datatype: string
+  - name: sex
+    label: sex
+    role: attribute
+    datatype: string
+  - name: fork_length
+    label: fork_length
+    role: attribute
+    datatype: string
+  - name: interpolated
+    label: interpolated
+    role: attribute
+    datatype: string
+  - name: reach_old
+    label: reach_old
+    role: attribute
+    datatype: string
+  - name: reach
+    label: reach
+    role: attribute
+    datatype: string
+  - name: reach_length
+    label: reach_length
+    role: attribute
+    datatype: string
+  - name: rkm_down
+    label: rkm_down
+    role: attribute
+    datatype: string
+  - name: rkm_up
+    label: rkm_up
+    role: attribute
+    datatype: string
+  - name: valleytype
+    label: valleytype
+    role: attribute
+    datatype: string
+  - name: slope_type
+    label: slope_type
+    role: attribute
+    datatype: string
+  - name: slope
+    label: slope
+    role: attribute
+    datatype: string
+  - name: land_cover
+    label: land_cover
+    role: attribute
+    datatype: string
+  - name: perc_suit_hold
+    label: perc_suit_hold
+    role: attribute
+    datatype: string
+  - name: redd_dens
+    label: redd_dens
+    role: attribute
+    datatype: string
+  - name: below_vey
+    label: below_vey
+    role: attribute
+    datatype: string
+  - name: vey
+    label: vey
+    role: attribute
+    datatype: string
+  - name: above_vey
+    label: above_vey
+    role: attribute
+    datatype: string
+  - name: month
+    label: month
+    role: attribute
+    datatype: string
+  - name: days_after_tag_nonzero
+    label: days_after_tag_nonzero
+    role: attribute
+    datatype: string
+  - name: rkm_round
+    label: rkm_round
+    role: attribute
+    datatype: string
+  - name: temp_avg_day
+    label: temp_avg_day
+    role: attribute
+    datatype: string
+  - name: temp_min_day
+    label: temp_min_day
+    role: attribute
+    datatype: string
+  - name: temp_max_day
+    label: temp_max_day
+    role: attribute
+    datatype: string
+  - name: cfs_day
+    label: cfs_day
+    role: attribute
+    datatype: string
+  - name: obs_in_spawnperiod
+    label: obs_in_spawnperiod
+    role: attribute
+    datatype: string
+  - name: day
+    label: day
+    role: attribute
+    datatype: string
+  - name: dist_day
+    label: dist_day
+    role: attribute
+    datatype: string
+  - name: dist_day_dir
+    label: dist_day_dir
+    role: attribute
+    datatype: string
+  - name: dist_above_weir
+    label: dist_above_weir
+    role: attribute
+    datatype: string
+  - name: dadm7
+    label: dadm7
+    role: attribute
+    datatype: string
+  - name: max_sub_rkm
+    label: max_sub_rkm
+    role: attribute
+    datatype: string
+  - name: min_sub_rkm
+    label: min_sub_rkm
+    role: attribute
+    datatype: string
+  - name: max_sub_dist_day
+    label: max_sub_dist_day
+    role: attribute
+    datatype: string
+  - name: state_mh
+    label: state_mh
+    role: attribute
+    datatype: string
+  - name: state_mha
+    label: state_mha
+    role: attribute
+    datatype: string
+  - name: week_num
+    label: week_num
+    role: attribute
+    datatype: string
+  - name: cfs_day_std
+    label: cfs_day_std
+    role: attribute
+    datatype: string
+  - name: week_num_std
+    label: week_num_std
+    role: attribute
+    datatype: string
+  - name: temp_avg_day_std
+    label: temp_avg_day_std
+    role: attribute
+    datatype: string
+  - name: temp_min_day_std
+    label: temp_min_day_std
+    role: attribute
+    datatype: string
+  - name: temp_max_day_std
+    label: temp_max_day_std
+    role: attribute
+    datatype: string
+  - name: dadm7_std
+    label: dadm7_std
+    role: attribute
+    datatype: string
+  - name: land_cover_std
+    label: land_cover_std
+    role: attribute
+    datatype: string
+  - name: slope_std
+    label: slope_std
+    role: attribute
+    datatype: string
+  - name: redd_dens_std
+    label: redd_dens_std
+    role: attribute
+    datatype: string
+  - name: fork_length_std
+    label: fork_length_std
+    role: attribute
+    datatype: string
+  - name: perc_suit_hold_std
+    label: perc_suit_hold_std
+    role: attribute
+    datatype: string
+  - name: days_after_tag_std
+    label: days_after_tag_std
+    role: attribute
+    datatype: string
+  - name: dist_above_weir_std
+    label: dist_above_weir_std
+    role: attribute
+    datatype: string
+  - name: year
+    label: year
+    role: attribute
+    datatype: string
+  - name: reach_2
+    label: reach_2
+    role: attribute
+    datatype: string
+  - name: reach_3
+    label: reach_3
+    role: attribute
+    datatype: string
+  - name: reach_4
+    label: reach_4
+    role: attribute
+    datatype: string
+  - name: reach_5
+    label: reach_5
+    role: attribute
+    datatype: string
+  - name: reach_6
+    label: reach_6
+    role: attribute
+    datatype: string
+  - name: reach_7
+    label: reach_7
+    role: attribute
+    datatype: string
+  - name: reach_8
+    label: reach_8
+    role: attribute
+    datatype: string
+  - name: reach_9
+    label: reach_9
+    role: attribute
+    datatype: string
+  - name: reach_10
+    label: reach_10
+    role: attribute
+    datatype: string
+  - name: reach_11
+    label: reach_11
+    role: attribute
+    datatype: string
+  - name: reach_12
+    label: reach_12
+    role: attribute
+    datatype: string
+  - name: reach_13
+    label: reach_13
+    role: attribute
+    datatype: string
+  - name: reach_14
+    label: reach_14
+    role: attribute
+    datatype: string
+  - name: year_2020
+    label: year_2020
+    role: attribute
+    datatype: string
+  - name: year_2022
+    label: year_2022
+    role: attribute
+    datatype: string
+  - name: sex_male
+    label: sex_male
+    role: attribute
+    datatype: string
+  - name: slope_type_pool_riffle
+    label: slope_type_pool_riffle
+    role: attribute
+    datatype: string
+  - name: valleytype_partially_confined
+    label: valleytype_partially_confined
+    role: attribute
+    datatype: string
+  - name: valleytype_confined
+    label: valleytype_confined
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

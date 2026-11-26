@@ -1,0 +1,37 @@
+spec_version: 1
+slug: koyukuk-chum-en-route-mortality
+version: lexical-f1bg2mb2
+title: "Documentation of en route mortality of summer chum salmon in the Koyukuk River, Alaska and its potential linkage to the heatwave of 2019"
+description: "[agent] The complete 2019 field table records date, location, live/dead status, sex fields, length and age. The 861 published rows include 68 dead fish from the Koyukuk mainstem and 793 live fish across the other two locations."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/F1BG2MB2
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F1BG2MB2
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: "Peter Westley (2020). Documentation of en route mortality of summer chum salmon in the Koyukuk River, Alaska and its potential linkage to the heatwave of 2019. KNB Data Repository. https://doi.org/10.5063/F1BG2MB2. CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/. Published CSVs are reserialized locally with structural graph metadata. Documented reversible source-format fields preserve original records and their cells."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F1BG2MB2
+      sha256: 4b9fc5244a5f2312d17d5416284d021e7d319f1cc0a5ae2aa580a6eab4edb2d1
+    - name: Compiled_data.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:98764977-4596-4e5e-9d52-05121faba935
+      sha256: b7a778d45c4f9e06ced90f688beb6a6ec8a0414d8793c897beb4ae76da2e7a3b
+parser: specs.knb_lexical_csv:parse
+tables:
+  - id: mortality
+    file: Compiled_data.csv
+    keys: ["source_record_number"]
+    columns:
+      - {name: "Date", role: attribute, datatype: string, description: "Source column Date."}
+      - {name: "Location", role: attribute, datatype: string, description: "Source column Location."}
+      - {name: "Live.Dead", role: attribute, datatype: string, description: "Source column Live.Dead."}
+      - {name: "Sex.Code", role: attribute, datatype: string, description: "Source column Sex.Code."}
+      - {name: "Sex", role: attribute, datatype: string, description: "Source column Sex."}
+      - {name: "Length", role: attribute, datatype: string, description: "Source column Length."}
+      - {name: "Age", role: attribute, datatype: string, description: "Source column Age."}
+      - {name: "source_record_number", role: attribute, datatype: string, description: "One-based position of this data record after the header in the pinned source CSV."}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

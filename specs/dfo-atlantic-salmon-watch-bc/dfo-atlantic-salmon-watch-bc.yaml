@@ -1,0 +1,60 @@
+spec_version: 1
+slug: dfo-atlantic-salmon-watch-bc
+version: lexical-df7279d654a5
+title: Atlantic salmon reported in British Columbia waters
+description: The English Atlantic Salmon Watch Program file comprises 117 reports. DFO verified 79 reports as Atlantic salmon and recorded 38 as unconfirmed by a “No” flag. The source distinguishes these categories. Pairs of reports can share a date and location. The file ends with 25 empty export records, which are checked separately and omitted from the report count.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/f0299fb3-73b9-4977-b96a-c83bd84ebdc4
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Reports of Atlantic salmon captured in BC waters, Open Government Portal record f0299fb3-73b9-4977-b96a-c83bd84ebdc4. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: aswp-pssa-2005-ongoing-rpt-pac-dfo-mpo-aquaculture-eng.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/f0299fb3-73b9-4977-b96a-c83bd84ebdc4/attachments/aswp-pssa-2005-ongoing-rpt-pac-dfo-mpo-aquaculture-eng.csv
+    sha256: 8accae67ec6a3c1b4f4ec20c86ee138a06303bb235291b1354d1a11fd9fea372
+  - name: aswp-pssa-2005-ongoing-def-pac-dfo-mpo-aquaculture-eng.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/f0299fb3-73b9-4977-b96a-c83bd84ebdc4/attachments/aswp-pssa-2005-ongoing-def-pac-dfo-mpo-aquaculture-eng.csv
+    sha256: db298069d5c8acc5492fbb494e6b0dd2b8dc4025bb6059020de7248c31a23bc2
+parser: specs.dfo_pacific_tables_parser:parse
+tables:
+- id: reports
+  file: aswp-pssa-2005-ongoing-rpt-pac-dfo-mpo-aquaculture-eng.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    role: attribute
+    datatype: string
+    description: One-based original CSV record position after the source header. Derived package key, local to this pinned source file or archive member.
+  - name: Date
+    role: attribute
+    datatype: string
+    description: Date the fish was reported to DFO.
+  - name: Location
+    role: attribute
+    datatype: string
+  - name: Confirmed Atlantic Salmon?
+    role: attribute
+    datatype: string
+    description: DFO assessment of whether the reported fish was an Atlantic salmon.
+  - name: Life Stage
+    role: attribute
+    datatype: string
+  - name: Catch Method
+    role: attribute
+    datatype: string
+  - name: Condition
+    role: attribute
+    datatype: string
+  - name: Comments
+    role: attribute
+    datatype: string
+  - name: source_cell_padding
+    role: attribute
+    datatype: string
+    description: Reconstruction metadata. A JSON object maps one-based original field positions to the exact [prefix, suffix] whitespace removed for the SDK. Restore the first string before and the second after the packaged cell. An empty field means no padding was separated.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

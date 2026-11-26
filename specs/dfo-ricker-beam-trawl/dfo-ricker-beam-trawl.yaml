@@ -1,0 +1,432 @@
+spec_version: 1
+slug: dfo-ricker-beam-trawl
+version: lexical-97daf040ba3a
+title: Ricker beam trawl juvenile salmon set logs
+description: The English set-log table records the 1990–1993 surface beam trawl study off western Vancouver Island. Its 131 fields include tow identifiers, gear, start and end times, surface conditions and catch categories by species. Set ID alone repeats in this file.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/b16db0fe-a4ec-4844-819e-630e33137b6d
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Ocean Salmon Program - Ricker Beam Trawl Juvenile Salmon Study from 1990 to 1993, Open Government Portal record b16db0fe-a4ec-4844-819e-630e33137b6d. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: Ricker_Beam_Trawl_Set_Logs_1990_1993_EN.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/b16db0fe-a4ec-4844-819e-630e33137b6d/attachments/Ricker_Beam_Trawl_Set_Logs_1990_1993_EN.csv
+    sha256: 1bc5e8410c97ff7e52e9d17b4f427675539b304777600b3c5aa1f404a662ba94
+  - name: Data_Dictionary_Ricker_Beam_Trawl.htm
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/b16db0fe-a4ec-4844-819e-630e33137b6d/attachments/Data_Dictionary_Ricker_Beam_Trawl.htm
+    sha256: 3b2a8c8d1fb997e27e51feb853ab326759efd9239b191ef01d5855562c718fa5
+parser: specs.dfo_pacific_tables_parser:parse
+tables:
+- id: set_logs
+  file: Ricker_Beam_Trawl_Set_Logs_1990_1993_EN.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    role: attribute
+    datatype: string
+    description: One-based original CSV record position after the source header. Derived package key, local to this pinned source file or archive member.
+  - name: PAIR_NUM
+    role: attribute
+    datatype: string
+  - name: ID_NUM
+    role: attribute
+    datatype: string
+    description: Identifier on the original set log. It repeats in these bytes.
+  - name: START_DTT_ISO8601
+    role: attribute
+    datatype: string
+  - name: END_DTT_ISO8601
+    role: attribute
+    datatype: string
+  - name: GEAR
+    role: attribute
+    datatype: string
+  - name: PURPOSE
+    role: attribute
+    datatype: string
+  - name: LOCATION
+    role: attribute
+    datatype: string
+  - name: TRANS_NUM
+    role: attribute
+    datatype: string
+  - name: SLATITUDE
+    role: attribute
+    datatype: string
+  - name: SLONGITUDE
+    role: attribute
+    datatype: string
+  - name: FLATITUDE
+    role: attribute
+    datatype: string
+  - name: FLONGITUDE
+    role: attribute
+    datatype: string
+  - name: DIST_OFF
+    role: attribute
+    datatype: string
+  - name: SPEED
+    role: attribute
+    datatype: string
+  - name: DURATION
+    role: attribute
+    datatype: string
+  - name: SURF_TEMP
+    role: attribute
+    datatype: string
+  - name: SURF_SAL
+    role: attribute
+    datatype: string
+  - name: S_SOCKEYE1
+    role: attribute
+    datatype: string
+  - name: S_SOCKEYE2
+    role: attribute
+    datatype: string
+  - name: S_SOCKEYE3
+    role: attribute
+    datatype: string
+  - name: S_SOCKEYE4
+    role: attribute
+    datatype: string
+  - name: S_SOCKEYE5
+    role: attribute
+    datatype: string
+  - name: S_SOCKEYE6
+    role: attribute
+    datatype: string
+  - name: S_CHINOOK1
+    role: attribute
+    datatype: string
+  - name: S_CHINOOK2
+    role: attribute
+    datatype: string
+  - name: S_CHINOOK3
+    role: attribute
+    datatype: string
+  - name: S_CHINOOK4
+    role: attribute
+    datatype: string
+  - name: S_CHINOOK5
+    role: attribute
+    datatype: string
+  - name: S_CHINOOK6
+    role: attribute
+    datatype: string
+  - name: S_COHO1
+    role: attribute
+    datatype: string
+  - name: S_COHO2
+    role: attribute
+    datatype: string
+  - name: S_COHO3
+    role: attribute
+    datatype: string
+  - name: S_COHO4
+    role: attribute
+    datatype: string
+  - name: S_COHO5
+    role: attribute
+    datatype: string
+  - name: S_COHO6
+    role: attribute
+    datatype: string
+  - name: S_CHUM1
+    role: attribute
+    datatype: string
+  - name: S_CHUM2
+    role: attribute
+    datatype: string
+  - name: S_CHUM3
+    role: attribute
+    datatype: string
+  - name: S_CHUM4
+    role: attribute
+    datatype: string
+  - name: S_CHUM5
+    role: attribute
+    datatype: string
+  - name: S_CHUM6
+    role: attribute
+    datatype: string
+  - name: S_PINK1
+    role: attribute
+    datatype: string
+  - name: S_PINK2
+    role: attribute
+    datatype: string
+  - name: S_PINK3
+    role: attribute
+    datatype: string
+  - name: S_PINK4
+    role: attribute
+    datatype: string
+  - name: S_PINK5
+    role: attribute
+    datatype: string
+  - name: S_PINK6
+    role: attribute
+    datatype: string
+  - name: J_SOCKEYE1
+    role: attribute
+    datatype: string
+  - name: J_SOCKEYE2
+    role: attribute
+    datatype: string
+  - name: J_SOCKEYE3
+    role: attribute
+    datatype: string
+  - name: J_CHINOOK1
+    role: attribute
+    datatype: string
+  - name: J_CHINOOK2
+    role: attribute
+    datatype: string
+  - name: J_CHINOOK3
+    role: attribute
+    datatype: string
+  - name: J_COHO1
+    role: attribute
+    datatype: string
+  - name: J_COHO2
+    role: attribute
+    datatype: string
+  - name: J_COHO3
+    role: attribute
+    datatype: string
+  - name: J_CHUM1
+    role: attribute
+    datatype: string
+  - name: J_CHUM2
+    role: attribute
+    datatype: string
+  - name: J_CHUM3
+    role: attribute
+    datatype: string
+  - name: J_PINK1
+    role: attribute
+    datatype: string
+  - name: J_PINK2
+    role: attribute
+    datatype: string
+  - name: J_PINK3
+    role: attribute
+    datatype: string
+  - name: J_STEELHD1
+    role: attribute
+    datatype: string
+  - name: J_STEELHD2
+    role: attribute
+    datatype: string
+  - name: J_STEELHD3
+    role: attribute
+    datatype: string
+  - name: A_SOCKEYE1
+    role: attribute
+    datatype: string
+  - name: A_SOCKEYE2
+    role: attribute
+    datatype: string
+  - name: A_SOCKEYE3
+    role: attribute
+    datatype: string
+  - name: A_CHINOOK1
+    role: attribute
+    datatype: string
+  - name: A_CHINOOK2
+    role: attribute
+    datatype: string
+  - name: A_CHINOOK3
+    role: attribute
+    datatype: string
+  - name: A_COHO1
+    role: attribute
+    datatype: string
+  - name: A_COHO2
+    role: attribute
+    datatype: string
+  - name: A_COHO3
+    role: attribute
+    datatype: string
+  - name: A_CHUM1
+    role: attribute
+    datatype: string
+  - name: A_CHUM2
+    role: attribute
+    datatype: string
+  - name: A_CHUM3
+    role: attribute
+    datatype: string
+  - name: A_PINK1
+    role: attribute
+    datatype: string
+  - name: A_PINK2
+    role: attribute
+    datatype: string
+  - name: A_PINK3
+    role: attribute
+    datatype: string
+  - name: A_STEELHD1
+    role: attribute
+    datatype: string
+  - name: A_STEELHD2
+    role: attribute
+    datatype: string
+  - name: A_STEELHD3
+    role: attribute
+    datatype: string
+  - name: DOGFISH1
+    role: attribute
+    datatype: string
+  - name: DOGFISH2
+    role: attribute
+    datatype: string
+  - name: CHUB_MACK1
+    role: attribute
+    datatype: string
+  - name: CHUB_MACK2
+    role: attribute
+    datatype: string
+  - name: HAKE1
+    role: attribute
+    datatype: string
+  - name: HAKE2
+    role: attribute
+    datatype: string
+  - name: POLLOCK1
+    role: attribute
+    datatype: string
+  - name: POLLOCK2
+    role: attribute
+    datatype: string
+  - name: LINGCOD1
+    role: attribute
+    datatype: string
+  - name: LINGCOD2
+    role: attribute
+    datatype: string
+  - name: YELLWT_RF1
+    role: attribute
+    datatype: string
+  - name: YELLWT_RF2
+    role: attribute
+    datatype: string
+  - name: BOCACCIO1
+    role: attribute
+    datatype: string
+  - name: BOCACCIO2
+    role: attribute
+    datatype: string
+  - name: ROCKFISH1
+    role: attribute
+    datatype: string
+  - name: ROCKFISH2
+    role: attribute
+    datatype: string
+  - name: SCULPIN1
+    role: attribute
+    datatype: string
+  - name: SCULPIN2
+    role: attribute
+    datatype: string
+  - name: SABLEFISH1
+    role: attribute
+    datatype: string
+  - name: SABLEFISH2
+    role: attribute
+    datatype: string
+  - name: WOLF_EEL1
+    role: attribute
+    datatype: string
+  - name: WOLF_EEL2
+    role: attribute
+    datatype: string
+  - name: SANDLANCE1
+    role: attribute
+    datatype: string
+  - name: SANDLANCE2
+    role: attribute
+    datatype: string
+  - name: HERRING1
+    role: attribute
+    datatype: string
+  - name: HERRING2
+    role: attribute
+    datatype: string
+  - name: POACHER1
+    role: attribute
+    datatype: string
+  - name: POACHER2
+    role: attribute
+    datatype: string
+  - name: SAURY1
+    role: attribute
+    datatype: string
+  - name: SAURY2
+    role: attribute
+    datatype: string
+  - name: SMELT1
+    role: attribute
+    datatype: string
+  - name: SMELT2
+    role: attribute
+    datatype: string
+  - name: SUNFISH1
+    role: attribute
+    datatype: string
+  - name: SUNFISH2
+    role: attribute
+    datatype: string
+  - name: FLATFISH1
+    role: attribute
+    datatype: string
+  - name: FLATFISH2
+    role: attribute
+    datatype: string
+  - name: SHINER_P1
+    role: attribute
+    datatype: string
+  - name: SHINER_P2
+    role: attribute
+    datatype: string
+  - name: LANTERN1
+    role: attribute
+    datatype: string
+  - name: LANTERN2
+    role: attribute
+    datatype: string
+  - name: SANDFISH1
+    role: attribute
+    datatype: string
+  - name: SANDFISH2
+    role: attribute
+    datatype: string
+  - name: SQUID1
+    role: attribute
+    datatype: string
+  - name: SQUID2
+    role: attribute
+    datatype: string
+  - name: JELLYFISH
+    role: attribute
+    datatype: string
+  - name: OTHER
+    role: attribute
+    datatype: string
+  - name: OTHER2
+    role: attribute
+    datatype: string
+  - name: COMMENTS
+    role: attribute
+    datatype: string
+    description: Original survey comments.
+  - name: source_cell_padding
+    role: attribute
+    datatype: string
+    description: Reconstruction metadata. A JSON object maps one-based original field positions to the exact [prefix, suffix] whitespace removed for the SDK. Restore the first string before and the second after the packaged cell. An empty field means no padding was separated.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

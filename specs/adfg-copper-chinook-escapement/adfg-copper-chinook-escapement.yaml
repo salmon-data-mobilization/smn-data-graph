@@ -1,0 +1,71 @@
+spec_version: 1
+slug: adfg-copper-chinook-escapement
+version: lexical-f14f1p0t
+title: "Estimated annual Chinook Salmon escapement at Copper River from 1980 to 2016"
+description: "[agent] The standardized CSV gives annual spawning escapement estimates for 1999–2016. The detailed calculation CSV covers 1975–2016 and includes harvest, in-river abundance, uncertainty and total escapement."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/F14F1P0T
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F14F1P0T
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: "James Savereide (2017). Estimated annual Chinook Salmon escapement at Copper River from 1980 to 2016. KNB Data Repository. https://doi.org/10.5063/F14F1P0T. CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/. Published CSVs are reserialized locally with structural graph metadata."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F14F1P0T
+      sha256: f8dad65fa313cd61dab009590549eb8463ff705b7013b4eaf0f592b89f872261
+    - name: escapement_copper-river_chinook_1999-2016_standardized.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:c17f0db5-330d-4739-af48-202279b37322
+      sha256: 971ace63ff785709445254f963767b4d6b1cc7cdcc4c72a588226d848f49c141
+    - name: escapement_copper-river_chinook_1975-2016_excel-sheet-1.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:7ca0f768-a849-4383-84b3-02aacc55caaa
+      sha256: 51e979dd99a85338291991a75550454383028d7ecd3c3e908e206bcee10b5faa
+parser: csv
+tables:
+  - id: escapement
+    file: escapement_copper-river_chinook_1999-2016_standardized.csv
+    keys: ["sampleYear"]
+    columns:
+      - {name: "location", role: attribute, datatype: string, description: "Location of sample"}
+      - {name: "SASAP.region", role: attribute, datatype: string, description: "SASAP region name"}
+      - {name: "sampleYear", role: attribute, datatype: string, description: "Year of observation"}
+      - {name: "species", role: attribute, datatype: string, description: "Species observed"}
+      - {name: "cumulativeCount", role: attribute, datatype: string, description: "Estimated cumulative spawning escapement for year"}
+  - id: calculation
+    file: escapement_copper-river_chinook_1975-2016_excel-sheet-1.csv
+    keys: ["Year"]
+    columns:
+      - {name: "Year", role: attribute, datatype: string, description: "The year the data was sampled"}
+      - {name: "Copper_District_Commercial_Harvest", role: attribute, datatype: string, description: "Copper District, Commercial Harvest"}
+      - {name: "Copper_District_Subsistence_Harvest", role: attribute, datatype: string, description: "Copper District, Subsistence Harvest"}
+      - {name: "Copper_District_Homepack_Harvest", role: attribute, datatype: string, description: "Copper District, Homepack Harvest"}
+      - {name: "Copper_District_Donated_Harvest", role: attribute, datatype: string, description: "Copper District, Donated Harvest"}
+      - {name: "Copper_District_Educational_Harvest", role: attribute, datatype: string, description: "Copper District, Educational Harvest"}
+      - {name: "Copper_District_District_Total_Harvest", role: attribute, datatype: string, description: "Copper District, Total Harvest. The sum of commercial, subsistence, homepack, donated, and educational harvest for Copper District."}
+      - {name: "Chitina_Subdistrict_Harvest_State", role: attribute, datatype: string, description: "Chitina Subdistrict, State Harvest"}
+      - {name: "Chitina_Subdistrict_Harvest_Federal", role: attribute, datatype: string, description: "Chitina Subdistrict, Federal Harvest"}
+      - {name: "Chitina_Subdistrict_Harvest_Total", role: attribute, datatype: string, description: "Chitina Subdistrict, Total Harvest. The sum of state and federal harvest for Chitina Subdistrict."}
+      - {name: "Chitina_Subdistrict_Harvest_SE", role: attribute, datatype: string, description: "Chitina Subdistrict, Harvest Standard Error"}
+      - {name: "Chitina_Subdistrict_Harvest_CV", role: attribute, datatype: string, description: "Chitina Subdistrict, Harvest Coefficient of Variation. Calculated by dividing the Standard Error by the Total Harvest."}
+      - {name: "Glennallen_Subdistrict_Harvest_State", role: attribute, datatype: string, description: "Glennallen Subdistrict, State Harvest"}
+      - {name: "Glennallen_Subdistrict_Harvest_Federal", role: attribute, datatype: string, description: "Glennallen Subdistrict, Federal Harvest"}
+      - {name: "Glennallen_Subdistrict_Harvest_Total", role: attribute, datatype: string, description: "Glennallen Subdistrict, Total Harvest. The sum of state and federal harvest for Glennallen Subdistrict."}
+      - {name: "Glennallen_Subdistrict_Harvest_SE", role: attribute, datatype: string, description: "Glennallen Subdistrict, Harvest Standard Error"}
+      - {name: "Glennallen_Subdistrict_Harvest_CV", role: attribute, datatype: string, description: "Glennallen Subdistrict, Harvest Coefficient of Variation. Calculated by dividing the Standard Error by the Total Harvest."}
+      - {name: "Sport_Harvest", role: attribute, datatype: string, description: "Sport Harvest"}
+      - {name: "Sport_SE", role: attribute, datatype: string, description: "Sport Standard Error"}
+      - {name: "Sport_CV", role: attribute, datatype: string, description: "Sport Coefficient of Variation. Calculated by dividing the Standard Error by the Total Harvest."}
+      - {name: "Inriver_Harvest", role: attribute, datatype: string, description: "Total Inriver Harvest. The sum of Total Harvest for Chitina Subdistrict, Glennallen Subdistrict, and Sport Harvest."}
+      - {name: "Total_Harvest", role: attribute, datatype: string, description: "Total Harvest. The sum of Inriver Harvest and Copper District Total Harvest."}
+      - {name: "Inriver_Abundance", role: attribute, datatype: string, description: "Inriver Abundance"}
+      - {name: "Inriver_SE", role: attribute, datatype: string, description: "Inriver Standard Error"}
+      - {name: "Inriver_LCI", role: attribute, datatype: string, description: "Inriver 95% Lower Confidence Interval"}
+      - {name: "Inriver_UCI", role: attribute, datatype: string, description: "Inriver 95% Upper Confidence Interval"}
+      - {name: "Inriver_CV", role: attribute, datatype: string, description: "Inriver Coefficient of Variation. Calculated by dividing the Standard Error by the Total Inriver Abundance."}
+      - {name: "Total_Run", role: attribute, datatype: string, description: "Total Run. The sum of Total Harvest and Total Escapement."}
+      - {name: "Harvest_Rate", role: attribute, datatype: string, description: "Harvest Rate. Total Harvest divided by Total Run."}
+      - {name: "Total_Escapement", role: attribute, datatype: string, description: "The cumulative total escapement estimate of chinook salmon in Copper River. Abundance minus Inriver Harvest."}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

@@ -1,0 +1,41 @@
+spec_version: 1
+slug: dfo-fraser-river-flows
+version: lexical-0570734ce57f
+title: Fraser River mean discharge at Hope
+description: The complete English table has two discharge series for 1912–1999. The annual series averages January–December. The flow-year series runs from April to the following March. Both use cubic metres per second. DFO describes this series as an environmental covariate studied alongside Pacific salmon production.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/6e97f406-c893-431a-96d3-3976490dd7bb
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Fraser River Flows, Open Government Portal record 6e97f406-c893-431a-96d3-3976490dd7bb. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: frf_1912_1999_en.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/6e97f406-c893-431a-96d3-3976490dd7bb/attachments/frf_1912_1999_en.csv
+    sha256: 03be85cf30787bd7250c8fbe9937ada765a7447136388946c744c989470caf12
+  - name: Data_Dictionary_Fraser_River_EN_FR.xlsx
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/6e97f406-c893-431a-96d3-3976490dd7bb/attachments/Data_Dictionary_Fraser_River_EN_FR.xlsx
+    sha256: 716c064f5500a2aa22e930496d6e283d7af689538ec27a88914bd82aa4c90ad0
+parser: csv
+tables:
+- id: mean_flow
+  file: frf_1912_1999_en.csv
+  keys:
+  - YEAR
+  columns:
+  - name: YEAR
+    role: attribute
+    datatype: string
+    description: Published year label.
+  - name: FRASER ANNUAL
+    role: attribute
+    datatype: string
+    description: Mean annual river discharge at Hope from January through December, in cubic metres per second.
+  - name: FRASER FLOW YEAR
+    role: attribute
+    datatype: string
+    description: Mean river discharge at Hope from April through March of the following year, in cubic metres per second.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

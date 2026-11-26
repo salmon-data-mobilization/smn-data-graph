@@ -1,0 +1,51 @@
+spec_version: 1
+slug: california-chinook-ecosystem-indicators
+version: v1-lexical-0f13b0d473f8
+title: California Chinook salmon and ecosystem indicator series
+description: '[agent] The full long-format indicator file links brood year, source stock label, indicator and value. The abbreviation lookup is pinned as documentation. The deposit also provides stock-specific files. Units and interpretation depend on the indicator.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.6084/m9.figshare.32086272.v1
+  doi: 10.6084/m9.figshare.32086272.v1
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: Stuart Munsch. California Chinook salmon indicators data. Figshare, version 1. https://doi.org/10.6084/m9.figshare.32086272.v1. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. The selected table is reserialized as text with a source row number and structural metadata.
+  files:
+  - name: full_ts_04_10_26.csv
+    url: https://ndownloader.figshare.com/files/63966834
+    sha256: 0f13b0d473f8a1d548011e05ac3f814b18354b45be06bfeefa08374ca7b99554
+  - name: indicator_abbreviations_11_13_25.csv
+    url: https://ndownloader.figshare.com/files/63966828
+    sha256: 43fc14655f07a5142286152f025a770dfe65812867b98eb226b1afdff38e741d
+parser: specs.west_coast_csv:parse
+tables:
+- id: indicators
+  file: full_ts_04_10_26.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: brood_year
+    label: brood_year
+    role: attribute
+    datatype: string
+  - name: stock
+    label: stock
+    role: attribute
+    datatype: string
+  - name: indicator
+    label: indicator
+    role: attribute
+    datatype: string
+  - name: value
+    label: value
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

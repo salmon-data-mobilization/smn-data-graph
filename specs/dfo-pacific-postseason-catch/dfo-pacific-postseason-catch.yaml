@@ -1,0 +1,165 @@
+spec_version: 1
+slug: dfo-pacific-postseason-catch
+version: lexical-e8237408c46c
+title: Pacific commercial salmon post-season catch estimates by gear
+description: The three English catch tables cover gillnet, seine and troll fisheries from 1996 to 2004. DFO identifies catch in numbers of fish and effort in boat-days. Each file begins with a publisher title record above its field names. The parser checks this title layout and packages the rows below the header.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/82c7eaa7-7078-4d38-a880-25d53f00c579
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Pacific Region Commercial Salmon Fishery Post-Season Catch Estimates, Open Government Portal record 82c7eaa7-7078-4d38-a880-25d53f00c579. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: gill_net_1996-2004_commercial_salmon_post-season_catch_en.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/82c7eaa7-7078-4d38-a880-25d53f00c579/attachments/gill_net_1996-2004_commercial_salmon_post-season_catch_en.csv
+    sha256: 873e3906b60104ff5ea53748c04a69ce7d6e9f48e6cbeb72b3829861678c644b
+  - name: seine_1996-2004_commercial_salmon_post-season_catch_en.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/82c7eaa7-7078-4d38-a880-25d53f00c579/attachments/seine_1996-2004_commercial_salmon_post-season_catch_en.csv
+    sha256: cab96a2d1e8833c891bac4b3661a22edf0ba5c47fc7388f59afb22a87c8c7cd0
+  - name: troll_1996-2004_commercial_salmon_post-season_catch_en.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/82c7eaa7-7078-4d38-a880-25d53f00c579/attachments/troll_1996-2004_commercial_salmon_post-season_catch_en.csv
+    sha256: 7c4563243bd3e5ce95a60648a55520f0b1fdcde51a5016735ee080701f948cdb
+  - name: data_dictionary_en_fr_pacific_region_pse_1996-2004.pdf
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/82c7eaa7-7078-4d38-a880-25d53f00c579/attachments/data_dictionary_en_fr_pacific_region_pse_1996-2004.pdf
+    sha256: 43ccf87064cf937b4ec5cfde3cd6f5d564533c17bad3bd29951606c11bc681d6
+parser: specs.dfo_pacific_tables_parser:parse
+tables:
+- id: gillnet
+  file: gill_net_1996-2004_commercial_salmon_post-season_catch_en.csv
+  keys:
+  - CALENDAR_YEAR
+  - LICENCE_AREA
+  - MGMT_AREA
+  columns:
+  - name: FISHERY
+    role: attribute
+    datatype: string
+  - name: ESTIMATE_TYPE
+    role: attribute
+    datatype: string
+  - name: LICENCE_AREA
+    role: attribute
+    datatype: string
+  - name: CALENDAR_YEAR
+    role: attribute
+    datatype: string
+  - name: MGMT_AREA
+    role: attribute
+    datatype: string
+  - name: BOAT_DAYS
+    role: attribute
+    datatype: string
+    description: Source fishing effort in boat-days.
+  - name: SOCKEYE_KEPT
+    role: attribute
+    datatype: string
+  - name: COHO_KEPT
+    role: attribute
+    datatype: string
+  - name: PINK_KEPT
+    role: attribute
+    datatype: string
+  - name: CHUM_KEPT
+    role: attribute
+    datatype: string
+  - name: CHINOOK_KEPT
+    role: attribute
+    datatype: string
+  - name: NOTES
+    role: attribute
+    datatype: string
+    description: DFO comments include explicit notice when catches are withheld for privacy.
+- id: seine
+  file: seine_1996-2004_commercial_salmon_post-season_catch_en.csv
+  keys:
+  - CALENDAR_YEAR
+  - LICENCE_AREA
+  - MGMT_AREA
+  columns:
+  - name: FISHERY
+    role: attribute
+    datatype: string
+  - name: ESTIMATE_TYPE
+    role: attribute
+    datatype: string
+  - name: LICENCE_AREA
+    role: attribute
+    datatype: string
+  - name: CALENDAR_YEAR
+    role: attribute
+    datatype: string
+  - name: MGMT_AREA
+    role: attribute
+    datatype: string
+  - name: BOAT_DAYS
+    role: attribute
+    datatype: string
+    description: Source fishing effort in boat-days.
+  - name: SOCKEYE_KEPT
+    role: attribute
+    datatype: string
+  - name: COHO_KEPT
+    role: attribute
+    datatype: string
+  - name: PINK_KEPT
+    role: attribute
+    datatype: string
+  - name: CHUM_KEPT
+    role: attribute
+    datatype: string
+  - name: CHINOOK_KEPT
+    role: attribute
+    datatype: string
+  - name: NOTES
+    role: attribute
+    datatype: string
+    description: DFO comments include explicit notice when catches are withheld for privacy.
+- id: troll
+  file: troll_1996-2004_commercial_salmon_post-season_catch_en.csv
+  keys:
+  - CALENDAR_YEAR
+  - LICENCE_AREA
+  - MGMT_AREA
+  columns:
+  - name: FISHERY
+    role: attribute
+    datatype: string
+  - name: ESTIMATE_TYPE
+    role: attribute
+    datatype: string
+  - name: LICENCE_AREA
+    role: attribute
+    datatype: string
+  - name: CALENDAR_YEAR
+    role: attribute
+    datatype: string
+  - name: MGMT_AREA
+    role: attribute
+    datatype: string
+  - name: BOAT_DAYS
+    role: attribute
+    datatype: string
+    description: Source fishing effort in boat-days.
+  - name: SOCKEYE_KEPT
+    role: attribute
+    datatype: string
+  - name: COHO_KEPT
+    role: attribute
+    datatype: string
+  - name: PINK_KEPT
+    role: attribute
+    datatype: string
+  - name: CHUM_KEPT
+    role: attribute
+    datatype: string
+  - name: CHINOOK_KEPT
+    role: attribute
+    datatype: string
+  - name: NOTES
+    role: attribute
+    datatype: string
+    description: DFO comments include explicit notice when catches are withheld for privacy.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

@@ -1,0 +1,80 @@
+spec_version: 1
+slug: methow-river-fish-production
+version: v1-lexical-ae57ad93f4d3
+title: Methow River floodplain fish biomass and production
+description: '[agent] The Methow River food-web study compared fish abundance, biomass and production across sampling sites and study years. This package covers the complete fish biomass and production worksheet, including species alongside salmon and steelhead. Repeated 95% interval headers retain their original column positions. The two diet and invertebrate workbooks remain in the deposit.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.6084/m9.figshare.25238527.v1
+  doi: 10.6084/m9.figshare.25238527.v1
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: James Paris. Methow River data. Figshare, version 1. https://doi.org/10.6084/m9.figshare.25238527.v1. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. The selected table is reserialized as text with a source row number and structural metadata.
+  files:
+  - name: Fish_biomass-production_Methow_River.xlsx
+    url: https://ndownloader.figshare.com/files/44583622
+    sha256: ae57ad93f4d35ded7dfb459c64dd93f5215186dcbf0c9f0b66739ac3ada919c7
+parser: specs.west_coast_csv:parse
+tables:
+- id: biomass_production
+  file: Fish_biomass-production_Methow_River.xlsx
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: Site
+    label: Site
+    role: attribute
+    datatype: string
+  - name: Study year
+    label: Study year
+    role: attribute
+    datatype: string
+  - name: Species
+    label: Species
+    role: attribute
+    datatype: string
+  - name: Abundance (# * m-2)
+    label: Abundance (# * m-2)
+    role: attribute
+    datatype: string
+  - name: source_column_5
+    label: 95% HIGH
+    role: attribute
+    datatype: string
+  - name: source_column_6
+    label: 95% LOW
+    role: attribute
+    datatype: string
+  - name: Biomass (g DM * m^-2)
+    label: Biomass (g DM * m^-2)
+    role: attribute
+    datatype: string
+  - name: source_column_8
+    label: 95% HIGH
+    role: attribute
+    datatype: string
+  - name: source_column_9
+    label: 95% LOW
+    role: attribute
+    datatype: string
+  - name: Production (g DM * m^-2 * yr^-1)
+    label: Production (g DM * m^-2 * yr^-1)
+    role: attribute
+    datatype: string
+  - name: source_column_11
+    label: 95% HIGH
+    role: attribute
+    datatype: string
+  - name: source_column_12
+    label: 95% LOW
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

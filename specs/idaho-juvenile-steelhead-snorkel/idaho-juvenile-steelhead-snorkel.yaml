@@ -1,0 +1,147 @@
+spec_version: 1
+slug: idaho-juvenile-steelhead-snorkel
+version: v1-lexical-c75f841d346b
+title: Juvenile steelhead counts from Idaho stream snorkel surveys
+description: '[agent] Idaho Department of Fish and Game snorkel surveys supply the juvenile steelhead counts used in this study of elevation, stream temperature and flow. This package retains the count file and its environmental covariates. The separate fish size resource and analysis scripts remain in the deposit.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.6084/m9.figshare.28216205.v1
+  doi: 10.6084/m9.figshare.28216205.v1
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: Ryan Vosbigian, Alexa Ballinger, Timothy E. Link, Timothy Copeland, Matthew R. Falcy. Data and scripts for "Elevation mediates juvenile steelhead demographic response to stream temperature and flow". Figshare, version 1. https://doi.org/10.6084/m9.figshare.28216205.v1. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. The selected table is reserialized as text with a source row number and structural metadata.
+  files:
+  - name: snorkelcount_data.csv
+    url: https://ndownloader.figshare.com/files/56386685
+    sha256: c75f841d346b495b331cbfc1bee2faa3cf2192c2421692fa079d012c6c09988d
+  - name: README.txt
+    url: https://ndownloader.figshare.com/files/56386679
+    sha256: 06f42c4ad9a3b6dbc504530525d7ed319a9b36e26833222a34fbff3e4c91aad4
+parser: specs.west_coast_csv:parse
+tables:
+- id: snorkel_counts
+  file: snorkelcount_data.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: source_column_1
+    label: Unnamed source column 1
+    role: attribute
+    datatype: string
+  - name: LSSurveyID
+    label: LSSurveyID
+    role: attribute
+    datatype: string
+  - name: StartLon
+    label: StartLon
+    role: attribute
+    datatype: string
+  - name: StartLat
+    label: StartLat
+    role: attribute
+    datatype: string
+  - name: Year
+    label: Year
+    role: attribute
+    datatype: string
+  - name: SampDate
+    label: SampDate
+    role: attribute
+    datatype: string
+  - name: Huc4Name
+    label: Huc4Name
+    role: attribute
+    datatype: string
+  - name: Huc5Name
+    label: Huc5Name
+    role: attribute
+    datatype: string
+  - name: Huc6Name
+    label: Huc6Name
+    role: attribute
+    datatype: string
+  - name: Drainage
+    label: Drainage
+    role: attribute
+    datatype: string
+  - name: WaterName
+    label: WaterName
+    role: attribute
+    datatype: string
+  - name: STHDFishCount
+    label: STHDFishCount
+    role: attribute
+    datatype: string
+  - name: TransLength
+    label: TransLength
+    role: attribute
+    datatype: string
+  - name: MethodType
+    label: MethodType
+    role: attribute
+    datatype: string
+  - name: Visibility
+    label: Visibility
+    role: attribute
+    datatype: string
+  - name: UnImputedVisibility
+    label: UnImputedVisibility
+    role: attribute
+    datatype: string
+  - name: NumSnorklers
+    label: NumSnorklers
+    role: attribute
+    datatype: string
+  - name: SiteElevation
+    label: SiteElevation
+    role: attribute
+    datatype: string
+  - name: StreamSlope
+    label: StreamSlope
+    role: attribute
+    datatype: string
+  - name: StreamTempC_prevyr
+    label: StreamTempC_prevyr
+    role: attribute
+    datatype: string
+  - name: Exceed_PK66_7AEP
+    label: Exceed_PK66_7AEP
+    role: attribute
+    datatype: string
+  - name: Exceed_M7D2Y_PrevYr
+    label: Exceed_M7D2Y_PrevYr
+    role: attribute
+    datatype: string
+  - name: AnnualMeanFlow
+    label: AnnualMeanFlow
+    role: attribute
+    datatype: string
+  - name: Totalwild
+    label: Totalwild
+    role: attribute
+    datatype: string
+  - name: FlowType
+    label: FlowType
+    role: attribute
+    datatype: string
+  - name: DayofYear
+    label: DayofYear
+    role: attribute
+    datatype: string
+  - name: Totalwild_lag1
+    label: Totalwild_lag1
+    role: attribute
+    datatype: string
+  - name: Totalwild_lag2
+    label: Totalwild_lag2
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

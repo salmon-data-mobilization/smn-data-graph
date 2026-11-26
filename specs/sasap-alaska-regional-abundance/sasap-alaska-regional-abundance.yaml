@@ -1,0 +1,32 @@
+spec_version: 1
+slug: sasap-alaska-regional-abundance
+version: lexical-qv3jzw
+title: "Estimate of total Alaskan salmon abundance by region, 2000-2015"
+description: "[agent] The deposited table gives means for 65 region and species combinations across 2000–2015. The authors combined escapement and fishery harvest within each year and averaged the resulting counts."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/QV3JZW
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/QV3JZW
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: "Jeanette Clark, Robyn Thiessen-Bock (2021). Estimate of total Alaskan salmon abundance by region, 2000-2015. KNB Data Repository. https://doi.org/10.5063/QV3JZW. CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/. Published CSVs are reserialized locally with structural graph metadata."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/QV3JZW
+      sha256: 3e5db609fea6e852680a2417c8dde5adea92971d441db4d8977ab44e55c39d58
+    - name: salmon-abundance_mean-cumulative-annual-count_by-region.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:a82d4fdd-ba5c-48b7-a838-0787d38919da
+      sha256: 3a17f9ec5d25142116ed97d4cee8377cfeb7119be27afbcd56dbc096c08db326
+parser: csv
+tables:
+  - id: abundance
+    file: salmon-abundance_mean-cumulative-annual-count_by-region.csv
+    keys: ["SASAP.Region", "Species"]
+    columns:
+      - {name: "SASAP.Region", role: attribute, datatype: string, description: "SASAP region where fish was counted as escaped or was caught"}
+      - {name: "Species", role: attribute, datatype: string, description: "Source column Species."}
+      - {name: "meanCumAnnualCount", role: attribute, datatype: string, description: "mean cumulative annual count of salmon (harvest + escapement for all systems and sectors, calculated annually, then averaged)"}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

@@ -1,0 +1,64 @@
+spec_version: 1
+slug: hood-canal-steelhead-monitoring
+version: v1-lexical-9061843cb0ab
+title: Hood Canal steelhead monitoring sample records
+description: '[agent] The study followed six Hood Canal steelhead populations during a supplementation assessment. The package covers every data row and eight original columns on Sheet1 (A, C, D, E, F, G, I, J): fish ID, brood year field BY, supplementation stage, method, river, reach, fork length and weight. Formula-derived columns, genetics and other workbook fields remain in the original.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.6084/m9.figshare.28315304.v1
+  doi: 10.6084/m9.figshare.28315304.v1
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: Donald Van Doornik. Hood_Canal_Steelhead_Monitoring_All_data_for_FigShare.xlsx. Figshare, version 1. https://doi.org/10.6084/m9.figshare.28315304.v1. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. The selected table is reserialized as text with a source row number and structural metadata.
+  files:
+  - name: Hood_Canal_Steelhead_Monitoring_All_data_for_FigShare.xlsx
+    url: https://ndownloader.figshare.com/files/52044416
+    sha256: 9061843cb0ab6fe12b9c34b601b81be2f91516663c0486b03cd49df9ef472ac8
+parser: specs.west_coast_csv:parse
+tables:
+- id: fish_samples
+  file: Hood_Canal_Steelhead_Monitoring_All_data_for_FigShare.xlsx
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: ID
+    label: ID
+    role: attribute
+    datatype: string
+  - name: BY
+    label: BY
+    role: attribute
+    datatype: string
+  - name: Suppstage
+    label: Suppstage
+    role: attribute
+    datatype: string
+  - name: Method
+    label: Method
+    role: attribute
+    datatype: string
+  - name: River
+    label: River
+    role: attribute
+    datatype: string
+  - name: Reach
+    label: Reach
+    role: attribute
+    datatype: string
+  - name: FLmm
+    label: FLmm
+    role: attribute
+    datatype: string
+  - name: WTgm
+    label: WTgm
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

@@ -1,0 +1,63 @@
+spec_version: 1
+slug: lower-granite-adult-steelhead
+version: v2-lexical-f3882a761a27
+title: Adult steelhead length and age at Lower Granite Dam
+description: '[agent] The Lower Granite adult trap series covers 2008 through 2019. It records capture date, last ocean year, fork length reported in millimetres, saltwater age, sex and genetic stock. The separate pink salmon abundance series and analysis scripts remain in the deposit.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.6084/m9.figshare.23233604.v2
+  doi: 10.6084/m9.figshare.23233604.v2
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: Ryan Vosbigian, Logan Wendling, Timothy Copeland, Matthew R. Falcy. Data and scripts for "Cycles in adult steelhead length suggest interspecific competition in the North Pacific Ocean". Figshare, version 2. https://doi.org/10.6084/m9.figshare.23233604.v2. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. The selected table is reserialized as text with a source row number and structural metadata.
+  files:
+  - name: adultsteelheadlowergranite_2008_2019.csv
+    url: https://ndownloader.figshare.com/files/40944206
+    sha256: f3882a761a27c18b4ee35caeb5a4abf0a408fbaf18495d5cb1637aed1de2015b
+  - name: README.txt
+    url: https://ndownloader.figshare.com/files/45268111
+    sha256: c6740ae6bbef10bbc982ebeea6f8fe0c4f70a618c3ea507850bbecc41c56f633
+parser: specs.west_coast_csv:parse
+tables:
+- id: adult_trap
+  file: adultsteelheadlowergranite_2008_2019.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: source_column_1
+    label: Unnamed source column 1
+    role: attribute
+    datatype: string
+  - name: CollectionDate
+    label: CollectionDate
+    role: attribute
+    datatype: string
+  - name: LastOceanYear
+    label: LastOceanYear
+    role: attribute
+    datatype: string
+  - name: ForkLengthmm
+    label: ForkLengthmm
+    role: attribute
+    datatype: string
+  - name: SaltwaterAge
+    label: SaltwaterAge
+    role: attribute
+    datatype: string
+  - name: GenSex
+    label: GenSex
+    role: attribute
+    datatype: string
+  - name: Genstock
+    label: Genstock
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

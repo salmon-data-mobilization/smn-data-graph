@@ -1,0 +1,66 @@
+spec_version: 1
+slug: pws-hatchery-origin-salmon
+version: lexical-f1qv3jxf
+title: "Hatchery-origin stray rates and total run characteristics for Pink Salmon and Chum Salmon returning to Prince William Sound, Alaska in 2013-2015"
+description: "[agent] Two stream-survey files record the sampling behind the estimates of hatchery-origin pink and chum salmon in 2013–2015. Each survey retains stream identifiers, specimen counts, marked and unmarked counts and the reported percentage of strays."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/F1QV3JXF
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F1QV3JXF
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: "E. Eric Knudsen, Peter S. Rand, Kristen B. Gorman, David R. Bernard, William D. Templin (2020). Hatchery-origin stray rates and total run characteristics for Pink Salmon and Chum Salmon returning to Prince William Sound, Alaska in 2013-2015. KNB Data Repository. https://doi.org/10.5063/F1QV3JXF. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. Published CSVs are reserialized locally with structural graph metadata."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F1QV3JXF
+      sha256: ff2cefb920edd21bc2870f9330ade585aaf29ce7b6019e015347086f5b1f5fb8
+    - name: pink-stream-proportions.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:21b56580-8c83-4aa9-9fec-bf2e026732a4
+      sha256: d973b7bce34461e74bf4782a253d9b0dcb58b7295365554abfbdc4f6727147bd
+    - name: chum-stream-proportions.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:94e7f3d5-ef63-4a37-a389-49e83a665900
+      sha256: 0210d47e8828581fbc3e77ac6aedf935fddab4c768903e0bcba84cca2695b85d
+parser: csv
+tables:
+  - id: pink_stream_proportions
+    file: pink-stream-proportions.csv
+    keys: ["ADFGStreamCode", "SurveyDate"]
+    columns:
+      - {name: "ADFGStreamCode", role: attribute, datatype: string, description: "Unique Alaska Department of Fish and Game stream identifier."}
+      - {name: "StreamName", role: attribute, datatype: string, description: "Name of study stream."}
+      - {name: "Region", role: attribute, datatype: string, description: "Region of Alaska. PWS = Prince William Sound."}
+      - {name: "SurveyDate", role: attribute, datatype: string, description: "Date of stream survey."}
+      - {name: "SurveyYear", role: attribute, datatype: string, description: "Year of stream survey."}
+      - {name: "SurveyJulienDate", role: attribute, datatype: string, description: "Julien date of stream survey."}
+      - {name: "SpeciesCode", role: attribute, datatype: string, description: "Unique Alaska Department of Fish and Game species code. 440 = Pink Salmon."}
+      - {name: "CommonName", role: attribute, datatype: string, description: "Common name of study species."}
+      - {name: "AliveCount", role: attribute, datatype: string, description: "Number of alive Pink Salmon estimated in and around the stream reach during each day's survey."}
+      - {name: "DeadCount", role: attribute, datatype: string, description: "Number of dead Pink Salmon estimated in and around the stream reach during each day's survey."}
+      - {name: "NumberSpecimens", role: attribute, datatype: string, description: "Number of individual Pink Salmon examined for sex, length, and otolith removal."}
+      - {name: "NumberReadOK", role: attribute, datatype: string, description: "Number of otolith specimens read successfully (OK) to determine natural or hatchery origin."}
+      - {name: "NumberMarked", role: attribute, datatype: string, description: "Number of successfully read otolith specimens determined to be of hatchery origin."}
+      - {name: "NumberUnmarked", role: attribute, datatype: string, description: "Number of successfully read otolith specimens determined to be of natural origin."}
+      - {name: "PercentStrays", role: attribute, datatype: string, description: "Percentage of the number of otolith specimens read successfully (OK) determined to be of hatchery origin."}
+  - id: chum_stream_proportions
+    file: chum-stream-proportions.csv
+    keys: ["ADFGStreamCode", "SurveyDate"]
+    columns:
+      - {name: "ADFGStreamCode", role: attribute, datatype: string, description: "Unique Alaska Department of Fish and Game stream identifier. See Alaska Department of Fish and Game's Anadromous Waters Catalog."}
+      - {name: "StreamName", role: attribute, datatype: string, description: "Name of study stream."}
+      - {name: "Region", role: attribute, datatype: string, description: "Region of Alaska. PWS = Prince William Sound."}
+      - {name: "SurveyDate", role: attribute, datatype: string, description: "Date of stream survey."}
+      - {name: "SurveyYear", role: attribute, datatype: string, description: "Year of stream survey."}
+      - {name: "SurveyJulienDate", role: attribute, datatype: string, description: "Julien date of stream survey."}
+      - {name: "SpeciesCode", role: attribute, datatype: string, description: "Unique Alaska Department of Fish and Game species code. 450 = Chum Salmon."}
+      - {name: "CommonName", role: attribute, datatype: string, description: "Common name of study species."}
+      - {name: "AliveCount", role: attribute, datatype: string, description: "Number of alive Chum Salmon estimated in and around the stream reach during each day's survey."}
+      - {name: "DeadCount", role: attribute, datatype: string, description: "Number of dead Chum Salmon estimated in and around the stream reach during each day's survey."}
+      - {name: "NumberSpecimens", role: attribute, datatype: string, description: "Number of individual Chum Salmon examined for sex, length, and otolith removal."}
+      - {name: "NumberReadOK", role: attribute, datatype: string, description: "Number of otolith specimens read successfully (OK) to determine natural or hatchery origin."}
+      - {name: "NumberMarked", role: attribute, datatype: string, description: "Number of successfully read otolith specimens determined to be of hatchery origin."}
+      - {name: "NumberUnmarked", role: attribute, datatype: string, description: "Number of successfully read otolith specimens determined to be of natural origin."}
+      - {name: "PercentStrays", role: attribute, datatype: string, description: "Percentage of the number of otolith specimens read successfully (OK) determined to be of hatchery origin."}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

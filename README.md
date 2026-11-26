@@ -32,7 +32,7 @@ variables inherited from the shell, so a run never uses a session's account.
 
 ## Local source intake
 
-The [Pacific salmon source intakes](specs/source-intake/README.md) build and verify local packages for six datasets covering spawner abundance, productivity, fishery harvest and salmon-unit lookups. The table catalogue query returns the publisher for each dataset and the path to each table in its package.
+The three [Pacific salmon source intakes](specs/source-intake/README.md) cover 36 datasets and 62 tables. The [third batch](specs/source-intake/batch-3.md) adds Canadian monitoring and fisheries records, U.S. West Coast and Columbia Basin field studies, and Alaska and North Pacific archives. The table catalogue query returns each dataset’s publisher record and the path to each table in its local package.
 
 ## Starter catalogue evidence
 

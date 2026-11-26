@@ -1,0 +1,100 @@
+spec_version: 1
+slug: cedar-river-off-channel-fish
+version: v2-lexical-c07adcaf46da
+title: Juvenile salmonids in lower Cedar River off-channel habitats
+description: '[agent] King County scientists surveyed juvenile fish by nighttime snorkeling in spring 2023. The selected table records fish observations by transect, pass, species and size class. Wood, physical habitat, snorkel-unit and spatial files are available in the deposit.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.6084/m9.figshare.25242403.v2
+  doi: 10.6084/m9.figshare.25242403.v2
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: Aaron David, Rebekah R. Stiling. Data for "Microhabitat conditions and habitat configuration influence juvenile salmonid use of off-channel features in the Cedar River, Washington". Figshare, version 2. https://doi.org/10.6084/m9.figshare.25242403.v2. CC0, https://creativecommons.org/publicdomain/zero/1.0/. The selected table is reserialized as text with a source row number and structural metadata.
+  files:
+  - name: Cedar_OC_fish_data_2023_06_07.csv
+    url: https://ndownloader.figshare.com/files/44594989
+    sha256: c07adcaf46da63db16a939021f61941a48e505b7aeb2bec4865af13e345f909a
+parser: specs.west_coast_csv:parse
+tables:
+- id: fish_surveys
+  file: Cedar_OC_fish_data_2023_06_07.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: Project_name
+    label: Project_name
+    role: attribute
+    datatype: string
+  - name: Date_sampled
+    label: Date_sampled
+    role: attribute
+    datatype: string
+  - name: Reach
+    label: Reach
+    role: attribute
+    datatype: string
+  - name: River_flow
+    label: River_flow
+    role: attribute
+    datatype: string
+  - name: Event_notes
+    label: Event_notes
+    role: attribute
+    datatype: string
+  - name: Transect_ID
+    label: Transect_ID
+    role: attribute
+    datatype: string
+  - name: Unit_ID
+    label: Unit_ID
+    role: attribute
+    datatype: string
+  - name: Habitat_type
+    label: Habitat_type
+    role: attribute
+    datatype: string
+  - name: Area_surveyed
+    label: Area_surveyed
+    role: attribute
+    datatype: string
+  - name: Transect_notes
+    label: Transect_notes
+    role: attribute
+    datatype: string
+  - name: Pass
+    label: Pass
+    role: attribute
+    datatype: string
+  - name: Observers
+    label: Observers
+    role: attribute
+    datatype: string
+  - name: Species_code
+    label: Species_code
+    role: attribute
+    datatype: string
+  - name: Age
+    label: Age
+    role: attribute
+    datatype: string
+  - name: Number
+    label: Number
+    role: attribute
+    datatype: string
+  - name: Length_class
+    label: Length_class
+    role: attribute
+    datatype: string
+  - name: Fish_notes
+    label: Fish_notes
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

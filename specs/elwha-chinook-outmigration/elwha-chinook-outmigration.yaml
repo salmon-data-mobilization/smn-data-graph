@@ -1,0 +1,52 @@
+spec_version: 1
+slug: elwha-chinook-outmigration
+version: v1-lexical-0fe5d29b809e
+title: Elwha River juvenile Chinook outmigration at rotary screw traps
+description: '[agent] The source ZIP contains Data/outMigrantDat.csv, the daily outmigration file for the Elwha River trap study. This package retains all rows and the original five fields, including the study estimates of fish passage. Temperature, length, redd and appendix resources remain in the original ZIP.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.3389/fevo.2023.1240987.s001
+  doi: 10.3389/fevo.2023.1240987.s001
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: 'Martin C. Liermann, Aimee H. Fullerton, George R. Pess, Joseph H. Anderson, Sarah A. Morley, Michael L. McHenry, mcKenzi N. Taylor, Justin Stapleton, Mel Elofson, Randall E. McCoy, Todd R. Bennett. DataSheet_1_Modeling timing and size of juvenile Chinook salmon out-migrants at three Elwha River rotary screw traps: a window into early life history post dam removal.zip. Figshare, version 1. https://doi.org/10.3389/fevo.2023.1240987.s001. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. The selected table is reserialized as text with a source row number and structural metadata.'
+  files:
+  - name: elwha-supplement.zip
+    url: https://ndownloader.figshare.com/files/43258947
+    sha256: 0fe5d29b809ee2b9a2261bf6ff901778c1630f7cde1e58d4d6454301d9a64dbc
+parser: specs.west_coast_csv:parse
+tables:
+- id: outmigration
+  file: elwha-supplement.zip
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: trap
+    label: trap
+    role: attribute
+    datatype: string
+  - name: year
+    label: year
+    role: attribute
+    datatype: string
+  - name: date
+    label: date
+    role: attribute
+    datatype: string
+  - name: fishPast
+    label: fishPast
+    role: attribute
+    datatype: string
+  - name: dateS
+    label: dateS
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

@@ -1,0 +1,53 @@
+spec_version: 1
+slug: sasap-regional-salmon-weights
+version: lexical-f1nc5zgw
+title: "Regional salmon weight derived from commercial catch data, Alaska, 1975-2016"
+description: "[agent] Tobias Schwoerer used commercial landings to derive weight estimates in pounds by year, SASAP region and species. The weight table includes the median and two quantiles. Two lookup tables describe the geographic groupings."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/F1NC5ZGW
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F1NC5ZGW
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: "Tobias Schwoerer (2019). Regional salmon weight derived from commercial catch data, Alaska, 1975-2016. KNB Data Repository. https://doi.org/10.5063/F1NC5ZGW. CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/. Published CSVs are reserialized locally with structural graph metadata."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F1NC5ZGW
+      sha256: 05b31c6d3e5e6a611c40167f3f072d56a5169608a743167fffda0aab264d1cc9
+    - name: weights.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:29f290b6-ce74-41c2-9549-0276ac0f0c8b
+      sha256: bf153faf9cf3f6d83820b7dbc761a794ba2f89d0ff64674a69d79554a24d28d5
+    - name: district_region_lut.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:0f6c40c8-d57d-4254-a11f-6fc6bab7189f
+      sha256: 1ea63ed0d53e94ff27dcfe7aea098f5157376daa8ea4eac5bfff0741e9fe16be
+    - name: harvest_regions.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:6e4820f5-ddc5-4476-bb6a-7edd75f85395
+      sha256: aa408d7bf303cabab37b66f7aa253d91ae0f34e9f9de339713c5d6899420bbd8
+parser: csv
+tables:
+  - id: weights
+    file: weights.csv
+    keys: ["Species", "SASAP.Region", "YEAR"]
+    columns:
+      - {name: "Species", role: attribute, datatype: string, description: "salmon species"}
+      - {name: "SASAP.Region", role: attribute, datatype: string, description: "SASAP region of harvest"}
+      - {name: "YEAR", role: attribute, datatype: string, description: "Year of harvest"}
+      - {name: "median_wgt", role: attribute, datatype: string, description: "median weight in pounds of harvested salmon, derived by dividing the net weight of the harvest by the number of fish"}
+      - {name: "p05_wgt", role: attribute, datatype: string, description: "5% probability quantile of weight"}
+      - {name: "p95_wgt", role: attribute, datatype: string, description: "95% probability quantile of weight"}
+  - id: district_regions
+    file: district_region_lut.csv
+    keys: ["District"]
+    columns:
+      - {name: "SASAP.Region", role: attribute, datatype: string, description: "SASAP region in which district is located"}
+      - {name: "District", role: attribute, datatype: string, description: "ADF&G commercial fishing district number"}
+  - id: harvest_regions
+    file: harvest_regions.csv
+    keys: ["ADFG_Area"]
+    columns:
+      - {name: "ADFG_Area", role: attribute, datatype: string, description: "ADF&G commercial fishing area"}
+      - {name: "SASAPRegions", role: attribute, datatype: string, description: "Corresponding SASAP region"}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

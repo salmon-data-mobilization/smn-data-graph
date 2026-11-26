@@ -1,0 +1,191 @@
+spec_version: 1
+slug: dfo-bc-lake-acoustic-targets
+version: lexical-7a1805f167b1
+title: BC lake acoustic surveys and Great Central Lake target records
+description: The output archive contains a survey inventory and detailed acoustic-target records. This package takes the complete inventory and all detailed records whose original lake code is 1 (Great Central Lk). It keeps the publisher’s lake, transect, depth, target, species-proportion and data-issue fields.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/5b5d3312-12e6-4265-b07b-c69dcc17a566
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Acoustic Target Data in British Columbia Lakes, Open Government Portal record 5b5d3312-12e6-4265-b07b-c69dcc17a566. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: Data_dictionary_ATD_EN.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/5b5d3312-12e6-4265-b07b-c69dcc17a566/attachments/Data_dictionary_ATD_EN.csv
+    sha256: a428c53e1a8639c514d29d6f90ff636a02be2dd58448b034a0e240625a60bf3a
+  - name: output.zip
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/5b5d3312-12e6-4265-b07b-c69dcc17a566/attachments/output.zip
+    sha256: b2f642c73bbd3ea1c0a01c4b24fb6d20be37b5546063f9c81c1050a4b1716b95
+  - name: Acoustic_Target_Data_Issues_EN.docx
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/5b5d3312-12e6-4265-b07b-c69dcc17a566/attachments/DFO-LEP%20Acoustic%20Target%20Data%20Issues_PDF2DOCX%20(1977-2007)_EN.docx
+    sha256: 81c83b2912995a6ca1a60dfbe43b507fedc1810f35f590377f272a292a701c44
+parser: specs.dfo_pacific_tables_parser:parse
+tables:
+- id: survey_inventory
+  file: output.zip
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    role: attribute
+    datatype: string
+    description: One-based original CSV record position after the source header. Derived package key, local to this pinned source file or archive member.
+  - name: ats_year/ats_année
+    role: attribute
+    datatype: string
+  - name: lake/lac
+    role: attribute
+    datatype: string
+  - name: lake_code/code du lac
+    role: attribute
+    datatype: string
+    description: Source Lake Enrichment Program code.
+  - name: survey_date/date de relevé
+    role: attribute
+    datatype: string
+  - name: target_survey_code/code de relevé
+    role: attribute
+    datatype: string
+  - name: target_survey_type/type de relevé
+    role: attribute
+    datatype: string
+  - name: sounder_code/code de l’échosondeur
+    role: attribute
+    datatype: string
+  - name: sounder_type/type de l’échosondeur
+    role: attribute
+    datatype: string
+  - name: sounder_gain/sensibilité du sondeur
+    role: attribute
+    datatype: string
+  - name: sounder_issues/problèmes de sondeur
+    role: attribute
+    datatype: string
+  - name: key_field_replicate/relevés répétés
+    role: attribute
+    datatype: string
+  - name: sequential_date_replicate/relevés répétés
+    role: attribute
+    datatype: string
+  - name: acoustic_survey_notes/sujets du relevé acoustique
+    role: attribute
+    datatype: string
+  - name: acoustic_survey_comments/commentaires du relevé acoustique
+    role: attribute
+    datatype: string
+    description: Source comments on the survey.
+  - name: source_file/nom du fichier source
+    role: attribute
+    datatype: string
+  - name: source_cell_padding
+    role: attribute
+    datatype: string
+    description: Reconstruction metadata. A JSON object maps one-based original field positions to the exact [prefix, suffix] whitespace removed for the SDK. Restore the first string before and the second after the packaged cell. An empty field means no padding was separated.
+- id: great_central_lake_targets
+  file: output.zip
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    role: attribute
+    datatype: string
+    description: One-based original CSV record position after the source header. Derived package key, local to this pinned source file or archive member.
+  - name: ats_year/ats_année
+    role: attribute
+    datatype: string
+  - name: lake_code/code du lac
+    role: attribute
+    datatype: string
+    description: Source Lake Enrichment Program code.
+  - name: lake/lac
+    role: attribute
+    datatype: string
+  - name: survey_date/date de relevé
+    role: attribute
+    datatype: string
+  - name: target_survey_code/code de relevé
+    role: attribute
+    datatype: string
+  - name: target_survey_type/type de relevé
+    role: attribute
+    datatype: string
+  - name: survey_year/type de relevé
+    role: attribute
+    datatype: string
+  - name: survey_month/mois de relevé
+    role: attribute
+    datatype: string
+  - name: transect/transect
+    role: attribute
+    datatype: string
+  - name: depth_code/code de profondeur
+    role: attribute
+    datatype: string
+  - name: depth_min_m/profondeur minimale
+    role: attribute
+    datatype: string
+  - name: depth_max_m/profondeur maximale
+    role: attribute
+    datatype: string
+  - name: targets/cibles
+    role: attribute
+    datatype: string
+    description: Sounder targets reported in the acoustic data.
+  - name: prop_sockeye/proportions de saumons rouges
+    role: attribute
+    datatype: string
+    description: Source estimate of the sockeye proportion.
+  - name: prop_stickleback/proportion d’épinoches
+    role: attribute
+    datatype: string
+  - name: prop_total/somme des proportions
+    role: attribute
+    datatype: string
+  - name: transect_length_m/longueur du transect
+    role: attribute
+    datatype: string
+  - name: area_ha/superficie
+    role: attribute
+    datatype: string
+  - name: sounder_code/code de l’échosondeur
+    role: attribute
+    datatype: string
+  - name: sounder_type/type de l’échosondeur
+    role: attribute
+    datatype: string
+  - name: sounder_gain/sensibilité du sondeur
+    role: attribute
+    datatype: string
+  - name: sounder_issues/problèmes de sondeur
+    role: attribute
+    datatype: string
+  - name: acoustic_survey_notes/sujets du relevé acoustique
+    role: attribute
+    datatype: string
+  - name: acoustic_survey_comments/commentaires du relevé acoustique
+    role: attribute
+    datatype: string
+    description: Source comments on the survey.
+  - name: data_issues/problèmes aux données
+    role: attribute
+    datatype: string
+  - name: key_field_replicate/relevés répétés
+    role: attribute
+    datatype: string
+  - name: sequential_date_replicate/relevés répétés
+    role: attribute
+    datatype: string
+  - name: acoustic_source_file/nom du fichier source
+    role: attribute
+    datatype: string
+  - name: line_number/numéro de ligne
+    role: attribute
+    datatype: string
+  - name: source_cell_padding
+    role: attribute
+    datatype: string
+    description: Reconstruction metadata. A JSON object maps one-based original field positions to the exact [prefix, suffix] whitespace removed for the SDK. Restore the first string before and the second after the packaged cell. An empty field means no padding was separated.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

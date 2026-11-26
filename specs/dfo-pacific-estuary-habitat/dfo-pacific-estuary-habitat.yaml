@@ -1,0 +1,296 @@
+spec_version: 1
+slug: dfo-pacific-estuary-habitat
+version: lexical-b1c5095222d9
+title: Pacific estuaries, salmon habitat and human activities
+description: The two English tables describe ecological attributes and human activities at 439 estuaries across the Pacific Region. The ecological file includes salmon biomass, salmon species richness and a Conservation Unit field. The activity file contains salmon gillnet, seine and troll fishery fields alongside other pressures.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/e2a6cfd7-64a3-4588-beb2-aa9c63adc9f4
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Coastwide Evaluation and Classification of Pacific Region Estuaries based on Anthropogenic Activities and Significant Fish Habitat, Open Government Portal record e2a6cfd7-64a3-4588-beb2-aa9c63adc9f4. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: Activity_data_by_estuary_en.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/e2a6cfd7-64a3-4588-beb2-aa9c63adc9f4/attachments/Activity_data_by_estuary_en.csv
+    sha256: fab8215bc61d618a9efee7b9315ddba07acc4b1e2b95ef04619842ea87bcc15f
+  - name: Ecological_data_by_estuary_en.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/e2a6cfd7-64a3-4588-beb2-aa9c63adc9f4/attachments/Ecological_data_by_estuary_en.csv
+    sha256: 27d07f95671f65e82ffa6a04fea3c904543822a1716caf9b7110f55d70bfca39
+  - name: Data_Dictionary_EN.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/e2a6cfd7-64a3-4588-beb2-aa9c63adc9f4/attachments/Data_Dictionary_EN.csv
+    sha256: c4103696b6c594b8d4e3e9b3a444a3b15737b7722c301097e50395df91657927
+parser: specs.dfo_pacific_tables_parser:parse
+tables:
+- id: ecological
+  file: Ecological_data_by_estuary_en.csv
+  keys:
+  - estuary_id
+  columns:
+  - name: estuary_id
+    role: attribute
+    datatype: string
+    description: Source identifier for an estuary.
+  - name: estuary_name
+    role: attribute
+    datatype: string
+  - name: estuary_centroid_x
+    role: attribute
+    datatype: string
+  - name: estuary_centroid_y
+    role: attribute
+    datatype: string
+  - name: estuary_bioregion_en
+    role: attribute
+    datatype: string
+  - name: estuary_bioregion_fr
+    role: attribute
+    datatype: string
+  - name: cluster
+    role: attribute
+    datatype: string
+  - name: area_estuary
+    role: attribute
+    datatype: string
+  - name: salmon_biomass_kg
+    role: attribute
+    datatype: string
+    description: Source salmon biomass field in kilograms.
+  - name: salmon_sprichness
+    role: attribute
+    datatype: string
+    description: Source measure of salmon species richness.
+  - name: salmon_CUs
+    role: attribute
+    datatype: string
+  - name: eulachon_presence
+    role: attribute
+    datatype: string
+  - name: herring_spawn_biomass
+    role: attribute
+    datatype: string
+  - name: psandlance_suitability_Robinson2021
+    role: attribute
+    datatype: string
+  - name: psandlance_suitability_huard2021
+    role: attribute
+    datatype: string
+  - name: crab_dungeness_probability
+    role: attribute
+    datatype: string
+  - name: spot_prawn_count
+    role: attribute
+    datatype: string
+  - name: waterbird_importance
+    role: attribute
+    datatype: string
+  - name: eelgrass_biobands_lengthDivEstArea
+    role: attribute
+    datatype: string
+  - name: eelgrass_polygons
+    role: attribute
+    datatype: string
+  - name: canopyKelp_biobands_lengthDivEstArea
+    role: attribute
+    datatype: string
+  - name: canopyKelp_polygons
+    role: attribute
+    datatype: string
+  - name: understoryKelp_biobands_lengthDivEstArea
+    role: attribute
+    datatype: string
+  - name: understoryGreenAlgae_biobands_lengthDivEstArea
+    role: attribute
+    datatype: string
+  - name: saltmarsh_biobands_lengthDivEstArea
+    role: attribute
+    datatype: string
+  - name: substrate_rock
+    role: attribute
+    datatype: string
+  - name: substrate_mixed
+    role: attribute
+    datatype: string
+  - name: substrate_sand
+    role: attribute
+    datatype: string
+  - name: substrate_mud
+    role: attribute
+    datatype: string
+  - name: rugosity
+    role: attribute
+    datatype: string
+- id: activity
+  file: Activity_data_by_estuary_en.csv
+  keys:
+  - estuary_id
+  columns:
+  - name: estuary_id
+    role: attribute
+    datatype: string
+    description: Source identifier for an estuary.
+  - name: estuary_name
+    role: attribute
+    datatype: string
+  - name: estuary_centroid_x
+    role: attribute
+    datatype: string
+  - name: estuary_centroid_y
+    role: attribute
+    datatype: string
+  - name: estuary_bioregion_en
+    role: attribute
+    datatype: string
+  - name: estuary_bioregion_fr
+    role: attribute
+    datatype: string
+  - name: cluster
+    role: attribute
+    datatype: string
+  - name: area_watershed
+    role: attribute
+    datatype: string
+  - name: area_estuary
+    role: attribute
+    datatype: string
+  - name: area_shorelinebuff
+    role: attribute
+    datatype: string
+  - name: area_watershedEraseShorelineBuff
+    role: attribute
+    datatype: string
+  - name: mar_disposalatsea
+    role: attribute
+    datatype: string
+  - name: mar_underwaterinfrastructure
+    role: attribute
+    datatype: string
+  - name: mar_anchoragesrec
+    role: attribute
+    datatype: string
+  - name: mar_portsandterminals
+    role: attribute
+    datatype: string
+  - name: mar_docks
+    role: attribute
+    datatype: string
+  - name: mar_marinas
+    role: attribute
+    datatype: string
+  - name: mar_homeslodges
+    role: attribute
+    datatype: string
+  - name: mar_derelictvessels
+    role: attribute
+    datatype: string
+  - name: mar_loghandling
+    role: attribute
+    datatype: string
+  - name: mar_fishingcomm_trawl
+    role: attribute
+    datatype: string
+  - name: mar_fishingcomm_pressurehose
+    role: attribute
+    datatype: string
+  - name: mar_fishingcomm_hookandline
+    role: attribute
+    datatype: string
+  - name: mar_fishingcomm_dive
+    role: attribute
+    datatype: string
+  - name: mar_fishingcomm_trap
+    role: attribute
+    datatype: string
+  - name: mar_fishingcomm_salmon_gill
+    role: attribute
+    datatype: string
+  - name: mar_fishingcomm_salmon_seine
+    role: attribute
+    datatype: string
+  - name: mar_fishingcomm_salmon_troll
+    role: attribute
+    datatype: string
+  - name: mar_fishingrec_anadromous
+    role: attribute
+    datatype: string
+  - name: mar_fishingrec_crab
+    role: attribute
+    datatype: string
+  - name: mar_fishingrec_groundfish
+    role: attribute
+    datatype: string
+  - name: mar_fishingrec_prawnandshrimp
+    role: attribute
+    datatype: string
+  - name: mar_recboating
+    role: attribute
+    datatype: string
+  - name: mar_shipping
+    role: attribute
+    datatype: string
+  - name: mar_anchorscours
+    role: attribute
+    datatype: string
+  - name: mar_aquaticinvasives
+    role: attribute
+    datatype: string
+  - name: mar_anchoragescom
+    role: attribute
+    datatype: string
+  - name: mar_dredging*
+    role: attribute
+    datatype: string
+  - name: mar_aquaculture_shellfish*
+    role: attribute
+    datatype: string
+  - name: mar_aquaculture_finfish*
+    role: attribute
+    datatype: string
+  - name: ter_agriculture
+    role: attribute
+    datatype: string
+  - name: ter_forestrycutblocks
+    role: attribute
+    datatype: string
+  - name: ter_burnedareas
+    role: attribute
+    datatype: string
+  - name: ter_debrislitter
+    role: attribute
+    datatype: string
+  - name: ter_wstwtroutflowinorganic
+    role: attribute
+    datatype: string
+  - name: ter_wstwtroutfloworganic
+    role: attribute
+    datatype: string
+  - name: ter_mining
+    role: attribute
+    datatype: string
+  - name: ter_shorelinedevelopment
+    role: attribute
+    datatype: string
+  - name: ter_industrywatershed
+    role: attribute
+    datatype: string
+  - name: ter_generaldevelopment
+    role: attribute
+    datatype: string
+  - name: ter_dams
+    role: attribute
+    datatype: string
+  - name: ter_freshwatobstructions
+    role: attribute
+    datatype: string
+  - name: activity_count_terrestrial
+    role: attribute
+    datatype: string
+  - name: activity_count_marine
+    role: attribute
+    datatype: string
+  - name: activity_count_total
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

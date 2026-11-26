@@ -1,0 +1,146 @@
+spec_version: 1
+slug: dfo-salish-sea-juvenile-trawl
+version: lexical-89899e778601
+title: Salish Sea juvenile salmon and pelagic trawl surveys
+description: The three selected v2026a resources describe survey trips, fishing events and catch. DFO records event depths, effort and gear alongside catch counts, volumes, weights and verification descriptions. These surveys follow juvenile Pacific salmon alongside other pelagic species.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/711c33d3-32eb-4729-9a39-681fe6f6bca2
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Salish Sea, Open Government Portal record 711c33d3-32eb-4729-9a39-681fe6f6bca2. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: SALISH_event_v2026a.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/711c33d3-32eb-4729-9a39-681fe6f6bca2/attachments/SALISH_event_v2026a.csv
+    sha256: 8d819b5da6579e34b50d833530c0751ef4cdfbbd9c080898e09f450743659a2d
+  - name: SALISH_trip_v2026a.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/711c33d3-32eb-4729-9a39-681fe6f6bca2/attachments/SALISH_trip_v2026a.csv
+    sha256: 6b17597b32cf7e27487b1ed20d1cf8618b86255a8d2e7078b1cea451a1de23f5
+  - name: SALISH_catch_v2026a.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/711c33d3-32eb-4729-9a39-681fe6f6bca2/attachments/SALISH_catch_v2026a.csv
+    sha256: 9c005937913a802c73791d7a8b135d468f481f89cf1bcf6cc14469f5624098b9
+  - name: Data_Dictionary_EN_FR.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/711c33d3-32eb-4729-9a39-681fe6f6bca2/attachments/Data_Dictionary_EN_FR.csv
+    sha256: 4a91cfd6b72a69fbd67a5bf0475f41e1d3e17f007d28051f108753f2ae29d084
+parser: specs.dfo_pacific_tables_parser:parse
+tables:
+- id: trips
+  file: SALISH_trip_v2026a.csv
+  keys:
+  - TRIP_ID
+  columns:
+  - name: SURVEY_SERIES
+    role: attribute
+    datatype: string
+  - name: TRIP_ID
+    role: attribute
+    datatype: string
+    description: Publisher trip identifier.
+  - name: TRIP_START_DATE
+    role: attribute
+    datatype: string
+  - name: TRIP_END_DATE
+    role: attribute
+    datatype: string
+  - name: VESSEL_NAME
+    role: attribute
+    datatype: string
+  - name: CITATION
+    role: attribute
+    datatype: string
+  - name: REPORT_LINK
+    role: attribute
+    datatype: string
+  - name: source_cell_padding
+    role: attribute
+    datatype: string
+    description: Reconstruction metadata. A JSON object maps one-based original field positions to the exact [prefix, suffix] whitespace removed for the SDK. Restore the first string before and the second after the packaged cell. An empty field means no padding was separated.
+- id: events
+  file: SALISH_event_v2026a.csv
+  keys:
+  - UNIQUE_EVENT
+  columns:
+  - name: TRIP_ID
+    role: attribute
+    datatype: string
+    description: Publisher trip identifier.
+  - name: UNIQUE_EVENT
+    role: attribute
+    datatype: string
+    description: Publisher event identifier.
+  - name: GEAR_TARGET_DEPTH_M
+    role: attribute
+    datatype: string
+  - name: BOTTOM_DEPTH_M
+    role: attribute
+    datatype: string
+  - name: START_LATITUDE
+    role: attribute
+    datatype: string
+  - name: START_LONGITUDE
+    role: attribute
+    datatype: string
+  - name: END_LATITUDE
+    role: attribute
+    datatype: string
+  - name: END_LONGITUDE
+    role: attribute
+    datatype: string
+  - name: TOW_DURATION_HOUR
+    role: attribute
+    datatype: string
+  - name: GEAR
+    role: attribute
+    datatype: string
+  - name: NET_MOUTH_WIDTH_M
+    role: attribute
+    datatype: string
+  - name: NET_MOUTH_HEIGHT_M
+    role: attribute
+    datatype: string
+  - name: DISTANCE_KM
+    role: attribute
+    datatype: string
+- id: catches
+  file: SALISH_catch_v2026a.csv
+  keys:
+  - UNIQUE_CATCH
+  columns:
+  - name: UNIQUE_EVENT
+    role: attribute
+    datatype: string
+    description: Publisher event identifier.
+  - name: UNIQUE_CATCH
+    role: attribute
+    datatype: string
+    description: Publisher catch identifier.
+  - name: COMMON_NAME
+    role: attribute
+    datatype: string
+  - name: SCIENTIFIC_NAME
+    role: attribute
+    datatype: string
+  - name: CATCH_COUNT
+    role: attribute
+    datatype: string
+    description: Number reported for the catch record.
+  - name: CATCH_VOLUME
+    role: attribute
+    datatype: string
+  - name: CATCH_VOLUME_UNITS
+    role: attribute
+    datatype: string
+  - name: CATCH_WEIGHT
+    role: attribute
+    datatype: string
+  - name: CATCH_WEIGHT_UNITS
+    role: attribute
+    datatype: string
+    description: Unit stated by the source for catch weight.
+  - name: CATCH_VERIFICATION_DESC
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

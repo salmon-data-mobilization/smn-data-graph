@@ -1,0 +1,79 @@
+spec_version: 1
+slug: dfo-sep-postseason-production
+version: lexical-a50c4ff4585a
+title: Pacific Salmonid Enhancement Program brood-year 2022 post-season production
+description: The English report for brood year 2022 contains proposed release targets and actual production at SEP-licensed facilities. The title line dates the report to 29 January 2025. The 13 named fields include species, run, stock, project, release stage, release target, actual release, fry on hand and comments.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/e0c5d455-b934-4add-bd63-dd8b9b819a48
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Salmonid Enhancement Program (SEP) Post-Season Report Archive, Open Government Portal record e0c5d455-b934-4add-bd63-dd8b9b819a48. This package preserves the selected source records and adds structural metadata.
+  files:
+  - name: BY2022-SEP-Post-Season-Report-EN-.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/e0c5d455-b934-4add-bd63-dd8b9b819a48/attachments/BY2022%20SEP%20Post%20Season%20Report%20(EN).csv
+    sha256: 19a99d5c6d9c1cb8dbd8ca9af9d5b8a60e136a1d59e058ebb14864fbff2ff06a
+  - name: Post-Season-Report-Data-Dictionary-EN.xlsx
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/e0c5d455-b934-4add-bd63-dd8b9b819a48/attachments/Post%20Season%20Report%20Data%20Dictionary%20EN.xlsx
+    sha256: 4701a726d10ca83cc8735b5727ba011e23c742a23eb52d5c552560a434a8d897
+parser: specs.dfo_pacific_tables_parser:parse
+tables:
+- id: brood_2022
+  file: BY2022-SEP-Post-Season-Report-EN-.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    role: attribute
+    datatype: string
+    description: One-based original CSV record position after the source header. Derived package key, local to this pinned source file or archive member.
+  - name: Regional Area
+    role: attribute
+    datatype: string
+  - name: Program
+    role: attribute
+    datatype: string
+  - name: Project
+    role: attribute
+    datatype: string
+  - name: Species
+    role: attribute
+    datatype: string
+  - name: Run
+    role: attribute
+    datatype: string
+  - name: Stock
+    role: attribute
+    datatype: string
+  - name: Release Site
+    role: attribute
+    datatype: string
+  - name: Release Stage
+    role: attribute
+    datatype: string
+  - name: 2022 Brood Release Target
+    role: attribute
+    datatype: string
+    description: Proposed release target for this brood year.
+  - name: 2022 Brood Actual Release
+    role: attribute
+    datatype: string
+    description: Release reported for this brood year; preserve unknown or blank cells.
+  - name: Fry On Hand
+    role: attribute
+    datatype: string
+    description: Source-reported fry on hand.
+  - name: Production Strategy
+    role: attribute
+    datatype: string
+  - name: Comment
+    role: attribute
+    datatype: string
+  - name: source_cell_padding
+    role: attribute
+    datatype: string
+    description: Reconstruction metadata. A JSON object maps one-based original field positions to the exact [prefix, suffix] whitespace removed for the SDK. Restore the first string before and the second after the packaged cell. An empty field means no padding was separated.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

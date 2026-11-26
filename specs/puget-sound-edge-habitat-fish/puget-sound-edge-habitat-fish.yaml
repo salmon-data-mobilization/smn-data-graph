@@ -1,0 +1,105 @@
+spec_version: 1
+slug: puget-sound-edge-habitat-fish
+version: v1-lexical-2218486435b3
+title: Juvenile salmonid use of Snoqualmie and Green River margins
+description: '[agent] King County sampled fish along six edge habitat types in the Snoqualmie and Green rivers from 2016 through 2022. This intake covers the complete electrofishing table, including survey notes. The separate physical habitat table remains available in the deposit.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.6084/m9.figshare.24539695.v1
+  doi: 10.6084/m9.figshare.24539695.v1
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: Aaron David, Christopher Gregersen, Joshua Kubo, Daniel Lantz, James Bower. Data for "Juvenile Pacific salmonid habitat use in two Puget Sound lowland rivers". Figshare, version 1. https://doi.org/10.6084/m9.figshare.24539695.v1. CC0, https://creativecommons.org/publicdomain/zero/1.0/. The selected table is reserialized as text with a source row number and structural metadata.
+  files:
+  - name: Fish_data_2023_04_25.csv
+    url: https://ndownloader.figshare.com/files/43103230
+    sha256: 2218486435b35da651b8e4c45136147d3cd9fc67a5637c2915206016beaaf82a
+parser: specs.west_coast_csv:parse
+tables:
+- id: fish_surveys
+  file: Fish_data_2023_04_25.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: Project
+    label: Project
+    role: attribute
+    datatype: string
+  - name: River
+    label: River
+    role: attribute
+    datatype: string
+  - name: Date
+    label: Date
+    role: attribute
+    datatype: string
+  - name: Flow
+    label: Flow
+    role: attribute
+    datatype: string
+  - name: Event_notes
+    label: Event_notes
+    role: attribute
+    datatype: string
+  - name: Transect_ID
+    label: Transect_ID
+    role: attribute
+    datatype: string
+  - name: Unit_ID
+    label: Unit_ID
+    role: attribute
+    datatype: string
+  - name: Edge_type
+    label: Edge_type
+    role: attribute
+    datatype: string
+  - name: Transect_type
+    label: Transect_type
+    role: attribute
+    datatype: string
+  - name: Transect_notes
+    label: Transect_notes
+    role: attribute
+    datatype: string
+  - name: Time_surveyed
+    label: Time_surveyed
+    role: attribute
+    datatype: string
+  - name: Species
+    label: Species
+    role: attribute
+    datatype: string
+  - name: Age
+    label: Age
+    role: attribute
+    datatype: string
+  - name: Hatchery_mark
+    label: Hatchery_mark
+    role: attribute
+    datatype: string
+  - name: Number
+    label: Number
+    role: attribute
+    datatype: string
+  - name: Length
+    label: Length
+    role: attribute
+    datatype: string
+  - name: Fish_notes
+    label: Fish_notes
+    role: attribute
+    datatype: string
+  - name: source_edge_whitespace
+    label: Original padded field values
+    role: attribute
+    datatype: string
+    description: JSON with one-based source positions and original strings for fields with whitespace at either edge.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

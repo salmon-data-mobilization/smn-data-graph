@@ -1,0 +1,98 @@
+spec_version: 1
+slug: sasap-ne-pacific-coho-broods
+version: lexical-f1zp44bp
+title: "Coho salmon brood tables, northeast Pacific, 1967-2015"
+description: "[agent] Two published brood tables give recruits by total age and by freshwater/sea age. The same brood years can occur in both tables. Separate lookup tables identify stocks and contributing sources."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/F1ZP44BP
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F1ZP44BP
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: "Stephanie Freund, Jeanette Clark (2018). Coho salmon brood tables, northeast Pacific, 1967-2015. KNB Data Repository. https://doi.org/10.5063/F1ZP44BP. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. Published CSVs are reserialized locally with structural graph metadata. Documented reversible source-format fields preserve original records and their cells."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F1ZP44BP
+      sha256: bab644f84b8122df27506220ad2f4fbd2f611e884c37856e4efd86a1a0fb2d44
+    - name: CohoBroodTables_TotalAge.csv
+      url: https://cn.dataone.org/cn/v2/resolve/knb.92355.1
+      sha256: 1b709bd59e8dd3b409843d7bdf3d4d43ead17fef2e227ed08aaee60ab8b9caab
+    - name: CohoBroodTables_FW_SW_Age.csv
+      url: https://cn.dataone.org/cn/v2/resolve/knb.92354.1
+      sha256: 42ac61e18e33f9a7986411c51c5837bc90b40e1a3a5d12fa7439a2369ff78a0e
+    - name: StockInfo_Coho.csv
+      url: https://cn.dataone.org/cn/v2/resolve/knb.92356.1
+      sha256: 2e6c0e014e73d0fbb87fafcabb0b684da2cf1dc373b3b8c8e2d65515df82124b
+    - name: SourceInfo_Coho.csv
+      url: https://cn.dataone.org/cn/v2/resolve/knb.92357.1
+      sha256: e34d86eabceaac508ad4c311fcc44fc776d23fdcbf51b2693ec0ffdcedf2bb46
+parser: specs.knb_lexical_csv:parse
+tables:
+  - id: total_age
+    file: CohoBroodTables_TotalAge.csv
+    keys: ["source_record_number"]
+    columns:
+      - {name: "Stock.ID", role: attribute, datatype: string, description: "Unique stock identifer"}
+      - {name: "Species", role: attribute, datatype: string, description: "Salmon species"}
+      - {name: "Stock", role: attribute, datatype: string, description: "Name of stock"}
+      - {name: "Region", role: attribute, datatype: string, description: "SASAP Region"}
+      - {name: "UseFlag", role: attribute, datatype: string, description: "Indicates if data should be used in analysis"}
+      - {name: "BroodYear", role: attribute, datatype: string, description: "Brood year"}
+      - {name: "TotalEscapement", role: attribute, datatype: string, description: "Total escapement value"}
+      - {name: "R2", role: attribute, datatype: string, description: "number of total age 2 recruits"}
+      - {name: "R3", role: attribute, datatype: string, description: "number of total age 3 recruits"}
+      - {name: "R4", role: attribute, datatype: string, description: "number of total age 4 recruits"}
+      - {name: "R5", role: attribute, datatype: string, description: "number of total age 5 recruits"}
+      - {name: "R6", role: attribute, datatype: string, description: "number of total age 6 recruits"}
+      - {name: "R7", role: attribute, datatype: string, description: "number of total age 8 recruits"}
+      - {name: "TotalRecruits", role: attribute, datatype: string, description: "total number of recruits across age classes"}
+      - {name: "source_record_number", role: attribute, datatype: string, description: "One-based position of this data record after the header in the pinned source CSV."}
+  - id: freshwater_sea_age
+    file: CohoBroodTables_FW_SW_Age.csv
+    keys: ["Stock.ID", "BroodYear"]
+    columns:
+      - {name: "Stock.ID", role: attribute, datatype: string, description: "Unique stock identifer"}
+      - {name: "Species", role: attribute, datatype: string, description: "Salmon species"}
+      - {name: "Stock", role: attribute, datatype: string, description: "Name of stock"}
+      - {name: "Region", role: attribute, datatype: string, description: "SASAP Region"}
+      - {name: "UseFlag", role: attribute, datatype: string, description: "Indicates if data should be used in analysis"}
+      - {name: "BroodYear", role: attribute, datatype: string, description: "Brood year"}
+      - {name: "TotalEscapement", role: attribute, datatype: string, description: "Total escapement value"}
+      - {name: "R1.0", role: attribute, datatype: string, description: "number of age 1.0 recruits"}
+      - {name: "R1.1", role: attribute, datatype: string, description: "number of age 1.1 recruits"}
+      - {name: "R1.2", role: attribute, datatype: string, description: "number of age 1.2 recruits"}
+      - {name: "R2.0", role: attribute, datatype: string, description: "number of age 2.0 recruits"}
+      - {name: "R2.1", role: attribute, datatype: string, description: "number of age 2.1 recruits"}
+      - {name: "R2.2", role: attribute, datatype: string, description: "number of age 2.2 recruits"}
+      - {name: "R3.0", role: attribute, datatype: string, description: "number of age 3.0 recruits"}
+      - {name: "R3.1", role: attribute, datatype: string, description: "number of age 3.1 recruits"}
+      - {name: "R3.2", role: attribute, datatype: string, description: "number of age 3.2 recruits"}
+      - {name: "R4.1", role: attribute, datatype: string, description: "number of age 4.1 recruits"}
+      - {name: "TotalRecruits", role: attribute, datatype: string, description: "total number of recruits across age classes"}
+  - id: stocks
+    file: StockInfo_Coho.csv
+    keys: ["Stock.ID"]
+    columns:
+      - {name: "Stock.ID", role: attribute, datatype: string, description: "Unique stock identifer"}
+      - {name: "Species", role: attribute, datatype: string, description: "Salmon species"}
+      - {name: "Stock", role: attribute, datatype: string, description: "Name of stock"}
+      - {name: "Ocean.Region", role: attribute, datatype: string, description: "Ocean Region (Gulf of Alaska or Bering Sea) where stock is from"}
+      - {name: "Region", role: attribute, datatype: string, description: "SASAP Region where stock is from"}
+      - {name: "Sub.Region", role: attribute, datatype: string, description: "Sub-region where stock is from"}
+      - {name: "Jurisdiction", role: attribute, datatype: string, description: "Jurisidiction"}
+      - {name: "Lat", role: attribute, datatype: string, description: "Latitude"}
+      - {name: "Lon", role: attribute, datatype: string, description: "Longitude"}
+      - {name: "Source.ID", role: attribute, datatype: string, description: "Data source where stock data came from"}
+  - id: sources
+    file: SourceInfo_Coho.csv
+    keys: ["Source.ID"]
+    columns:
+      - {name: "Source.ID", role: attribute, datatype: string, description: "Unique data source identifer"}
+      - {name: "Source", role: attribute, datatype: string, description: "ADFG document from which data were extracted"}
+      - {name: "Title", role: attribute, datatype: string, description: "Title of the source document"}
+      - {name: "URL", role: attribute, datatype: string, description: "Link to the source document"}
+      - {name: "source_cell_padding", role: attribute, datatype: string, description: "Derived JSON triples of original column position, leading whitespace and trailing whitespace. An empty value means no padding."}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

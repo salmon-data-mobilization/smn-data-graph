@@ -1,0 +1,118 @@
+spec_version: 1
+slug: pws-pink-salmon-parentage
+version: lexical-f1dr2swp
+title: "Shedd et al. (2022) - Evolutionary Applications - Reduced relative fitness in hatchery-origin Pink Salmon in two streams in Prince William Sound, Alaska in 2013-2016"
+description: "[agent] Four files give parentage assignment results for pink salmon collected at Stockdale Creek and Hogan Bay Creek. Each creek has a file for the 2013–2015 lineage and one for 2014–2016."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/F1DR2SWP
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F1DR2SWP
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: "Kyle Shedd, Emily Lescak, Christopher Habicht, E. Eric Knudsen, Tyler Dann, Heather Hoyt, Daniel Prince, William Templin (2022). Shedd et al. (2022) - Evolutionary Applications - Reduced relative fitness in hatchery-origin Pink Salmon in two streams in Prince William Sound, Alaska in 2013-2016. KNB Data Repository. https://doi.org/10.5063/F1DR2SWP. CC BY 4.0, https://creativecommons.org/licenses/by/4.0/. Published CSVs are reserialized locally with structural graph metadata."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F1DR2SWP
+      sha256: 917d0c953b0a3bb6959fc4bdd5086943b2aa9878da658ac9fe268689bae2727e
+    - name: stockdale_paired_14_16_filter_parents.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:3f1a2c65-2015-4ead-9a3e-f0443d2b55f3
+      sha256: 55ff2c5bd471a92d19ec2ca3cad0752d0e8d55baa02178927e2a6ab12049ad6e
+    - name: stockdale_paired_13_15_filter_parents.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:3cbf389c-882b-4328-a014-2202e26cdf1e
+      sha256: 4e972bf2b409fcdb067c1c93d7a8defbda42f71d6422f0a2a4780ec432b95903
+    - name: hogan_paired_14_16_filter_parents.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:5f4885cc-8f02-4ed7-becf-79e103045be3
+      sha256: 2e2b5fa087a1233adf97c86a403821727cf0a1906b07c5437c4082ee0bc48719
+    - name: hogan_paired_13_15_filter_parents.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:ee8d5074-b356-4660-8488-f4f15c9fdfa4
+      sha256: 834b6bfd10066f00004c6b71ae2d0f7c9fc54a56cdd774e1eaeb9ebc848826a5
+parser: csv
+tables:
+  - id: stockdale_paired_14_16_filter_parents
+    file: stockdale_paired_14_16_filter_parents.csv
+    keys: ["franz_id"]
+    columns:
+      - {name: "franz_id", role: attribute, datatype: string, description: "Unique identifier for FRANz pedigree analysis, derived from SILLY and Fish ID."}
+      - {name: "SILLY", role: attribute, datatype: string, description: "Collection code unique to species, location, year collected."}
+      - {name: "Fish ID", role: attribute, datatype: string, description: "Unique fish ID number, numbers are unique within a collection (SILLY)."}
+      - {name: "DNA Tray Code", role: attribute, datatype: string, description: "Unique 10-digit barcode for the 48-Deep-Well-Plate that a sample was collected in."}
+      - {name: "DNA Tray Well Code", role: attribute, datatype: string, description: "Well position code within 48-Deep-Well-Plate."}
+      - {name: "Sample Year", role: attribute, datatype: string, description: "Collection year, 2014 - parent, 2016 - offspring."}
+      - {name: "Sample Date", role: attribute, datatype: string, description: "Sample collection date."}
+      - {name: "SEX", role: attribute, datatype: string, description: "Sex of sample identified from secondary sexual characteristics and/or presence of eggs/milt."}
+      - {name: "Length Mm", role: attribute, datatype: string, description: "Fish length in mm, mid-eye to hypural plate (MEH)."}
+      - {name: "Otolith Mark Present", role: attribute, datatype: string, description: "Presence of hatchery-origin thermal otolith mark."}
+      - {name: "Otolith Mark ID", role: attribute, datatype: string, description: "Otolith thermal mark pattern, unique to hatchery broodstock and release year."}
+      - {name: "origin", role: attribute, datatype: string, description: "Hatchery or natural-origin."}
+      - {name: "Sex", role: attribute, datatype: string, description: "Sex of fish sample."}
+      - {name: "date", role: attribute, datatype: string, description: "Sample date."}
+      - {name: "DOY", role: attribute, datatype: string, description: "Day of year (aka Julian date)."}
+      - {name: "n", role: attribute, datatype: string, description: "Number of offspring assigned to a given parent via genetic parentage analysis using FRANz pedigree reconstruction software."}
+      - {name: "lineage", role: attribute, datatype: string, description: "Pink Salmon lineage (odd/even)."}
+  - id: stockdale_paired_13_15_filter_parents
+    file: stockdale_paired_13_15_filter_parents.csv
+    keys: ["franz_id"]
+    columns:
+      - {name: "franz_id", role: attribute, datatype: string, description: "Unique identifier for FRANz pedigree analysis, derived from SILLY and Fish ID."}
+      - {name: "SILLY", role: attribute, datatype: string, description: "Collection code unique to species, location, year collected."}
+      - {name: "Fish ID", role: attribute, datatype: string, description: "Unique fish ID number, numbers are unique within a collection (SILLY)."}
+      - {name: "DNA Tray Code", role: attribute, datatype: string, description: "Unique 10-digit barcode for the 48-Deep-Well-Plate that a sample was collected in."}
+      - {name: "DNA Tray Well Code", role: attribute, datatype: string, description: "Well position code within 48-Deep-Well-Plate."}
+      - {name: "Sample Year", role: attribute, datatype: string, description: "Collection year, 2013 - parent, 2015 - offspring."}
+      - {name: "Sample Date", role: attribute, datatype: string, description: "Sample collection date."}
+      - {name: "SEX", role: attribute, datatype: string, description: "Sex of sample identified from secondary sexual characteristics and/or presence of eggs/milt."}
+      - {name: "Length Mm", role: attribute, datatype: string, description: "Fish length in mm, mid-eye to hypural plate (MEH)."}
+      - {name: "Otolith Mark Present", role: attribute, datatype: string, description: "Presence of hatchery-origin thermal otolith mark."}
+      - {name: "Otolith Mark ID", role: attribute, datatype: string, description: "Otolith thermal mark pattern, unique to hatchery broodstock and release year."}
+      - {name: "origin", role: attribute, datatype: string, description: "Hatchery or natural-origin."}
+      - {name: "Sex", role: attribute, datatype: string, description: "Sex of fish sample."}
+      - {name: "date", role: attribute, datatype: string, description: "Sample date."}
+      - {name: "DOY", role: attribute, datatype: string, description: "Day of year (aka Julian date)."}
+      - {name: "n", role: attribute, datatype: string, description: "Number of offspring assigned to a given parent via genetic parentage analysis using FRANz pedigree reconstruction software."}
+      - {name: "lineage", role: attribute, datatype: string, description: "Pink Salmon lineage (odd/even)."}
+  - id: hogan_paired_14_16_filter_parents
+    file: hogan_paired_14_16_filter_parents.csv
+    keys: ["franz_id"]
+    columns:
+      - {name: "franz_id", role: attribute, datatype: string, description: "Unique identifier for FRANz pedigree analysis, derived from SILLY and Fish ID."}
+      - {name: "SILLY", role: attribute, datatype: string, description: "Collection code unique to species, location, year collected."}
+      - {name: "Fish ID", role: attribute, datatype: string, description: "Unique fish ID number, numbers are unique within a collection (SILLY)."}
+      - {name: "DNA Tray Code", role: attribute, datatype: string, description: "Unique 10-digit barcode for the 48-Deep-Well-Plate that a sample was collected in."}
+      - {name: "DNA Tray Well Code", role: attribute, datatype: string, description: "Well position code within 48-Deep-Well-Plate."}
+      - {name: "Sample Year", role: attribute, datatype: string, description: "Collection year, 2014 - parent, 2016 - offspring."}
+      - {name: "Sample Date", role: attribute, datatype: string, description: "Sample collection date."}
+      - {name: "SEX", role: attribute, datatype: string, description: "Sex of sample identified from secondary sexual characteristics and/or presence of eggs/milt."}
+      - {name: "Length Mm", role: attribute, datatype: string, description: "Fish length in mm, mid-eye to hypural plate (MEH)."}
+      - {name: "Otolith Mark Present", role: attribute, datatype: string, description: "Presence of hatchery-origin thermal otolith mark."}
+      - {name: "Otolith Mark ID", role: attribute, datatype: string, description: "Otolith thermal mark pattern, unique to hatchery broodstock and release year."}
+      - {name: "origin", role: attribute, datatype: string, description: "Hatchery or natural-origin."}
+      - {name: "Sex", role: attribute, datatype: string, description: "Sex of fish sample."}
+      - {name: "date", role: attribute, datatype: string, description: "Sample date."}
+      - {name: "DOY", role: attribute, datatype: string, description: "Day of year (aka Julian date)."}
+      - {name: "n", role: attribute, datatype: string, description: "Number of offspring assigned to a given parent via genetic parentage analysis using FRANz pedigree reconstruction software."}
+      - {name: "lineage", role: attribute, datatype: string, description: "Pink Salmon lineage (odd/even)."}
+  - id: hogan_paired_13_15_filter_parents
+    file: hogan_paired_13_15_filter_parents.csv
+    keys: ["franz_id"]
+    columns:
+      - {name: "franz_id", role: attribute, datatype: string, description: "Unique identifier for FRANz pedigree analysis, derived from SILLY and Fish ID."}
+      - {name: "SILLY", role: attribute, datatype: string, description: "Collection code unique to species, location, year collected."}
+      - {name: "Fish ID", role: attribute, datatype: string, description: "Unique fish ID number, numbers are unique within a collection (SILLY)."}
+      - {name: "DNA Tray Code", role: attribute, datatype: string, description: "Unique 10-digit barcode for the 48-Deep-Well-Plate that a sample was collected in."}
+      - {name: "DNA Tray Well Code", role: attribute, datatype: string, description: "Well position code within 48-Deep-Well-Plate"}
+      - {name: "Sample Year", role: attribute, datatype: string, description: "Collection year, 2013 - parent, 2015 - offspring."}
+      - {name: "Sample Date", role: attribute, datatype: string, description: "Sample collection date."}
+      - {name: "SEX", role: attribute, datatype: string, description: "Sex of sample identified from secondary sexual characteristics and/or presence of eggs/milt."}
+      - {name: "Length Mm", role: attribute, datatype: string, description: "Fish length in mm, mid-eye to hypural plate (MEH)."}
+      - {name: "Otolith Mark Present", role: attribute, datatype: string, description: "Presence of hatchery-origin thermal otolith mark."}
+      - {name: "Otolith Mark ID", role: attribute, datatype: string, description: "Otolith thermal mark pattern, unique to hatchery broodstock and release year."}
+      - {name: "origin", role: attribute, datatype: string, description: "Hatchery or natural-origin"}
+      - {name: "Sex", role: attribute, datatype: string, description: "Sex of fish sample."}
+      - {name: "date", role: attribute, datatype: string, description: "Sample date"}
+      - {name: "DOY", role: attribute, datatype: string, description: "Day of year (aka Julian date)."}
+      - {name: "n", role: attribute, datatype: string, description: "Number of offspring assigned to a given parent via genetic parentage analysis using FRANz pedigree reconstruction software."}
+      - {name: "lineage", role: attribute, datatype: string, description: "Pink Salmon lineage (odd/even)"}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

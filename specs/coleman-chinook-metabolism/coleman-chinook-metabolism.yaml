@@ -1,0 +1,96 @@
+spec_version: 1
+slug: coleman-chinook-metabolism
+version: v3-lexical-41f8e7ec596d
+title: Feeding and energetics of juvenile fall-run Chinook salmon
+description: '[agent] Juvenile fall-run Chinook from Coleman National Fish Hatchery in California were studied under different water temperatures. This package covers the fish-level source table with lengths, body and meal weights, temperature and experimental fields. Individual metabolism traces and R code remain in the record. The study methods are available in the associated paper.'
+source:
+  publisher: Figshare
+  landing_page: https://doi.org/10.6084/m9.figshare.20422302.v3
+  doi: 10.6084/m9.figshare.20422302.v3
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: Vanessa Lo. raw data for The effect of temperature on specific dynamic action of juvenile Fall-run Chinook salmon, Oncorhynchus tshawytscha. Figshare, version 3. https://doi.org/10.6084/m9.figshare.20422302.v3. CC0, https://creativecommons.org/publicdomain/zero/1.0/. The selected table is reserialized as text with a source row number and structural metadata.
+  files:
+  - name: SDA_fish_data.csv
+    url: https://ndownloader.figshare.com/files/37298722
+    sha256: 41f8e7ec596d0942dd7c6552e6f5bb4015db53b96b898d1a0bf0c701530d197f
+parser: specs.west_coast_csv:parse
+tables:
+- id: fish_experiment
+  file: SDA_fish_data.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    label: Source record number
+    role: attribute
+    datatype: string
+    description: One-based data row within the selected source table.
+  - name: FishID
+    label: FishID
+    role: attribute
+    datatype: string
+  - name: weight.g
+    label: weight.g
+    role: attribute
+    datatype: string
+  - name: FL.cm
+    label: FL.cm
+    role: attribute
+    datatype: string
+  - name: TL.cm
+    label: TL.cm
+    role: attribute
+    datatype: string
+  - name: Temp
+    label: Temp
+    role: attribute
+    datatype: string
+  - name: sham.DT
+    label: sham.DT
+    role: attribute
+    datatype: string
+  - name: gav.DT
+    label: gav.DT
+    role: attribute
+    datatype: string
+  - name: meal.size.g
+    label: meal.size.g
+    role: attribute
+    datatype: string
+  - name: meal.percent
+    label: meal.percent
+    role: attribute
+    datatype: string
+  - name: full.meal.g
+    label: full.meal.g
+    role: attribute
+    datatype: string
+  - name: volume.mL
+    label: volume.mL
+    role: attribute
+    datatype: string
+  - name: net.volume.mL
+    label: net.volume.mL
+    role: attribute
+    datatype: string
+  - name: MMR
+    label: MMR
+    role: attribute
+    datatype: string
+  - name: chamber
+    label: chamber
+    role: attribute
+    datatype: string
+  - name: DE.kJ
+    label: DE.kJ
+    role: attribute
+    datatype: string
+  - name: puked
+    label: puked
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

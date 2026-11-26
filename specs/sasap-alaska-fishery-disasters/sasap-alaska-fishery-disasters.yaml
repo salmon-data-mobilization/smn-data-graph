@@ -1,0 +1,51 @@
+spec_version: 1
+slug: sasap-alaska-fishery-disasters
+version: lexical-f1r78cf3
+title: "Alaska salmon fishery disaster determinations, 1997-2018"
+description: "[agent] One table records individual fishery-disaster requests and their outcomes. A second summarizes declarations by SASAP region. The underlying events can affect several regions."
+source:
+  publisher: "KNB Data Repository"
+  doi: 10.5063/F1R78CF3
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F1R78CF3
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: "Steve Langdon, Taylor Brelsford, Robyn Thiessen-Bock (2018). Alaska salmon fishery disaster determinations, 1997-2018. KNB Data Repository. https://doi.org/10.5063/F1R78CF3. CC0 1.0, https://creativecommons.org/publicdomain/zero/1.0/. Published CSVs are reserialized locally with structural graph metadata. Documented reversible source-format fields preserve original records and their cells."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F1R78CF3
+      sha256: 0a4c70865746b0b744499b82ed32618543d152d93cf48f5a966813a07dc1d025
+    - name: fishery_disaster_request_details.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:9dd9ee30-fe27-486b-aff1-9e2bc669d724
+      sha256: 6a9264df091548c3c5a9f366d43dc4379bb511b5a3e7cce64a374b3127417bd9
+    - name: fishery_disaster_requests_by_area.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:8274b48a-b0c9-4af0-bd67-604d89c05d07
+      sha256: 3d134650238baed2d9b86cd09dcf17085f417aaded2f295a3ce3d27bd1982c59
+parser: specs.knb_lexical_csv:parse
+tables:
+  - id: determinations
+    file: fishery_disaster_request_details.csv
+    keys: ["ShortName"]
+    columns:
+      - {name: "ShortName", role: attribute, datatype: string, description: "Short name of disaster roughly corresponding to title on NOAA fishery disaster webpage"}
+      - {name: "Amount", role: attribute, datatype: string, description: "Amount of money (in unadjusted USD) that was appropriated for disaster, if a disaster was declared"}
+      - {name: "Area", role: attribute, datatype: string, description: "Areas affected by fishery, corresponding to \"Fishery/Area Affected\" on NOAA fishery disaster website"}
+      - {name: "Date_Determination", role: attribute, datatype: string, description: "Date of disaster determination (where available)"}
+      - {name: "Date_Request", role: attribute, datatype: string, description: "Date of disaster request"}
+      - {name: "Funding_Distribution", role: attribute, datatype: string, description: "Detailed information on how funding was distributed (where available)"}
+      - {name: "Requester", role: attribute, datatype: string, description: "Source column Requester."}
+      - {name: "Source", role: attribute, datatype: string, description: "Additional source information for disaster declaration (where available)"}
+      - {name: "Species", role: attribute, datatype: string, description: "Species of Pacific Salmon affected by disaster"}
+      - {name: "Status", role: attribute, datatype: string, description: "Source column Status."}
+      - {name: "Comments", role: attribute, datatype: string, description: "Additional comments on disaster declaration"}
+      - {name: "source_cell_padding", role: attribute, datatype: string, description: "Derived JSON triples of original column position, leading whitespace and trailing whitespace. An empty value means no padding."}
+  - id: areas
+    file: fishery_disaster_requests_by_area.csv
+    keys: ["SASAP_Region"]
+    columns:
+      - {name: "SASAP_Region", role: attribute, datatype: string, description: "Region of Alaska directly affected by disaster"}
+      - {name: "Count", role: attribute, datatype: string, description: "Number of disaster declarations"}
+      - {name: "Year", role: attribute, datatype: string, description: "Source column Year."}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []
