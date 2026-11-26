@@ -56,7 +56,7 @@ class MeasurementTypeAudit(unittest.TestCase):
         write_csv(self.package / "data/samples.csv", ["id", "reading", "depth"], self.original)
         write_csv(self.package / "data/projection.csv", ["id", "reading_numeric"], self.typed)
 
-    def run_audit(self, decisions=None, *, gate=True):
+    def run_audit(self, decisions=None, *, gate=True, numeric=False):
         args = [sys.executable, str(SCRIPT), str(self.package)]
         if decisions is not None:
             path = self.package / "review.json"
@@ -64,6 +64,8 @@ class MeasurementTypeAudit(unittest.TestCase):
             args.extend(["--decisions", str(path)])
         if gate:
             args.append("--require-accounted")
+        if numeric:
+            args.append("--require-numeric")
         return subprocess.run(args, capture_output=True, text=True, check=False)
 
     def check_report(self, decisions, code, status):
@@ -166,6 +168,20 @@ class MeasurementTypeAudit(unittest.TestCase):
                 self.typed = rows
                 self.write_data()
                 self.check_report([{"source": SOURCE, "view": VIEW}], 1, "invalid_view")
+
+    def test_numeric_gate_distinguishes_abstention_from_usable_numeric_data(self):
+        abstention = self.run_audit([{"source": SOURCE, "unresolved": "Precision unresolved."}], numeric=True)
+        report = json.loads(abstention.stdout)
+        self.assertEqual(abstention.returncode, 1)
+        self.assertTrue(report["accounted"])
+        self.assertFalse(report["numeric_ready"])
+        self.assertEqual(self.run_audit([{"source": SOURCE, "view": VIEW}], numeric=True).returncode, 0)
+        for values in (["1", "invalid", ""], ["", "", "ND"]):
+            with self.subTest(values=values):
+                for row, value in zip(self.original, values):
+                    row[2] = value
+                self.write_data()
+                self.assertEqual(self.run_audit([{"source": SOURCE, "view": VIEW}], numeric=True).returncode, 1)
 
     def test_descriptor_disagreement_fails_and_no_measurements_does_not_pass_gate(self):
         descriptor = self.package / "datapackage.json"

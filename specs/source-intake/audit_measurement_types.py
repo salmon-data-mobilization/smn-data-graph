@@ -179,15 +179,46 @@ def verify_view(source, view, measurements, schemas, field_tokens):
     return result
 
 
-def audit(package, decisions_path):
+def numeric_evidence(measurements, schemas):
+    """Read each table once and count valid, missing and invalid cells per native numeric field."""
+    evidence = {}
+    for table, (path, schema, _, _) in schemas.items():
+        numeric_fields = {
+            key: INTEGER if row["value_type"] == "integer" else DECIMAL
+            for key, row in measurements.items() if key[:2] == table and row["value_type"] in NUMERIC
+        }
+        if not numeric_fields:
+            continue
+        missing = schema.get("missingValues", [""])
+        if not isinstance(missing, list) or not all(isinstance(item, str) for item in missing):
+            raise ValueError("resource missingValues must be an array of strings")
+        for key in numeric_fields:
+            evidence[key] = {"nonmissing": 0, "missing": 0, "invalid": 0}
+        for row in read_csv(path):
+            for key, pattern in numeric_fields.items():
+                token = row[key[2]]
+                if token in missing:
+                    state = "missing"
+                elif pattern.fullmatch(token):
+                    state = "nonmissing"
+                else:
+                    state = "invalid"
+                evidence[key][state] += 1
+    return evidence
+
+
+def audit(package, decisions_path, *, check_numeric=False):
     measurements, schemas = metadata(package)
     decisions = read_decisions(decisions_path, measurements)
+    direct = numeric_evidence(measurements, schemas) if check_numeric else {}
     fields = []
     for key, row in sorted(measurements.items()):
         item = {"field": list(key), "value_type": row["value_type"]}
         decision = decisions.get(key, {})
         if row["value_type"] in NUMERIC:
             item["status"] = "declared_numeric"
+            if check_numeric:
+                item["cells"] = direct[key]
         elif "unresolved" in decision:
             item.update(status="explicitly_unresolved", reason=decision["unresolved"])
         elif "view" in decision:
@@ -205,13 +236,20 @@ def audit(package, decisions_path):
             item["status"] = "undeclared"
         fields.append(item)
     counts = Counter(item["status"] for item in fields)
-    return {
+    report = {
         "measurement_slots": len(fields),
         "text_measurement_slots": sum(item["value_type"] == "string" for item in fields),
         "by_status": {status: counts[status] for status in ("declared_numeric", "verified_view", "explicitly_unresolved", "undeclared", "invalid_view")},
         "fields": fields,
         "accounted": bool(fields) and not (counts["undeclared"] or counts["invalid_view"]),
     }
+    if check_numeric:
+        report["numeric_ready"] = bool(fields) and all(
+            item["status"] == "verified_view" or
+            (item["status"] == "declared_numeric" and item["cells"]["nonmissing"] > 0 and item["cells"]["invalid"] == 0)
+            for item in fields
+        )
+    return report
 
 
 def main():
@@ -219,13 +257,14 @@ def main():
     parser.add_argument("package", type=Path, help="native SDP directory")
     parser.add_argument("--decisions", type=Path, help="reviewer's JSON array of explicit field decisions")
     parser.add_argument("--require-accounted", action="store_true", help="fail for unreviewed slots, invalid views or no measurements")
+    parser.add_argument("--require-numeric", action="store_true", help="also require usable numeric observations or a verified numeric view for every declared measurement")
     args = parser.parse_args()
     try:
-        report = audit(args.package, args.decisions)
+        report = audit(args.package, args.decisions, check_numeric=args.require_numeric)
     except (OSError, KeyError, TypeError, ValueError, csv.Error, ArithmeticError) as error:
         parser.exit(2, f"cannot audit package: {error}\n")
     print(json.dumps(report, indent=2))
-    return int(args.require_accounted and not report["accounted"])
+    return int((args.require_accounted and not report["accounted"]) or (args.require_numeric and not report["numeric_ready"]))
 
 
 if __name__ == "__main__":
