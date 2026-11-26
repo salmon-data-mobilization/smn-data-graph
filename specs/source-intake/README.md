@@ -97,4 +97,20 @@ To review a text measurement, pass `--decisions decisions.json`. Each field iden
 
 A direct view must have a matching resolved variable IRI, matching unit and I-ADOPT fields, a native integer or number type, identical named primary keys, and the same rows, numerical values and missingness. The audit matches keys across CSVs, compares finite decimal values, and uses each resource schema's declared missing tokens (the default is an empty field). At least one nonmissing pair must exist. A conversion, subset, estimate or aggregation needs its own scientific review. The audit checks the reviewer's stated link and preserves unresolved fields in its report. The reviewer determines whether the sampling design and variable support the intended analysis.
 
+When a publisher assigns a missing marker to one measurement field, add `source_missing_tokens` and `source_missing_evidence` to that direct-view decision. Cite the field or table and explain why the marker means missing there. For example, an instrument reading could use the following decision.
+
+```json
+{
+  "source": ["example", "samples", "reading"],
+  "view": ["example", "numeric_samples", "reading_numeric"],
+  "source_missing_tokens": ["ND"],
+  "source_missing_evidence": {
+    "locator": "Instrument export manual, reading field dictionary",
+    "rationale": "The instrument uses ND when it did not record a reading."
+  }
+}
+```
+
+Resource `missingValues` still apply to their full declared scope. Additional tokens apply only when reading this exact source value column. Keys, sibling columns and target values keep their respective resource rules. Both token sets use exact case-sensitive text, including whitespace. Additions must be distinct, nonblank strings absent from the resource list. Negative numeric sentinels such as `-999` require the same evidence and match only the stated spelling (`-999.0` is a different token). Zero, positive numeric values and infinities cannot be introduced through a field override. The JSON report retains the supplied locator and rationale and counts source cells matching each additional token for a verified view.
+
 Use `--require-accounted` for a gate. It exits with status 1 for an unreviewed nonnumeric field, a failed view check, or a package with no declared measurements. An explicit unresolved decision satisfies this gate and contributes zero verified views. An input or schema error exits with status 2.

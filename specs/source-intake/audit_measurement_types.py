@@ -6,7 +6,7 @@ import json
 import re
 import sys
 from collections import Counter
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -70,6 +70,28 @@ def decision_key(value):
     return tuple(value)
 
 
+def validate_missing_override(record):
+    tokens = record["source_missing_tokens"]
+    evidence = record["source_missing_evidence"]
+    if not isinstance(evidence, dict) or set(evidence) != {"locator", "rationale"} or not all(
+        isinstance(text, str) and text.strip() for text in evidence.values()
+    ):
+        raise ValueError("source_missing_evidence requires a nonempty locator and rationale")
+    if not isinstance(tokens, list) or not tokens or not all(isinstance(t, str) and t.strip() for t in tokens):
+        raise ValueError("source_missing_tokens requires a nonempty list of nonblank strings")
+    if len(tokens) != len(set(tokens)):
+        raise ValueError("repeated source_missing_token")
+    for token in tokens:
+        try:
+            number = Decimal(token)
+        except InvalidOperation:
+            continue
+        if number.is_finite() and (number >= 0 or not DECIMAL.fullmatch(token)):
+            raise ValueError("a numeric source_missing_token must be an exact negative decimal literal")
+        if number.is_infinite():
+            raise ValueError("infinite source_missing_token")
+
+
 def read_decisions(path, measurements):
     if path is None:
         return {}
@@ -78,7 +100,9 @@ def read_decisions(path, measurements):
         raise ValueError("decisions must be a JSON array")
     decisions = {}
     for record in records:
-        if not isinstance(record, dict) or set(record) not in ({"source", "view"}, {"source", "unresolved"}):
+        if not isinstance(record, dict) or set(record) not in (
+            {"source", "view"}, {"source", "view", "source_missing_tokens", "source_missing_evidence"}, {"source", "unresolved"},
+        ):
             raise ValueError("each decision needs a source and either a view or an unresolved reason")
         source = decision_key(record["source"])
         if source in decisions or source not in measurements or measurements[source]["value_type"] in NUMERIC:
@@ -88,11 +112,13 @@ def read_decisions(path, measurements):
                 raise ValueError("unresolved decisions need a nonempty reason")
         else:
             decision_key(record["view"])
+            if "source_missing_tokens" in record:
+                validate_missing_override(record)
         decisions[source] = record
     return decisions
 
 
-def keyed_values(key, schema_info, value_type):
+def keyed_values(key, schema_info, value_type, field_tokens=()):
     path, schema, fields, table_key = schema_info
     keys = [name.strip() for name in table_key.split(",")]
     resource_key = schema.get("primaryKey")
@@ -103,23 +129,29 @@ def keyed_values(key, schema_info, value_type):
     missing = schema.get("missingValues", [""])
     if not isinstance(missing, list) or not all(isinstance(item, str) for item in missing):
         raise ValueError("resource missingValues must be an array of strings")
+    if set(missing).intersection(field_tokens):
+        raise ValueError("source_missing_tokens repeats a resource missing token")
+    token_counts = dict.fromkeys(field_tokens, 0)
     values = {}
     for row in read_csv(path):
         identity = tuple(row[name] for name in keys)
         if any(part in missing or part == "" for part in identity) or identity in values:
             raise ValueError("empty or repeated row key")
         token = row[key[2]]
-        if token in missing:
+        if token in token_counts:
+            token_counts[token] += 1
+            values[identity] = None
+        elif token in missing:
             values[identity] = None
         else:
             pattern = INTEGER if value_type == "integer" else DECIMAL
             if not pattern.fullmatch(token):
                 raise ValueError("a nonmissing cell cannot be read as the declared numeric type")
             values[identity] = Decimal(token)
-    return keys, values
+    return keys, values, token_counts
 
 
-def verify_view(source, view, measurements, schemas):
+def verify_view(source, view, measurements, schemas, field_tokens):
     if view not in measurements or measurements[view]["value_type"] not in NUMERIC:
         raise ValueError("view must identify a native numeric measurement")
     if source[0] != view[0] or measurements[source]["value_type"] != "string":
@@ -132,8 +164,8 @@ def verify_view(source, view, measurements, schemas):
     attributes = SEMANTICS if source_column.get("unit_iri") else (*SEMANTICS, "unit_label")
     if any(source_column.get(name, "") != view_column.get(name, "") for name in attributes):
         raise ValueError("source and view declare different variable, unit or I-ADOPT roles")
-    source_keys, original = keyed_values(source, schemas[source[:2]], "number")
-    view_keys, typed = keyed_values(view, schemas[view[:2]], measurements[view]["value_type"])
+    source_keys, original, token_counts = keyed_values(source, schemas[source[:2]], "number", field_tokens)
+    view_keys, typed, _ = keyed_values(view, schemas[view[:2]], measurements[view]["value_type"])
     if source_keys != view_keys or original.keys() != typed.keys():
         raise ValueError("source and view must cover the same row keys")
     if original != typed:
@@ -141,7 +173,10 @@ def verify_view(source, view, measurements, schemas):
     observed = sum(value is not None for value in typed.values())
     if observed == 0:
         raise ValueError("no paired nonmissing numeric values")
-    return {"rows": len(typed), "nonmissing": observed}
+    result = {"rows": len(typed), "nonmissing": observed}
+    if field_tokens:
+        result["source_missing_token_counts"] = token_counts
+    return result
 
 
 def audit(package, decisions_path):
@@ -158,8 +193,12 @@ def audit(package, decisions_path):
         elif "view" in decision:
             view = decision_key(decision["view"])
             item["view"] = list(view)
+            field_tokens = decision.get("source_missing_tokens", [])
+            if field_tokens:
+                item["source_missing_tokens"] = field_tokens
+                item["source_missing_evidence"] = decision["source_missing_evidence"]
             try:
-                item.update(verify_view(key, view, measurements, schemas), status="verified_view")
+                item.update(verify_view(key, view, measurements, schemas, field_tokens), status="verified_view")
             except ValueError as error:
                 item.update(status="invalid_view", reason=str(error))
         else:

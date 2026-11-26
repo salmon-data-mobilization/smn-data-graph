@@ -86,6 +86,52 @@ class MeasurementTypeAudit(unittest.TestCase):
         self.assertTrue(report["accounted"])
         self.assertEqual((field["rows"], field["nonmissing"]), (3, 2))
 
+    def test_field_missing_token_isolated_from_sibling_measurement_keys_and_target(self):
+        self.columns[2][4] = "string"
+        self.columns.append(["example", "projection", "depth_numeric", "measurement", "number", "urn:example:depth", "urn:example:m"])
+        self.write_metadata()
+        write_csv(self.package / "data/samples.csv", ["id", "reading", "depth"], [["NA", "0", "2"], ["B", "NA", "NA"], ["C", "ND", "3"]])
+        write_csv(self.package / "data/projection.csv", ["id", "reading_numeric", "depth_numeric"], [["NA", "0", "2"], ["B", "", ""], ["C", "", "3"]])
+        evidence = {"locator": "Instrument dictionary, reading field", "rationale": "The instrument uses NA for a missed reading."}
+        first = {"source": SOURCE, "view": VIEW, "source_missing_tokens": ["NA"], "source_missing_evidence": evidence}
+        second = {"source": UNRELATED, "view": ["example", "projection", "depth_numeric"]}
+        report, field = self.check_report([first, second], 1, "verified_view")
+        self.assertEqual((field["rows"], field["nonmissing"]), (3, 1))
+        self.assertEqual(field["source_missing_token_counts"], {"NA": 1})
+        self.assertEqual(field["source_missing_evidence"], evidence)
+        sibling = next(item for item in report["fields"] if item["field"] == UNRELATED)
+        self.assertEqual(sibling["status"], "invalid_view")
+        write_csv(self.package / "data/projection.csv", ["id", "reading_numeric", "depth_numeric"], [["NA", "0", "2"], ["B", "NA", ""], ["C", "", "3"]])
+        self.check_report([first, second], 1, "invalid_view")
+
+    def test_documented_negative_sentinel_is_an_exact_lexeme(self):
+        self.original = [["A", "-999", "1"], ["B", "-999.0", "2"], ["C", "0", "3"]]
+        self.typed = [["C", "0"], ["B", "-999"], ["A", ""]]
+        self.write_data()
+        decision = {"source": SOURCE, "view": VIEW, "source_missing_tokens": ["-999"],
+                    "source_missing_evidence": {"locator": "Instrument export manual, reading", "rationale": "The export reserves the exact label -999 for unrecorded readings."}}
+        _, field = self.check_report([decision], 0, "verified_view")
+        self.assertEqual(field["source_missing_token_counts"], {"-999": 1})
+        self.assertEqual(field["nonmissing"], 2)
+
+    def test_missing_override_requires_evidence_and_rejects_ambiguous_or_repeated_tokens(self):
+        evidence = {"locator": "Instrument dictionary, reading", "rationale": "Instrument flag"}
+        direct = {"source": SOURCE, "view": VIEW}
+        invalid = [
+            {"source_missing_tokens": ["NA"]},
+            {"source_missing_evidence": evidence},
+            {"source_missing_tokens": ["NA"], "source_missing_evidence": {"locator": "", "rationale": "Flag"}},
+            {"source_missing_tokens": ["NA"], "source_missing_evidence": {"locator": "Field", "rationale": " "}},
+        ]
+        for tokens in ([], [" "], ["NA", "NA"], ["0"], ["-0.00e2"], ["+4"], [0]):
+            invalid.append({"source_missing_tokens": tokens, "source_missing_evidence": evidence})
+        for change in invalid:
+            with self.subTest(change=change):
+                self.assertEqual(self.run_audit([{**direct, **change}]).returncode, 2)
+        redundant = {**direct, "source_missing_tokens": ["ND"], "source_missing_evidence": evidence}
+        _, field = self.check_report([redundant], 1, "invalid_view")
+        self.assertIn("repeats a resource", field["reason"])
+
     def test_unrelated_variable_or_wrong_unit_cannot_substitute(self):
         _, field = self.check_report([{"source": SOURCE, "view": UNRELATED}], 1, "invalid_view")
         self.assertIn("different", field["reason"])
