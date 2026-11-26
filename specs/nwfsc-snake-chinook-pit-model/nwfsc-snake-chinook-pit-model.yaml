@@ -1,0 +1,131 @@
+spec_version: 1
+slug: nwfsc-snake-chinook-pit-model
+version: 2.3-lexical-7e14354ce6bd
+title: Snake River spring/summer Chinook salmon spawner estimates from PIT detections
+description: '[agent] The complete ICSRSSchinookModel.csv table from NOAA Northwest Fisheries Science Center VRData 2.3 contains 159 population-year estimates in 20 Snake River spring/summer Chinook populations for years within 2010–2019. The Nez Perce Tribe contributed the series. VRData identifies the method as DABOM model expansion of PIT-tag detections. The package preserves all 19 source fields as text.'
+source:
+  publisher: NOAA Northwest Fisheries Science Center
+  landing_page: https://github.com/nwfsc-math-bio/VRData/blob/1511807c895c5adfd1b146a92023a9f93bffde31/data-raw/ICSRSSchinookModel.csv
+  licence: null
+  redistribution: unconfirmed
+  attribution: NOAA Northwest Fisheries Science Center, VRData 2.3 (April 21, 2022). The Nez Perce Tribe contributed the estimates and Mari Williams compiled the source table. https://github.com/nwfsc-math-bio/VRData/blob/1511807c895c5adfd1b146a92023a9f93bffde31/data-raw/ICSRSSchinookModel.csv. NOAA declares CC0 1.0 for its VRData package (https://creativecommons.org/publicdomain/zero/1.0/). The table documentation identifies the Nez Perce Tribe as the data contributor and supplies no separate redistribution statement for that series. The derived package adds structural metadata and serializes the original table with source values preserved.
+  files:
+  - name: ICSRSSchinookModel.csv
+    url: https://raw.githubusercontent.com/nwfsc-math-bio/VRData/1511807c895c5adfd1b146a92023a9f93bffde31/data-raw/ICSRSSchinookModel.csv
+    sha256: 7e14354ce6bd115a5e35949e7d8768fbd07eac9b3155a2977c173b1dd9bf62da
+  - name: Salmon-Chinook-Snake-River-spring-summer-run-ESU-ICSRSSchinookModel.Rd
+    url: https://raw.githubusercontent.com/nwfsc-math-bio/VRData/1511807c895c5adfd1b146a92023a9f93bffde31/man/Salmon-Chinook-Snake-River-spring-summer-run-ESU-ICSRSSchinookModel.Rd
+    sha256: 57438d7e9b9cafcd0e40e4ca3a65623f0e205a7d53a0923961369b8455f2082c
+  - name: DESCRIPTION
+    url: https://raw.githubusercontent.com/nwfsc-math-bio/VRData/1511807c895c5adfd1b146a92023a9f93bffde31/DESCRIPTION
+    sha256: d1a77aa3a4d6fbbe9f0a57ee86945f7994669058dba9463ad33ae4caef772062
+  - name: LICENSE
+    url: https://raw.githubusercontent.com/nwfsc-math-bio/VRData/1511807c895c5adfd1b146a92023a9f93bffde31/LICENSE
+    sha256: 4b353f5c7f38259a20197b0658f1bed1ec984d8f5062e1f63b2cbeb225e0d2bb
+parser: csv
+tables:
+- id: snake_chinook_model
+  file: ICSRSSchinookModel.csv
+  keys:
+  - NMFS_POPID
+  - YEAR
+  columns:
+  - name: SERIES
+    role: attribute
+    datatype: string
+    label: SERIES
+    description: Series label assigned by the compiler to distinguish source series.
+  - name: ESU
+    role: attribute
+    datatype: string
+    label: ESU
+    description: ESU or DPS name recorded in VRData.
+  - name: SPECIES
+    role: attribute
+    datatype: string
+    label: SPECIES
+    description: Species name recorded in VRData.
+  - name: METHOD
+    role: attribute
+    datatype: string
+    label: METHOD
+    description: Published method category. Model refers to DABOM expansion from PIT-tag data in the VRData manual.
+  - name: MAJOR_POPULATION_GROUP
+    role: attribute
+    datatype: string
+    label: MAJOR_POPULATION_GROUP
+    description: Source name of the major population group within the ESU or DPS.
+  - name: NMFS_POPID
+    role: attribute
+    datatype: string
+    label: NMFS_POPID
+    description: Population code used by the Northwest Fisheries Science Center, retained in the scope of this table.
+  - name: POPULATION_NAME
+    role: attribute
+    datatype: string
+    label: POPULATION_NAME
+    description: Full population name in the source.
+  - name: COMMON_POPULATION_NAME
+    role: attribute
+    datatype: string
+    label: COMMON_POPULATION_NAME
+    description: Abbreviated population name used in viability report figures and tables.
+  - name: DISPLAY_ORDER
+    role: attribute
+    datatype: string
+    label: DISPLAY_ORDER
+    description: Display-order token as supplied in the CSV.
+  - name: RUN_TIMING
+    role: attribute
+    datatype: string
+    label: RUN_TIMING
+    description: Seasonal run-timing field. Every cell in this series is blank. The ESU label carries the source spring/summer designation.
+  - name: STREAM_NAME
+    role: attribute
+    datatype: string
+    label: STREAM_NAME
+    description: Stream name as supplied in the CSV.
+  - name: YEAR
+    role: attribute
+    datatype: string
+    label: YEAR
+    description: Calendar year when the count was made, as defined in the VRData manual.
+  - name: NUMBER_OF_SPAWNERS
+    role: attribute
+    datatype: string
+    label: NUMBER_OF_SPAWNERS
+    description: Spawner or escapement value in the VRData schema. The row citations name the Nez Perce Tribe natural-origin spawner abundance series.
+  - name: FRACWILD
+    role: attribute
+    datatype: string
+    label: FRACWILD
+    description: Fraction of wild or natural-origin spawners according to VRData. The file reports 1 in every row.
+  - name: CATCH
+    role: attribute
+    datatype: string
+    label: CATCH
+    description: CATCH token as supplied in the CSV. The table manual gives no definition for this field.
+  - name: CONTRIBUTOR
+    role: attribute
+    datatype: string
+    label: CONTRIBUTOR
+    description: Data contributor recorded by the compiler.
+  - name: COMPILER
+    role: attribute
+    datatype: string
+    label: COMPILER
+    description: Compiler of the data file as recorded in VRData.
+  - name: CITATION
+    role: attribute
+    datatype: string
+    label: CITATION
+    description: Source citation supplied by VRData for the row.
+  - name: LINE_NOTES
+    role: attribute
+    datatype: string
+    label: LINE_NOTES
+    description: Row note as supplied in the CSV.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

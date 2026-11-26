@@ -1,0 +1,78 @@
+spec_version: 1
+slug: dfo-smu-cu-du-lookup
+version: lexical-d10eec5b8a5b
+title: DFO Pacific Salmon Stock Management Unit, Conservation Unit and Designatable Unit lookup
+description: Complete bilingual lookup attachment from the DFO Pacific Salmon Conservation Units, Sites & Status catalogue record. The package retains DFO’s CU, SMU and DU labels, indexes, type codes, empty fields and multi-index cells as text. The graph describes the table and its provenance. The published table supports lookups within this source snapshot.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/1ac00a39-4770-443d-8a6b-9656c06df6a3/resource/ce7ba1d7-ca4f-4510-9958-3fb7618cd6c5
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: Contains information licensed under the Open Government Licence – Canada. Fisheries and Oceans Canada, Pacific Salmon Conservation Units, Sites & Status, SMU CU DU Lookup Table. Open Government Portal resource ce7ba1d7-ca4f-4510-9958-3fb7618cd6c5. The derived package transcodes the CSV to UTF-8 and preserves the published header and cell text.
+  files:
+  - name: SMU_CU_DU_Lookup_Table_7172025.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/1ac00a39-4770-443d-8a6b-9656c06df6a3/attachments/SMU_CU_DU_Lookup_Table_7172025.csv
+    sha256: d10eec5b8a5b46dab4b73daeeb97d125cbbd4a781f46fa2f2a17b9c740ccf102
+parser: specs.dfo_smu_cu_du_lookup_parser:parse
+tables:
+- id: unit_lookup
+  file: SMU_CU_DU_Lookup_Table_7172025.csv
+  keys:
+  - Full CU Index/Index complet des UC
+  columns:
+  - name: DFO Area/Zone du MPO
+    role: attribute
+    datatype: string
+    description: DFO area label in the published lookup.
+  - name: Species/Espèces
+    role: attribute
+    datatype: string
+    description: Species label as published.
+  - name: SMU Name/Nom de l'UGS
+    role: attribute
+    datatype: string
+    description: Stock Management Unit name where supplied.
+  - name: Full SMU Index/Index Complet des UGS
+    role: attribute
+    datatype: string
+    description: Stock Management Unit index where supplied.
+  - name: SMU Life History Type/Cycle biologique de l'UGS
+    role: attribute
+    datatype: string
+    description: Source life-history label for the Stock Management Unit.
+  - name: CU Name/Nom UC
+    role: attribute
+    datatype: string
+    description: Conservation Unit name as supplied.
+  - name: Full CU Index/Index complet des UC
+    role: attribute
+    datatype: string
+    description: Source-local Conservation Unit index. Every record in the pinned attachment has a distinct nonempty value.
+  - name: CU Life History Type/Type de cycle de l'UC
+    role: attribute
+    datatype: string
+    description: Source life-history label for the Conservation Unit.
+  - name: CU Type/ Type UC
+    role: attribute
+    datatype: string
+    description: Conservation Unit type string, including verification, bin, deprecated and extirpated labels as supplied.
+  - name: DU Name/Nom UD
+    role: attribute
+    datatype: string
+    description: Designatable Unit name or names as supplied.
+  - name: DU Number/Numéro UD
+    role: attribute
+    datatype: string
+    description: Designatable Unit number or numbers retained as text.
+  - name: Full DU Index/Index complet de l'UD
+    role: attribute
+    datatype: string
+    description: Designatable Unit index text. Some cells contain more than one index separated by semicolons.
+  - name: DU Acronym/Acronyme « DU »
+    role: attribute
+    datatype: string
+    description: Designatable Unit acronym text as supplied.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

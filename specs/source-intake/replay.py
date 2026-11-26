@@ -1,4 +1,4 @@
-"""Build and verify the three pinned source packages, then admit each to a local store."""
+"""Build and verify the selected source intake, then admit each package to a local store."""
 
 import argparse
 import csv
@@ -17,7 +17,10 @@ from salmongraph.vocab import VocabIndex
 
 
 SPECS = Path(__file__).resolve().parents[1]
-SOURCES = ("dfo-rs-productivity", "nwfsc-columbia-chum-2020", "sasap-sockeye-brood")
+BATCHES = {
+    1: ("dfo-rs-productivity", "nwfsc-columbia-chum-2020", "sasap-sockeye-brood"),
+    2: ("dfo-smu-cu-du-lookup", "nwfsc-snake-chinook-pit-model", "sasap-alaska-harvest-sectors"),
+}
 
 
 def check_csv(spec, raw, build):
@@ -33,15 +36,12 @@ def check_csv(spec, raw, build):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--batch", type=int, choices=BATCHES, default=1, help="Source batch to replay (default: 1)")
     parser.add_argument("--intake-dir", type=Path, required=True, help="Directory with <source>/raw inputs and <source>/build outputs")
     parser.add_argument("--store", type=Path, required=True, help="Local Oxigraph database directory")
     parser.add_argument("--build-date", required=True, help="Explicit ISO date for the derived graph")
     args = parser.parse_args()
 
-    # The executor resolves custom parsers inside its checkout and hashes the code it ran.
-    custom = "dfo_rs_productivity_parser.py"
-    if (config.ROOT / "specs" / custom).read_bytes() != (SPECS / custom).read_bytes():
-        raise ValueError(f"Stage this intake's {custom} in the isolated executor's specs directory")
     intake_dir = args.intake_dir.resolve()
     store_path = args.store.resolve()
     if store_path.is_relative_to(intake_dir) or intake_dir.is_relative_to(store_path):
@@ -55,19 +55,29 @@ def main():
     if {key: pin.sha256 for key, pin in vocab.pins.items()} != expected:
         raise ValueError("Local vocabulary files differ from this intake's pins")
     builds = []
-    for slug in SOURCES:
+    for slug in BATCHES[args.batch]:
         source_dir = intake_dir / slug
         raw, build = source_dir / "raw", source_dir / "build"
         spec_dir = SPECS / slug
         spec = load_spec(spec_dir / f"{slug}.yaml")
+        # The executor resolves custom parser modules inside its own source tree.
+        # Compare the actual staged module before the executor fingerprints and runs it.
+        verifier = spec_dir / "verify_source.py"
+        if ":" in spec.parser:
+            module, _ = spec.parser.split(":", 1)
+            parser_file = Path(*module.split(".")).with_suffix(".py")
+            if (config.ROOT / parser_file).read_bytes() != (SPECS.parent / parser_file).read_bytes():
+                raise ValueError(f"Stage the current {parser_file} in the isolated executor")
+        if spec.parser != "csv" and not verifier.is_file():
+            raise ValueError(f"{slug}: this parser requires an independent source comparison")
         # Rebuild in isolation. A changed source, date, SDK or parser must never
         # replace a previously verified package before the store checks its graph.
         with tempfile.TemporaryDirectory(dir=source_dir) as temporary:
             staged = Path(temporary) / "build"
             build_dataset(spec, raw_dir=raw, out_dir=staged, vocab=vocab, build_date=args.build_date)
-            if slug == "dfo-rs-productivity":
+            if verifier.is_file():
                 subprocess.run(
-                    [sys.executable, str(spec_dir / "verify_source.py"), "--raw-dir", str(raw), "--build-dir", str(staged)],
+                    [sys.executable, str(verifier), "--raw-dir", str(raw), "--build-dir", str(staged)],
                     check=True,
                 )
             else:
@@ -80,7 +90,7 @@ def main():
                 staged.rename(build)
         builds.append(build)
 
-    # All three packages passed their source checks. The loader checks each manifest
+    # All selected packages passed their source checks. The loader checks each manifest
     # and commits its graphs in one transaction. Replaying identical builds is safe.
     store_path.parent.mkdir(parents=True, exist_ok=True)
     store = ox.Store(str(store_path))

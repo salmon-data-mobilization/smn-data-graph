@@ -1,0 +1,60 @@
+spec_version: 1
+slug: sasap-alaska-harvest-sectors
+version: lexical-f1hm56q3
+title: Harvest of Salmon across Commercial, Subsistence, Personal Use, and Sport Fish sectors, Alaska, 1995-2016
+description: '[agent] Alaska salmon harvest by year, SASAP region, species and fishery sector. The published CSV contains years 1969–2016, with the earliest year varying by sector. Source values, confidentiality indicators and commercial report flags are retained as text. The package includes the complete harvest table.'
+source:
+  publisher: KNB Data Repository
+  doi: 10.5063/F1HM56Q3
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/F1HM56Q3
+  licence: https://creativecommons.org/licenses/by/4.0/
+  redistribution: confirmed
+  attribution: 'Jeanette Clark and Alaska Department of Fish and Game (Divisions of Commercial Fisheries, Sport Fish, and Subsistence), 2019. Harvest of Salmon across Commercial, Subsistence, Personal Use, and Sport Fish sectors, Alaska, 1995-2016. KNB Data Repository. https://doi.org/10.5063/F1HM56Q3. Creative Commons Attribution 4.0 International, https://creativecommons.org/licenses/by/4.0/. This package reserializes the original CSV and adds structural metadata. The published analysis is retained as supporting evidence.'
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/F1HM56Q3
+      sha256: da99fa9e8c4ae589e50117398a5b6136b0aab3f0521cc702ac029e5b78ea86fd
+    - name: Harvest_All_Sectors.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:2f852663-60e5-4342-b6b9-cd079da97530
+      sha256: d06ff470cfa4bd67796e26c1583a9c50ab64de3bdff7e143e94f0885417c1d18
+    - name: All_Harvest.Rmd
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:374bdd99-f438-4f06-8f28-cc567b0247ad
+      sha256: b68eb324647a253036485ef1c6ae79c720fa9014cc018035a3caf4534c562571
+parser: csv
+tables:
+  - id: harvest
+    file: Harvest_All_Sectors.csv
+    keys: [year, SASAP.Region, species, sector]
+    columns:
+      - name: year
+        role: attribute
+        datatype: string
+        description: Year of the reported harvest.
+      - name: SASAP.Region
+        role: attribute
+        datatype: string
+        description: Harvest region assigned in the SASAP compilation. Some allocations use permit-holder residence.
+      - name: species
+        role: attribute
+        datatype: string
+        description: Common name of the harvested salmon species.
+      - name: p_conf
+        role: attribute
+        datatype: string
+        description: For direct CFEC commercial data, source indicator of the share of fisheries meeting the processing code’s confidentiality criterion.
+      - name: sector
+        role: attribute
+        datatype: string
+        description: Permitting sector reported by the source.
+      - name: source_report
+        role: attribute
+        datatype: string
+        description: Commercial harvest flag indicating use of a published management report.
+      - name: harvest
+        role: attribute
+        datatype: string
+        description: Harvest reported in numbers of fish. The source retains fractional estimates in some sectors.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

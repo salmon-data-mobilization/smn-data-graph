@@ -32,7 +32,7 @@ variables inherited from the shell, so a run never uses a session's account.
 
 ## Local source intake
 
-The [Pacific salmon source intake](specs/source-intake/README.md) builds and verifies local packages for DFO British Columbia productivity, NWFSC Columbia River chum and SASAP sockeye brood tables. It includes a SPARQL query that finds the source tables and their package paths.
+The [Pacific salmon source intakes](specs/source-intake/README.md) build and verify local packages for six datasets covering spawner abundance, productivity, fishery harvest and salmon-unit lookups. The table catalogue query returns the publisher for each dataset and the path to each table in its package.
 
 ## Starter catalogue evidence
 
