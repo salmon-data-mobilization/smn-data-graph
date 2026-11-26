@@ -1,9 +1,9 @@
 name: Source mapping audit
 on:
   pull_request:
-    paths: ['specs/source-intake/audit_*.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', '.github/workflows/source-mapping-audit.yml']
+    paths: ['specs/source-intake/audit_*.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', '.github/workflows/source-mapping-audit.yml']
   push:
-    paths: ['specs/source-intake/audit_*.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', '.github/workflows/source-mapping-audit.yml']
+    paths: ['specs/source-intake/audit_*.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', '.github/workflows/source-mapping-audit.yml']
 permissions:
   contents: read
 jobs:
@@ -15,3 +15,5 @@ jobs:
           persist-credentials: false
       - run: python3 -m unittest discover -s tests -p test_source_mapping_audit.py
       - run: python3 -m unittest discover -s tests -p test_measurement_types.py
+      - run: python3 -m pip install --target "$RUNNER_TEMP/audit-libs" rdflib==7.6.0
+      - run: PYTHONPATH="$RUNNER_TEMP/audit-libs" python3 -m unittest discover -s tests -p test_mapping_decisions.py
