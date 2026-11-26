@@ -1,0 +1,16 @@
+name: Source mapping audit
+on:
+  pull_request:
+    paths: ['specs/source-intake/audit_*.py', 'tests/test_source_mapping_audit.py', '.github/workflows/source-mapping-audit.yml']
+  push:
+    paths: ['specs/source-intake/audit_*.py', 'tests/test_source_mapping_audit.py', '.github/workflows/source-mapping-audit.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p test_source_mapping_audit.py

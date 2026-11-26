@@ -77,3 +77,7 @@ for row in store.query(query):
     print(row["title"].value, row["table"].value, row["resource"].value, sep="\t")
 PY
 ```
+
+## Check a proposed join
+
+Run `python3 specs/source-intake/audit_join.py LEFT.csv RIGHT.csv --left-key COLUMN [COLUMN ...]` on the exact UTF-8 CSV views you intend to join. Supply `--right-key` for different column names and repeat `--null-token` for publisher-defined missing values. The command matches exact lexical tuples and reports both whole-file key repetition and matches on the overlapping keys. Use `--require-single-match` when attaching exactly one lookup row to every row on the left. The JSON gives the number of expanded inner-join rows even on a cardinality failure. Link the source definitions for both keys to explain why the records represent comparable entities or events.
