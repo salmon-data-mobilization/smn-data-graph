@@ -39,3 +39,14 @@ class DecisionAudit(unittest.TestCase):
             self.run_audit(self.rows + [dict(self.rows[0], id="repeat")])
         with self.assertRaises(ValueError):
             self.run_audit(self.rows[:2])
+
+    def test_unit_can_be_used_without_redefining_the_external_label(self):
+        graph = Graph().parse(data="""
+            @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+            @prefix qudt: <http://qudt.org/schema/qudt/> .
+            <urn:local:passage> rdfs:label "Daily estimated fish" ; qudt:unit <http://qudt.org/vocab/unit/NUM> .
+            <http://qudt.org/vocab/unit/NUM> rdfs:label "Fish passing one trap in a day" .
+        """, format="turtle")
+        failures = audit.foreign_labels(graph, ["urn:local:"])
+        self.assertEqual(len(failures), 1)
+        self.assertEqual(failures[0]["subject"], "http://qudt.org/vocab/unit/NUM")

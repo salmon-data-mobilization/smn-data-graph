@@ -7,10 +7,21 @@ from pathlib import Path
 import re
 
 from rdflib import Graph, URIRef
+from rdflib.namespace import RDFS, SKOS
 
 
 def rank(seed, dataset, identifier):
     return hashlib.sha256(f"{seed}\n{dataset}\n{identifier}".encode()).hexdigest()
+
+
+def foreign_labels(graph, owned_namespaces):
+    """Find labels the profile assigns to terms owned by another vocabulary."""
+    labels = []
+    for predicate in (RDFS.label, SKOS.prefLabel, SKOS.altLabel, SKOS.hiddenLabel):
+        for subject, value in graph.subject_objects(predicate):
+            if isinstance(subject, URIRef) and not str(subject).startswith(tuple(owned_namespaces)):
+                labels.append({"subject": str(subject), "predicate": str(predicate), "value": value.n3()})
+    return sorted(labels, key=lambda row: (row["subject"], row["predicate"], row["value"]))
 
 
 def check_decisions(graph, records, dataset, seed, per_status):
@@ -58,14 +69,19 @@ def main():
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--seed", required=True)
     parser.add_argument("--per-status", type=int, default=2)
+    parser.add_argument("--owned-namespace", action="append", help="Check for labels on external terms. Repeat for each namespace the profile owns.")
     args = parser.parse_args()
     graph = Graph().parse(args.profile, format="turtle")
     try:
         result = check_decisions(graph, json.loads(args.register.read_text()), args.dataset, args.seed, args.per_status)
     except (OSError, ValueError, TypeError, AttributeError) as exc:
         parser.exit(2, f"{exc}\n")
+    if args.owned_namespace:
+        if not all(ns.endswith(("/", "#", ":")) for ns in args.owned_namespace):
+            parser.error("An owned namespace must end with /, # or : to delimit its terms")
+        result["foreign_labels"] = foreign_labels(graph, args.owned_namespace)
     print(json.dumps(result, indent=2))
-    return int(not result["matches_export"])
+    return int(not result["matches_export"] or bool(result.get("foreign_labels")))
 
 
 if __name__ == "__main__":
