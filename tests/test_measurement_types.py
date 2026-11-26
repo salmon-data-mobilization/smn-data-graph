@@ -1,9 +1,11 @@
 import csv
+import hashlib
 import json
 import subprocess
 import sys
 import tempfile
 import unittest
+from decimal import Decimal
 from pathlib import Path
 
 
@@ -133,6 +135,39 @@ class MeasurementTypeAudit(unittest.TestCase):
         redundant = {**direct, "source_missing_tokens": ["ND"], "source_missing_evidence": evidence}
         _, field = self.check_report([redundant], 1, "invalid_view")
         self.assertIn("repeats a resource", field["reason"])
+
+    def test_decimal_consumer_preserves_values_and_missingness_and_checks_the_hash(self):
+        exact = "0.123456789012345678901234567890123456789"
+        self.columns[-1][4] = "number"
+        self.write_metadata()
+        self.original = [["001", exact, "1"], ["002", "ND", "2"], ["003", "-0.00", "3"]]
+        self.typed = [["003", "0"], ["001", exact], ["002", ""]]
+        self.write_data()
+        path = self.package / "decisions.json"
+        path.write_text(json.dumps([{"source": SOURCE, "view": VIEW}]))
+        pin = hashlib.sha256((self.package / "data/samples.csv").read_bytes()).hexdigest()
+        args = [sys.executable, str(SCRIPT.with_name("read_numeric_view.py")), str(self.package), str(path), "--source", *SOURCE, "--source-sha256"]
+        report = subprocess.run([*args, pin], capture_output=True, text=True, check=True)
+        rows = json.loads(report.stdout)["rows"]
+        self.assertEqual(rows, [[["001"], exact], [["002"], None], [["003"], "-0.00"]])
+        self.assertEqual(Decimal(rows[0][1]), Decimal(exact))
+        for wrong in ["0" * 64, "not-a-hash"]:
+            refused = subprocess.run([*args, wrong], capture_output=True, text=True)
+            self.assertEqual((refused.returncode, refused.stdout), (2, ""))
+        self.typed[1][1] = "0.12345678901234568"
+        self.write_data()
+        refused = subprocess.run([*args, pin], capture_output=True, text=True)
+        self.assertEqual((refused.returncode, refused.stdout), (2, ""))
+        self.assertIn("differ in values or missingness", refused.stderr)
+
+    def test_decimal_consumer_refuses_unresolved_or_scientifically_unrelated_fields(self):
+        pin = hashlib.sha256((self.package / "data/samples.csv").read_bytes()).hexdigest()
+        path = self.package / "decisions.json"
+        args = [sys.executable, str(SCRIPT.with_name("read_numeric_view.py")), str(self.package), str(path), "--source", *SOURCE, "--source-sha256", pin]
+        for row in [{"source": SOURCE, "unresolved": "The unit is unknown."}, {"source": SOURCE, "view": UNRELATED}]:
+            path.write_text(json.dumps([row]))
+            result = subprocess.run(args, capture_output=True, text=True)
+            self.assertEqual((result.returncode, result.stdout), (2, ""))
 
     def test_unrelated_variable_or_wrong_unit_cannot_substitute(self):
         _, field = self.check_report([{"source": SOURCE, "view": UNRELATED}], 1, "invalid_view")

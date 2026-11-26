@@ -118,3 +118,16 @@ Use `--require-accounted` for a gate. It exits with status 1 for an unreviewed n
 ## Check export decisions and sample them for review
 
 Run `python3 specs/source-intake/audit_mapping_decisions.py PROFILE.ttl DECISIONS.json --dataset ID --seed SEED --per-status 2` with RDFLib installed. Supply one record per distinct proposed RDF triple with the fields `id`, `status` (`accepted` or `abstained`), `table`, `claim`, `source_url`, `locator`, `reason`, `subject`, `predicate` and `object`. This profile check handles IRI objects. It verifies the exact triple, requires evidence that the subject exists even for abstentions, and reports a seeded sample from both strata. The sample includes discrepancies so they remain available to a reviewer. A positive result describes what the explicit Turtle says. The native package, the biological interpretation, implied assertions and the evidence behind each decision require separate checks. To check labels during export, pass `--owned-namespace` for each project namespace, including its final delimiter. The command reports any labels the profile assigns to terms owned by another vocabulary.
+
+## Read a verified decimal field
+
+Use the following command when a published measurement has more decimal digits than a binary floating-point reader can preserve. Supply the reviewed package and field decisions, then the expected SHA-256 of the original source CSV from the publisher or a verified intake manifest.
+
+```sh
+python3 specs/source-intake/read_numeric_view.py PACKAGE decisions.json \
+  --source example samples reading --source-sha256 "$expected_source_sha256"
+```
+
+The reader checks the source bytes and reuses the audit's direct-view checks for variable identity, units, primary keys, values and missingness. It emits JSON in source order with the primary key column names and one pair per row, consisting of the key tuple and a decimal string or null. The Python function `read_verified_decimals(package, decisions_path, source, source_sha256)` returns the key names and a dictionary of key tuples to `decimal.Decimal` or `None`. Numeric spellings can normalize during decimal parsing. Original CSV bytes remain the authority for exact source spelling. Preserve decimal types during arithmetic and choose an appropriate decimal context for calculated results.
+
+This reader verifies one reviewed source-to-view mapping. Native SDK package validation remains a separate check. metasalmonpy v0.6.0 preserves a column as strings and reports a precision mismatch when its binary64 reader would change a declared numeric value.

@@ -1,9 +1,9 @@
 name: Source mapping audit
 on:
   pull_request:
-    paths: ['specs/source-intake/audit_*.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', '.github/workflows/source-mapping-audit.yml']
+    paths: ['specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', '.github/workflows/source-mapping-audit.yml']
   push:
-    paths: ['specs/source-intake/audit_*.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', '.github/workflows/source-mapping-audit.yml']
+    paths: ['specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', '.github/workflows/source-mapping-audit.yml']
 permissions:
   contents: read
 jobs:
