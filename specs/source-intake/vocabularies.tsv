@@ -1,0 +1,4 @@
+key	sha256	url
+smn	64e0a3a34d0eb844591078a2b8c65b0af266eec5dd1fbcc1e59677c88ea13e7d	https://raw.githubusercontent.com/salmon-data-mobilization/salmon-domain-ontology/e1ed7049009ee6bbf9a23794fd744f1062cf78e7/salmon-domain-ontology.ttl
+gcdfo	31e7c28cd06a14c48a10b748b9520ebeecff15eb4e926a6595967d8d5fb1eff1	https://raw.githubusercontent.com/dfo-pacific-science/dfo-salmon-ontology/4b547fad3414d8d2bb6b4f917cbdb8547c9d87c3/ontology/dfo-salmon.ttl
+psc	f6b9806e01288cd1f41d7a96bc0e4899f906c5284745d5a5cd4de6870c341e38	https://w3id.org/psc/vocab/release/v0.1.0-alpha.7/psc-vocabularies.ttl

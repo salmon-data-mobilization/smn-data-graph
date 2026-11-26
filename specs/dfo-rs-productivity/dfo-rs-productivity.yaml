@@ -1,0 +1,954 @@
+spec_version: 1
+slug: dfo-rs-productivity
+version: lexical-418508415cb5
+title: 'British Columbia sockeye, pink and chum salmon productivity: annual data, time-series summaries and decadal data quality'
+description: DFO annual productivity, time-series summaries and decadal data-quality summaries. Every input record can be reconstructed from these lexical tables. One terminal space in each of 77 comment cells is stored by its original column position, because the SDK trims resource strings on read. Two unnamed annual headers receive positional aliases, the series summary gains a source-record key and each decadal species or brood-line block keeps its own header. The graph describes tables, columns and provenance.
+source:
+  publisher: Fisheries and Oceans Canada
+  landing_page: https://open.canada.ca/data/en/dataset/3d659575-4125-44b4-8d8f-c050d6624758
+  licence: https://open.canada.ca/en/open-government-licence-canada
+  redistribution: confirmed
+  attribution: 'Contains information licensed under the Open Government Licence – Canada. Source: Fisheries and Oceans Canada, Productivity (Recruits-per-Spawner) data for Sockeye, Pink, and Chum Salmon from British Columbia, Open Government Portal record 3d659575-4125-44b4-8d8f-c050d6624758. Methods: Ogden et al. (2015), Canadian Technical Report of Fisheries and Aquatic Sciences 3130. This derived package assigns two reversible positional column names and a summary record key. The decadal source file is packaged as four blocks under their original headers. Empty padding to the right of each block is removed. The annual and series-summary tables carry a reconstruction column identifying 77 comment cells from which one trailing space was separated.'
+  files:
+  - name: Salmon_RS_Database.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/3d659575-4125-44b4-8d8f-c050d6624758/attachments/Salmon_RS_Database.csv
+    sha256: e5ea38b0109a8b2018ac94b7bbca0a2e2865a9f59fcddda4121aeb2f0ae1f3e5
+  - name: Salmon_RS_Time_Series_Summary.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/3d659575-4125-44b4-8d8f-c050d6624758/attachments/Salmon_RS_Time_Series_Summary.csv
+    sha256: 2dcffdbb5b428fb27b8465326213fd094bb3934bd3ee8945936971c930f5cb6c
+  - name: Salmon_RS_Decadal_Summary.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/3d659575-4125-44b4-8d8f-c050d6624758/attachments/Salmon_RS_Decadal_Summary.csv
+    sha256: 84f9847d09ed76e0ab6c72f4d1f82445eb9b23c31b3e08dac4ddd66e647f20ae
+  - name: Salmon_RS_Data_Dictionary_EN.csv
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/3d659575-4125-44b4-8d8f-c050d6624758/attachments/Salmon_RS_Data_Dictionary_EN.csv
+    sha256: 93667d645afca79c712730af9edf071c0f0b857b90613ec64588ec9b69bd2fc3
+  - name: Salmon_RS_README_EN.rtf
+    url: https://api-proxy.edh-cde.dfo-mpo.gc.ca/catalogue/records/3d659575-4125-44b4-8d8f-c050d6624758/attachments/Salmon_RS_README_EN.rtf
+    sha256: 4e3e29a47a9d04730ad217a0af1b335dc1304b3926fa85458ed5916d2bc568fa
+parser: specs.dfo_rs_productivity_parser:parse
+tables:
+- id: annual
+  file: Salmon_RS_Database.csv
+  keys:
+  - Species
+  - CU or PFMA or aggregate
+  - Year
+  columns:
+  - name: Area
+    role: attribute
+    datatype: string
+    description: Jurisdiction recorded by DFO.
+  - name: Species
+    role: attribute
+    datatype: string
+    description: Source species or pink salmon brood-line label.
+  - name: PFMA
+    role: attribute
+    datatype: string
+    description: Pacific Fishery Management Area of catch, where given.
+  - name: CU or PFMA or aggregate
+    role: attribute
+    datatype: string
+    description: Conservation Unit, fishery management area or regional aggregate as identified in the source.
+  - name: CUs caught in PFMA
+    role: attribute
+    datatype: string
+    description: Source text under CUs caught in PFMA. The dictionary uses the heading CUs caught in SA.
+  - name: Source
+    role: attribute
+    datatype: string
+    description: Source attribution for this row.
+  - name: Year
+    role: attribute
+    datatype: string
+    description: Return year for catch and escapement and brood year for recruits. The applicable basis depends on the field.
+  - name: EFS
+    role: attribute
+    datatype: string
+    description: Effective female spawners for Fraser River sockeye.
+  - name: Spawner
+    role: attribute
+    datatype: string
+    description: Escapement usually includes jacks and jills. Consult Esc comm for series restricted to adults.
+  - name: Returns
+    role: attribute
+    datatype: string
+    description: Escapement plus catch in the return year.
+  - name: ExplRate
+    role: attribute
+    datatype: string
+    description: Catch divided by the sum of catch and escapement.
+  - name: Catch
+    role: attribute
+    datatype: string
+    description: Harvest across fisheries, with United States interception and in-river harvest included where available.
+  - name: Ret0.1
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 0.1.
+  - name: Ret0.2
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 0.2.
+  - name: Ret1.1
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 1.1.
+  - name: Ret0.3
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 0.3.
+  - name: Ret1.2
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 1.2.
+  - name: Ret2.1
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 2.1.
+  - name: Ret0.4
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 0.4.
+  - name: Ret1.3
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 1.3.
+  - name: Ret2.2
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 2.2.
+  - name: Ret0.5
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 0.5.
+  - name: Ret1.4
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 1.4.
+  - name: Ret2.3
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 2.3.
+  - name: Ret0.6
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 0.6.
+  - name: Ret2.4
+    role: attribute
+    datatype: string
+    description: Return-year proportion of fish in European age class 2.4.
+  - name: NRec0.1
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 0.1 attributed to their brood year.
+  - name: NRec0.2
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 0.2 attributed to their brood year.
+  - name: NRec1.1
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 1.1 attributed to their brood year.
+  - name: NRec0.3
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 0.3 attributed to their brood year.
+  - name: NRec1.2
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 1.2 attributed to their brood year.
+  - name: NRec2.1
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 2.1 attributed to their brood year.
+  - name: NRec0.4
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 0.4 attributed to their brood year.
+  - name: NRec1.3
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 1.3 attributed to their brood year.
+  - name: NRec2.2
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 2.2 attributed to their brood year.
+  - name: NRec0.5
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 0.5 attributed to their brood year.
+  - name: NRec1.4
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 1.4 attributed to their brood year.
+  - name: NRec2.3
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 2.3 attributed to their brood year.
+  - name: NRec0.6
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 0.6 attributed to their brood year.
+  - name: NRec2.4
+    role: attribute
+    datatype: string
+    description: Count of recruits in European age class 2.4 attributed to their brood year.
+  - name: NTotRec
+    role: attribute
+    datatype: string
+    description: Total recruits attributed to their parental brood year.
+  - name: R/S
+    role: attribute
+    datatype: string
+    description: Recruits per spawner for the parental brood year.
+  - name: R/EFS
+    role: attribute
+    datatype: string
+    description: Fraser River sockeye recruits per effective female spawner for the parental brood year.
+  - name: Metadata source
+    role: attribute
+    datatype: string
+    description: Source named for accompanying comments.
+  - name: Esc comm
+    role: attribute
+    datatype: string
+    description: Source comments on escapement.
+  - name: Catch comm
+    role: attribute
+    datatype: string
+    description: Source comments on catch.
+  - name: Age comm
+    role: attribute
+    datatype: string
+    description: Source comments on age data.
+  - name: Prod comm
+    role: attribute
+    datatype: string
+    description: Source comments on productivity.
+  - name: SQ
+    role: attribute
+    datatype: string
+    description: Return-year quality rating of escapement data.
+  - name: CQ
+    role: attribute
+    datatype: string
+    description: Return-year quality rating of catch data.
+  - name: AQ
+    role: attribute
+    datatype: string
+    description: Return-year quality rating of age-composition data.
+  - name: RQ
+    role: attribute
+    datatype: string
+    description: Overall recruits-per-spawner quality category. The table dictionary and catalogue differ on year alignment; the original value is preserved.
+  - name: SQ notes
+    role: attribute
+    datatype: string
+    description: Fraser sockeye notes explaining changes from the default escapement rating.
+  - name: T_Idx_E
+    role: attribute
+    datatype: string
+    description: Sum of northern and central coast index-stream escapement estimates from NuSEDS as reported by DFO.
+  - name: ExpFactor1
+    role: attribute
+    datatype: string
+    description: Expansion for missing estimates at indicator streams.
+  - name: AdjSum
+    role: attribute
+    datatype: string
+    description: Sum of reported indicator-stream escapements after adjustment for missing values.
+  - name: ExpFactor2
+    role: attribute
+    datatype: string
+    description: Expansion for escapement at streams outside the indicator set.
+  - name: ObsE
+    role: attribute
+    datatype: string
+    description: Estimate of total observed escapement across streams in a Conservation Unit.
+  - name: ExpFactor3
+    role: attribute
+    datatype: string
+    description: Expansion for observer efficiency in the northern and central coast estimates.
+  - name: unnamed_source_column_60
+    role: attribute
+    datatype: string
+    description: Package alias for the unnamed 60th CSV column. All source values are empty.
+  - name: unnamed_source_column_61
+    role: attribute
+    datatype: string
+    description: Package alias for the unnamed 61st CSV column. All source values are empty.
+  - name: source_columns_with_trailing_space
+    role: attribute
+    datatype: string
+    description: Reconstruction metadata. Each entry is a one-based column position in the original publisher CSV. Split multiple positions on |. Append one ASCII space (U+0020) to the source value at each listed position. An empty entry means no spaces were separated. Source positions exclude package-added columns.
+- id: series_summary
+  file: Salmon_RS_Time_Series_Summary.csv
+  keys:
+  - source_record_number
+  columns:
+  - name: source_record_number
+    role: attribute
+    datatype: string
+    description: Derived one-based record position after the header in the time-series summary CSV. This package key identifies a location in the pinned file.
+  - name: Species
+    role: attribute
+    datatype: string
+    description: Source species or pink salmon brood-line label.
+  - name: Area
+    role: attribute
+    datatype: string
+    description: Area of British Columbia.
+  - name: Area unit
+    role: attribute
+    datatype: string
+    description: Geographic or biological unit covered by the series.
+  - name: CU or PFMA
+    role: attribute
+    datatype: string
+    description: Source name for a Conservation Unit or fishery management area, when available.
+  - name: CU type
+    role: attribute
+    datatype: string
+    description: Conservation Unit category used in the DFO compilation.
+  - name: Data source
+    role: attribute
+    datatype: string
+    description: Source for the numerical data.
+  - name: R/S first year
+    role: attribute
+    datatype: string
+    description: First brood year with a reported recruits-per-spawner value.
+  - name: R/S last year
+    role: attribute
+    datatype: string
+    description: Last brood year with a reported recruits-per-spawner value.
+  - name: R/S missing
+    role: attribute
+    datatype: string
+    description: Missing brood years inside the stated recruits-per-spawner period.
+  - name: Total years
+    role: attribute
+    datatype: string
+    description: The dictionary describes this as the number of missing years in the reported range. Values are preserved as given.
+  - name: SQmean
+    role: attribute
+    datatype: string
+    description: Mean escapement-data quality over the return years included by DFO.
+  - name: CQmean
+    role: attribute
+    datatype: string
+    description: Mean catch-data quality over the return years included by DFO.
+  - name: AQmean
+    role: attribute
+    datatype: string
+    description: Mean age-data quality over the return years included by DFO.
+  - name: RQmean
+    role: attribute
+    datatype: string
+    description: Mean quality rating for the recruits-per-spawner series.
+  - name: Data quality (Grant & Pestal 2012, p.35)
+    role: attribute
+    datatype: string
+    description: Spawner enumeration quality category from Grant and Pestal, as reported by DFO.
+  - name: Source of comments
+    role: attribute
+    datatype: string
+    description: Origin of the summary comments.
+  - name: Perct.streams
+    role: attribute
+    datatype: string
+    description: Indicator-stream coverage category. Some labels abbreviate percentage ranges.
+  - name: Escapement (comments)
+    role: attribute
+    datatype: string
+    description: Source notes on escapement estimates.
+  - name: Return (comments)
+    role: attribute
+    datatype: string
+    description: Source notes on total return estimates.
+  - name: Age structure (comments)
+    role: attribute
+    datatype: string
+    description: Source notes on age structure.
+  - name: Recruitment (comments)
+    role: attribute
+    datatype: string
+    description: Source notes on recruitment estimates.
+  - name: Exploitation rate (comments)
+    role: attribute
+    datatype: string
+    description: Source notes on exploitation-rate estimates.
+  - name: Catch (comments)
+    role: attribute
+    datatype: string
+    description: Source notes on catch estimation.
+  - name: Stock, general (comments)
+    role: attribute
+    datatype: string
+    description: Source notes on the stock and its productivity.
+  - name: PFMA where CU caught
+    role: attribute
+    datatype: string
+    description: Fishery management area of catch for northern and central coast Conservation Units, where reported.
+  - name: source_columns_with_trailing_space
+    role: attribute
+    datatype: string
+    description: Reconstruction metadata. Each entry is a one-based column position in the original publisher CSV. Split multiple positions on |. Append one ASCII space (U+0020) to the source value at each listed position. An empty entry means no spaces were separated. Source positions exclude package-added columns.
+- id: decadal_sockeye
+  file: Salmon_RS_Decadal_Summary.csv
+  keys:
+  - Species
+  - Decade
+  - DataQualityType
+  columns:
+  - name: Species
+    role: attribute
+    datatype: string
+    description: Species or pink salmon brood line as reported by DFO.
+  - name: Decade
+    role: attribute
+    datatype: string
+    description: Period label printed for this species or brood line.
+  - name: DataQualityType
+    role: attribute
+    datatype: string
+    description: DFO category for the quality of escapement (SQ), catch (CQ), age composition (AQ) or overall productivity (RQ) data.
+  - name: Anderson/Seton_Early Summer
+    role: attribute
+    datatype: string
+  - name: Bowron_Early Summer
+    role: attribute
+    datatype: string
+  - name: Chilko_Early Summer & Chilko_Summer
+    role: attribute
+    datatype: string
+  - name: Cultus_Late
+    role: attribute
+    datatype: string
+  - name: Francois/Fraser_Summer
+    role: attribute
+    datatype: string
+  - name: Harrison River
+    role: attribute
+    datatype: string
+  - name: Harrison-upstream migrating_Late
+    role: attribute
+    datatype: string
+  - name: Kamloops_Early Summer
+    role: attribute
+    datatype: string
+  - name: Lillooet/Harrison_Late
+    role: attribute
+    datatype: string
+  - name: Nadina-Francois-ES
+    role: attribute
+    datatype: string
+  - name: North Barriere_Early Summer<<Bin>>
+    role: attribute
+    datatype: string
+  - name: Pitt_Early Summer
+    role: attribute
+    datatype: string
+  - name: Quesnel_Summer
+    role: attribute
+    datatype: string
+  - name: Seton_Late<<Bin>>
+    role: attribute
+    datatype: string
+  - name: Shuswap Complex_Late
+    role: attribute
+    datatype: string
+  - name: Shuswap_Early Summer
+    role: attribute
+    datatype: string
+  - name: Takla/Trembleur/Stuart_Summer
+    role: attribute
+    datatype: string
+  - name: Takla/Trembleur_Early Stuart
+    role: attribute
+    datatype: string
+  - name: Osoyoos
+    role: attribute
+    datatype: string
+  - name: Great Central
+    role: attribute
+    datatype: string
+  - name: Sproat
+    role: attribute
+    datatype: string
+  - name: PFMA 1
+    role: attribute
+    datatype: string
+  - name: Awun
+    role: attribute
+    datatype: string
+  - name: Marian/Eden
+    role: attribute
+    datatype: string
+  - name: Yakoun
+    role: attribute
+    datatype: string
+  - name: PFMA 2E
+    role: attribute
+    datatype: string
+  - name: Mathers
+    role: attribute
+    datatype: string
+  - name: Skidegate
+    role: attribute
+    datatype: string
+  - name: PFMA 2W
+    role: attribute
+    datatype: string
+  - name: Mercer
+    role: attribute
+    datatype: string
+  - name: PFMA 3
+    role: attribute
+    datatype: string
+  - name: Damdochax
+    role: attribute
+    datatype: string
+  - name: Fred Wright
+    role: attribute
+    datatype: string
+  - name: Lower Nass - Portland
+    role: attribute
+    datatype: string
+  - name: Meziadin
+    role: attribute
+    datatype: string
+  - name: PFMA 4
+    role: attribute
+    datatype: string
+  - name: Alastair
+    role: attribute
+    datatype: string
+  - name: Azuklotz
+    role: attribute
+    datatype: string
+  - name: Bear
+    role: attribute
+    datatype: string
+  - name: Damshilgwit
+    role: attribute
+    datatype: string
+  - name: Johnston
+    role: attribute
+    datatype: string
+  - name: Kitsumkalum
+    role: attribute
+    datatype: string
+  - name: Kitwancool
+    role: attribute
+    datatype: string
+  - name: Lakelse
+    role: attribute
+    datatype: string
+  - name: Mcdonell
+    role: attribute
+    datatype: string
+  - name: Morice
+    role: attribute
+    datatype: string
+  - name: Motase
+    role: attribute
+    datatype: string
+  - name: Prudhomme
+    role: attribute
+    datatype: string
+  - name: Shawatlan
+    role: attribute
+    datatype: string
+  - name: Stephens
+    role: attribute
+    datatype: string
+  - name: Swan
+    role: attribute
+    datatype: string
+  - name: Tahlo/Morrison
+    role: attribute
+    datatype: string
+  - name: Babine-Early-Wild
+    role: attribute
+    datatype: string
+  - name: Babine-Fulton
+    role: attribute
+    datatype: string
+  - name: Babine-Late-Wild
+    role: attribute
+    datatype: string
+  - name: Babine-Mid-Wild
+    role: attribute
+    datatype: string
+  - name: Babine-Pinkut
+    role: attribute
+    datatype: string
+  - name: PFMA 5
+    role: attribute
+    datatype: string
+  - name: Curtis Inlet
+    role: attribute
+    datatype: string
+  - name: Devon
+    role: attribute
+    datatype: string
+  - name: Freeda
+    role: attribute
+    datatype: string
+  - name: Keecha
+    role: attribute
+    datatype: string
+  - name: Kooryet
+    role: attribute
+    datatype: string
+  - name: Lowe/Simpson/Weare
+    role: attribute
+    datatype: string
+  - name: Mikado
+    role: attribute
+    datatype: string
+  - name: Tsimtack/Moore/Roger
+    role: attribute
+    datatype: string
+  - name: PFMA 6
+    role: attribute
+    datatype: string
+  - name: Bloomfield
+    role: attribute
+    datatype: string
+  - name: Canoona
+    role: attribute
+    datatype: string
+  - name: Evelyn
+    role: attribute
+    datatype: string
+  - name: Hartley Bay
+    role: attribute
+    datatype: string
+  - name: Kitlope
+    role: attribute
+    datatype: string
+  - name: Kwakwa Creek
+    role: attribute
+    datatype: string
+  - name: PFMA 7
+    role: attribute
+    datatype: string
+  - name: Kadjusdis River
+    role: attribute
+    datatype: string
+  - name: Kainet Creek
+    role: attribute
+    datatype: string
+  - name: Mary Cove Creek
+    role: attribute
+    datatype: string
+  - name: Roderick
+    role: attribute
+    datatype: string
+  - name: Tankeeah River
+    role: attribute
+    datatype: string
+  - name: PFMA 8
+    role: attribute
+    datatype: string
+  - name: Koeye
+    role: attribute
+    datatype: string
+  - name: Namu
+    role: attribute
+    datatype: string
+  - name: Port John
+    role: attribute
+    datatype: string
+  - name: Northern Coastal Fjords
+    role: attribute
+    datatype: string
+  - name: PFMA 9
+    role: attribute
+    datatype: string
+  - name: Owikeno
+    role: attribute
+    datatype: string
+  - name: PFMA 10
+    role: attribute
+    datatype: string
+  - name: Long
+    role: attribute
+    datatype: string
+- id: decadal_pink_even
+  file: Salmon_RS_Decadal_Summary.csv
+  keys:
+  - Species
+  - Decade
+  - DataQualityType
+  columns:
+  - name: Species
+    role: attribute
+    datatype: string
+    description: Species or pink salmon brood line as reported by DFO.
+  - name: Decade
+    role: attribute
+    datatype: string
+    description: Period label printed for this species or brood line.
+  - name: DataQualityType
+    role: attribute
+    datatype: string
+    description: DFO category for the quality of escapement (SQ), catch (CQ), age composition (AQ) or overall productivity (RQ) data.
+  - name: ISC Aggregate
+    role: attribute
+    datatype: string
+  - name: PFMA 1
+    role: attribute
+    datatype: string
+  - name: North Haida Gwaii
+    role: attribute
+    datatype: string
+  - name: PFMA 2E
+    role: attribute
+    datatype: string
+  - name: East Haida Gwaii
+    role: attribute
+    datatype: string
+  - name: PFMA 2W
+    role: attribute
+    datatype: string
+  - name: West Haida Gwaii
+    role: attribute
+    datatype: string
+  - name: PFMA 3
+    role: attribute
+    datatype: string
+  - name: Nass-Skeena Estuary
+    role: attribute
+    datatype: string
+  - name: PFMA 4
+    role: attribute
+    datatype: string
+  - name: Middle & Upper Skeena
+    role: attribute
+    datatype: string
+  - name: PFMA 5
+    role: attribute
+    datatype: string
+  - name: PFMA 6
+    role: attribute
+    datatype: string
+  - name: PFMA 7
+    role: attribute
+    datatype: string
+  - name: PFMA 8
+    role: attribute
+    datatype: string
+  - name: PFMA 9
+    role: attribute
+    datatype: string
+  - name: PFMA 10
+    role: attribute
+    datatype: string
+  - name: Hecate Lowlands (PFMAs 5-10)
+    role: attribute
+    datatype: string
+  - name: Hecate Strait-Fjords (PFMAs 6-10)
+    role: attribute
+    datatype: string
+- id: decadal_pink_odd
+  file: Salmon_RS_Decadal_Summary.csv
+  keys:
+  - Species
+  - Decade
+  - DataQualityType
+  columns:
+  - name: Species
+    role: attribute
+    datatype: string
+    description: Species or pink salmon brood line as reported by DFO.
+  - name: Decade
+    role: attribute
+    datatype: string
+    description: Period label printed for this species or brood line.
+  - name: DataQualityType
+    role: attribute
+    datatype: string
+    description: DFO category for the quality of escapement (SQ), catch (CQ), age composition (AQ) or overall productivity (RQ) data.
+  - name: ISC Aggregate
+    role: attribute
+    datatype: string
+  - name: Fraser pink (1957-1991)
+    role: attribute
+    datatype: string
+  - name: Fraser pink (1993-2001)
+    role: attribute
+    datatype: string
+  - name: Fraser pink (2003-2007)
+    role: attribute
+    datatype: string
+  - name: Fraser pink (2009-2013)
+    role: attribute
+    datatype: string
+  - name: IFMP 2E
+    role: attribute
+    datatype: string
+  - name: East Haida Gwaii
+    role: attribute
+    datatype: string
+  - name: IFMP 3
+    role: attribute
+    datatype: string
+  - name: Middle - Upper Skeena
+    role: attribute
+    datatype: string
+  - name: IFMP 4
+    role: attribute
+    datatype: string
+  - name: Lower Skeena
+    role: attribute
+    datatype: string
+  - name: Nass-Portland-Observatory
+    role: attribute
+    datatype: string
+  - name: Nass-Skeena Estuary
+    role: attribute
+    datatype: string
+  - name: IFMP 5
+    role: attribute
+    datatype: string
+  - name: IFMP 6
+    role: attribute
+    datatype: string
+  - name: IFMP 7
+    role: attribute
+    datatype: string
+  - name: IFMP 8
+    role: attribute
+    datatype: string
+  - name: IFMP 9
+    role: attribute
+    datatype: string
+  - name: IFMP 10
+    role: attribute
+    datatype: string
+  - name: Hecate Strait-Fjords (IFMPs 5-10)
+    role: attribute
+    datatype: string
+  - name: Hecate Strait-Lowlands (IFMPs 6-8)
+    role: attribute
+    datatype: string
+  - name: Homathko-Klinaklini-Smith-Rivers-Bella Coola-Dean (IFMPs 8-10)
+    role: attribute
+    datatype: string
+- id: decadal_chum
+  file: Salmon_RS_Decadal_Summary.csv
+  keys:
+  - Species
+  - Decade
+  - DataQualityType
+  columns:
+  - name: Species
+    role: attribute
+    datatype: string
+    description: Species or pink salmon brood line as reported by DFO.
+  - name: Decade
+    role: attribute
+    datatype: string
+    description: Period label printed for this species or brood line.
+  - name: DataQualityType
+    role: attribute
+    datatype: string
+    description: DFO category for the quality of escapement (SQ), catch (CQ), age composition (AQ) or overall productivity (RQ) data.
+  - name: PFMA 1
+    role: attribute
+    datatype: string
+  - name: North Haida Gwaii
+    role: attribute
+    datatype: string
+  - name: Stanley Creek
+    role: attribute
+    datatype: string
+  - name: PFMA 2E
+    role: attribute
+    datatype: string
+  - name: East HG
+    role: attribute
+    datatype: string
+  - name: Skidegate
+    role: attribute
+    datatype: string
+  - name: PFMA 2W
+    role: attribute
+    datatype: string
+  - name: West Haida Gwaii
+    role: attribute
+    datatype: string
+  - name: PFMA 3
+    role: attribute
+    datatype: string
+  - name: Portland Canal-Observatory
+    role: attribute
+    datatype: string
+  - name: Portland Inlet
+    role: attribute
+    datatype: string
+  - name: PFMA 4
+    role: attribute
+    datatype: string
+  - name: Lower Skeena
+    role: attribute
+    datatype: string
+  - name: Middle Skeena
+    role: attribute
+    datatype: string
+  - name: Skeena Estuary
+    role: attribute
+    datatype: string
+  - name: PFMA 5
+    role: attribute
+    datatype: string
+  - name: PFMA 6
+    role: attribute
+    datatype: string
+  - name: Douglas-Gardner
+    role: attribute
+    datatype: string
+  - name: PFMA 7
+    role: attribute
+    datatype: string
+  - name: Mussel-Kynock
+    role: attribute
+    datatype: string
+  - name: Hecate Lowlands
+    role: attribute
+    datatype: string
+  - name: PFMA 8
+    role: attribute
+    datatype: string
+  - name: Bella Colla-Dean Rivers
+    role: attribute
+    datatype: string
+  - name: Bella Coola River_late
+    role: attribute
+    datatype: string
+  - name: PFMA 9
+    role: attribute
+    datatype: string
+  - name: Rivers Inlet
+    role: attribute
+    datatype: string
+  - name: Spiller-Fitz-Hugh-Burke (PFMAs 7-9)
+    role: attribute
+    datatype: string
+  - name: PFMA 10
+    role: attribute
+    datatype: string
+  - name: Smith Inlet (PFMAs 9-10)
+    role: attribute
+    datatype: string
+  - name: ISC Aggregate
+    role: attribute
+    datatype: string
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []
