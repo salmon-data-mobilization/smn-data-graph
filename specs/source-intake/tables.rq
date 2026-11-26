@@ -1,0 +1,12 @@
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX csvw: <http://www.w3.org/ns/csvw#>
+SELECT ?dataset ?title ?source ?table ?resource (COUNT(DISTINCT ?column) AS ?fields)
+WHERE {
+  GRAPH ?metadata {
+    ?dataset a dcat:Dataset ; dct:title ?title ; dcat:landingPage ?source ; dct:hasPart ?tableNode .
+    ?tableNode a csvw:Table ; dct:identifier ?table ; csvw:url ?resource ; csvw:tableSchema/csvw:column ?column .
+  }
+}
+GROUP BY ?dataset ?title ?source ?table ?resource
+ORDER BY ?title ?table

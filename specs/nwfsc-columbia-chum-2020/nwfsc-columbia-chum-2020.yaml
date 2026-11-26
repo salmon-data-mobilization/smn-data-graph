@@ -1,0 +1,131 @@
+spec_version: 1
+slug: nwfsc-columbia-chum-2020
+version: 2.3-lexical-aa7e7fc1cf63
+title: Columbia River chum salmon spawner series from NWFSC VRData 2.3
+description: '[agent] Complete CRchum2020.csv source table in NWFSC VRData 2.3. The 132 source rows cover four WDFW population series from 1938 through 2018. The string fields preserve the reported spawner values, fractions, zeros, -99 tokens, blanks and original citations.'
+source:
+  publisher: NOAA Northwest Fisheries Science Center
+  landing_page: https://github.com/nwfsc-math-bio/VRData/tree/1511807c895c5adfd1b146a92023a9f93bffde31/data-raw
+  licence: https://creativecommons.org/publicdomain/zero/1.0/
+  redistribution: confirmed
+  attribution: NOAA Northwest Fisheries Science Center, VRData 2.3 (2022-04-21), CRchum2020.csv. Washington Department of Fish and Wildlife contributed the data and Mari Williams compiled the table. https://github.com/nwfsc-math-bio/VRData/tree/1511807c895c5adfd1b146a92023a9f93bffde31. The package LICENSE declares CC0 1.0. Derived table metadata were added and the CSV was reserialized with lexical values preserved.
+  files:
+  - name: CRchum2020.csv
+    url: https://raw.githubusercontent.com/nwfsc-math-bio/VRData/1511807c895c5adfd1b146a92023a9f93bffde31/data-raw/CRchum2020.csv
+    sha256: aa7e7fc1cf6373136de335188fb2213ac2847b42d81de0b5f799ab651768c978
+  - name: Salmon-chum-Columbia-River-ESU-CRchum2020.Rd
+    url: https://raw.githubusercontent.com/nwfsc-math-bio/VRData/1511807c895c5adfd1b146a92023a9f93bffde31/man/Salmon-chum-Columbia-River-ESU-CRchum2020.Rd
+    sha256: 474d52bee7a2351db44b2abd96293e8b1a90787b98c95cbf6b460b93b654e809
+  - name: DESCRIPTION
+    url: https://raw.githubusercontent.com/nwfsc-math-bio/VRData/1511807c895c5adfd1b146a92023a9f93bffde31/DESCRIPTION
+    sha256: d1a77aa3a4d6fbbe9f0a57ee86945f7994669058dba9463ad33ae4caef772062
+  - name: LICENSE
+    url: https://raw.githubusercontent.com/nwfsc-math-bio/VRData/1511807c895c5adfd1b146a92023a9f93bffde31/LICENSE
+    sha256: 4b353f5c7f38259a20197b0658f1bed1ec984d8f5062e1f63b2cbeb225e0d2bb
+parser: csv
+tables:
+- id: chum_spawners
+  file: CRchum2020.csv
+  keys:
+  - NMFS_POPID
+  - YEAR
+  columns:
+  - name: SERIES
+    role: attribute
+    datatype: string
+    label: SERIES
+    description: Series label assigned by the compiler to distinguish source series.
+  - name: ESU
+    role: attribute
+    datatype: string
+    label: ESU
+    description: ESU or DPS name recorded in VRData.
+  - name: SPECIES
+    role: attribute
+    datatype: string
+    label: SPECIES
+    description: Species name recorded in VRData.
+  - name: METHOD
+    role: attribute
+    datatype: string
+    label: METHOD
+    description: Method category from VRData. The source manual explains that Survey can report an expanded spawning-ground survey count.
+  - name: MAJOR_POPULATION_GROUP
+    role: attribute
+    datatype: string
+    label: MAJOR_POPULATION_GROUP
+    description: Source name of the major population group within the ESU or DPS.
+  - name: NMFS_POPID
+    role: attribute
+    datatype: string
+    label: NMFS_POPID
+    description: Population code used by the Northwest Fisheries Science Center, retained in the scope of this table.
+  - name: POPULATION_NAME
+    role: attribute
+    datatype: string
+    label: POPULATION_NAME
+    description: Full population name in the source.
+  - name: COMMON_POPULATION_NAME
+    role: attribute
+    datatype: string
+    label: COMMON_POPULATION_NAME
+    description: Abbreviated population name used in viability report figures and tables.
+  - name: DISPLAY_ORDER
+    role: attribute
+    datatype: string
+    label: DISPLAY_ORDER
+    description: Display-order token as supplied in the CSV.
+  - name: RUN_TIMING
+    role: attribute
+    datatype: string
+    label: RUN_TIMING
+    description: Source seasonal run-timing label.
+  - name: STREAM_NAME
+    role: attribute
+    datatype: string
+    label: STREAM_NAME
+    description: Stream name as supplied in the CSV.
+  - name: YEAR
+    role: attribute
+    datatype: string
+    label: YEAR
+    description: Calendar year when the count was made, as defined in the VRData manual.
+  - name: NUMBER_OF_SPAWNERS
+    role: attribute
+    datatype: string
+    label: NUMBER_OF_SPAWNERS
+    description: Spawner or escapement count in the VRData manual. Its row-level WDFW citations refer to natural-origin abundance. Both source descriptions are kept.
+  - name: FRACWILD
+    role: attribute
+    datatype: string
+    label: FRACWILD
+    description: Fraction wild or natural according to the VRData manual. The manual designates -99 as missing for this field.
+  - name: CATCH
+    role: attribute
+    datatype: string
+    label: CATCH
+    description: CATCH token as supplied in the CSV. The table manual gives no definition for this field.
+  - name: CONTRIBUTOR
+    role: attribute
+    datatype: string
+    label: CONTRIBUTOR
+    description: Data contributor recorded by the compiler.
+  - name: COMPILER
+    role: attribute
+    datatype: string
+    label: COMPILER
+    description: Compiler of the data file as recorded in VRData.
+  - name: CITATION
+    role: attribute
+    datatype: string
+    label: CITATION
+    description: Source citation supplied by VRData for the row.
+  - name: LINE_NOTES
+    role: attribute
+    datatype: string
+    label: LINE_NOTES
+    description: Row note as supplied in the CSV.
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

@@ -1,0 +1,95 @@
+spec_version: 1
+slug: sasap-sockeye-brood
+version: lexical-cr5rr9
+title: "Sockeye salmon brood tables, northeastern Pacific, 1922-2016"
+description: "[agent] Source catalogue and three complete lexical tables for the SASAP sockeye brood compilation. Each table retains the source columns, records, row order, and cell strings. The EML and processing document identify source definitions and limitations. Brood-table field names alone do not establish comparable escapement measures across stocks."
+source:
+  publisher: KNB Data Repository
+  doi: 10.5063/CR5RR9
+  landing_page: https://knb.ecoinformatics.org/view/doi:10.5063/CR5RR9
+  licence: null
+  redistribution: unconfirmed
+  attribution: "Rich Brenner, Greg Ruggerone, Brendan Connors, Jeanette Clark and Stephanie Freund (2017). Sockeye salmon brood tables, northeastern Pacific, 1922-2016. KNB Data Repository. https://doi.org/10.5063/CR5RR9. The EML declares “no restrictions” without a separate licence identifier. This local package adds structural metadata and reserializes the three CSV tables. The analytical code remains supporting evidence."
+  files:
+    - name: metadata.xml
+      url: https://cn.dataone.org/cn/v2/resolve/doi:10.5063/CR5RR9
+      sha256: 6dd8f64440e36369de1f889467eebb1910fe46e728a9281d00fa10dbb16e69b2
+    - name: BroodTables.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:8371e85b-b693-4f22-9454-714ee17056f7
+      sha256: f76d62a17e52bc6aeac09e52293f004b90c5b44e4e04daf0263d40ea41a397db
+    - name: StockInfo.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:178c61cc-6119-42c2-9387-5b0b602324d4
+      sha256: 6dee8404c032fe66f611389f97c93f9bb44be4ba7c60496889dc05a1307c9930
+    - name: SourceInfo.csv
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:47fa131f-f5be-409d-b13b-8d9756a6239e
+      sha256: 9b35a6acd62a00ac5348715ed97dded2a6c4ebf71deeb827fd1f2581a58d8c49
+    - name: broodTableProcessing.Rmd
+      url: https://cn.dataone.org/cn/v2/resolve/urn:uuid:2e1f4408-6cbc-4acd-97b2-a0635a316952
+      sha256: a3c5f76a9004a203fbb8a2b28aac3393d30890e7dc96156ec8f13df8a6462c28
+parser: csv
+tables:
+  - id: brood_tables
+    file: BroodTables.csv
+    keys: [Stock.ID, BroodYear, UseFlag]
+    columns:
+      - {name: "Stock.ID", role: attribute, datatype: string, description: "Stock identifier in this compilation."}
+      - {name: "Species", role: attribute, datatype: string, description: "Source species label."}
+      - {name: "Stock", role: attribute, datatype: string, description: "Stock name supplied by the source."}
+      - {name: "Ocean.Region", role: attribute, datatype: string, description: "Source ocean region."}
+      - {name: "Region", role: attribute, datatype: string, description: "Source region."}
+      - {name: "Sub.Region", role: attribute, datatype: string, description: "Source subregion."}
+      - {name: "Jurisdiction", role: attribute, datatype: string, description: "Source management jurisdiction."}
+      - {name: "Lat", role: attribute, datatype: string, description: "Source latitude."}
+      - {name: "Lon", role: attribute, datatype: string, description: "Source longitude."}
+      - {name: "UseFlag", role: attribute, datatype: string, description: "Source flag for use of this row in analysis."}
+      - {name: "BroodYear", role: attribute, datatype: string, description: "Brood year as recorded."}
+      - {name: "TotalEscapement", role: attribute, datatype: string, description: "Source escapement field. Some estimates are indices. A common biological meaning across stocks has not been established."}
+      - {name: "R0.1", role: attribute, datatype: string, description: "Recruits in source age class 0.1, in European age notation."}
+      - {name: "R0.2", role: attribute, datatype: string, description: "Recruits in source age class 0.2, in European age notation."}
+      - {name: "R0.3", role: attribute, datatype: string, description: "Recruits in source age class 0.3, in European age notation."}
+      - {name: "R0.4", role: attribute, datatype: string, description: "Recruits in source age class 0.4, in European age notation."}
+      - {name: "R0.5", role: attribute, datatype: string, description: "Recruits in source age class 0.5, in European age notation."}
+      - {name: "R1.1", role: attribute, datatype: string, description: "Recruits in source age class 1.1, in European age notation."}
+      - {name: "R1.2", role: attribute, datatype: string, description: "Recruits in source age class 1.2, in European age notation."}
+      - {name: "R1.3", role: attribute, datatype: string, description: "Recruits in source age class 1.3, in European age notation."}
+      - {name: "R1.4", role: attribute, datatype: string, description: "Recruits in source age class 1.4, in European age notation."}
+      - {name: "R1.5", role: attribute, datatype: string, description: "Recruits in source age class 1.5, in European age notation."}
+      - {name: "R2.1", role: attribute, datatype: string, description: "Recruits in source age class 2.1, in European age notation."}
+      - {name: "R2.2", role: attribute, datatype: string, description: "Recruits in source age class 2.2, in European age notation."}
+      - {name: "R2.3", role: attribute, datatype: string, description: "Recruits in source age class 2.3, in European age notation."}
+      - {name: "R2.4", role: attribute, datatype: string, description: "Recruits in source age class 2.4, in European age notation."}
+      - {name: "R3.1", role: attribute, datatype: string, description: "Recruits in source age class 3.1, in European age notation."}
+      - {name: "R3.2", role: attribute, datatype: string, description: "Recruits in source age class 3.2, in European age notation."}
+      - {name: "R3.3", role: attribute, datatype: string, description: "Recruits in source age class 3.3, in European age notation."}
+      - {name: "R3.4", role: attribute, datatype: string, description: "Recruits in source age class 3.4, in European age notation."}
+      - {name: "R4.1", role: attribute, datatype: string, description: "Recruits in source age class 4.1, in European age notation."}
+      - {name: "R4.2", role: attribute, datatype: string, description: "Recruits in source age class 4.2, in European age notation."}
+      - {name: "R4.3", role: attribute, datatype: string, description: "Recruits in source age class 4.3, in European age notation."}
+      - {name: "TotalRecruits", role: attribute, datatype: string, description: "Recruit total as reported."}
+  - id: stock_info
+    file: StockInfo.csv
+    keys: [Stock.ID]
+    columns:
+      - {name: "Stock.ID", role: attribute, datatype: string, description: "Stock identifier in this compilation."}
+      - {name: "Species", role: attribute, datatype: string, description: "Source species label."}
+      - {name: "Stock", role: attribute, datatype: string, description: "Stock name supplied by the source."}
+      - {name: "Date.data.obtained", role: attribute, datatype: string, description: "Date the data were obtained. The source uses day 01 when no day was supplied."}
+      - {name: "Date.data.incorporated", role: attribute, datatype: string, description: "Date added to the compilation. The source uses day 01 when no day was supplied."}
+      - {name: "Ocean.Region", role: attribute, datatype: string, description: "Source ocean region."}
+      - {name: "Region", role: attribute, datatype: string, description: "Source region."}
+      - {name: "Sub.Region", role: attribute, datatype: string, description: "Source subregion."}
+      - {name: "Jurisdiction", role: attribute, datatype: string, description: "Source management jurisdiction."}
+      - {name: "Lat", role: attribute, datatype: string, description: "Source latitude."}
+      - {name: "Lon", role: attribute, datatype: string, description: "Source longitude."}
+      - {name: "Source.ID", role: attribute, datatype: string, description: "Source identifier in the compilation."}
+      - {name: "Comment..we.will.update.this.later.", role: attribute, datatype: string, description: "Source comments about the stock."}
+  - id: source_info
+    file: SourceInfo.csv
+    keys: [Source.ID]
+    columns:
+      - {name: "Source.ID", role: attribute, datatype: string, description: "Source identifier in the compilation."}
+      - {name: "Source", role: attribute, datatype: string, description: "Description of the contributing source."}
+identity: []
+observations: []
+cross_source_checks: []
+term_requests: []

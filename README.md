@@ -30,6 +30,10 @@ below is a separate workflow.
 `corpus_auth.py` reads the key from the Keychain and clears any Claude session
 variables inherited from the shell, so a run never uses a session's account.
 
+## Local source intake
+
+The [Pacific salmon source intake](specs/source-intake/README.md) builds and verifies local packages for DFO British Columbia productivity, NWFSC Columbia River chum and SASAP sockeye brood tables. It includes a SPARQL query that finds the source tables and their package paths.
+
 ## Starter catalogue evidence
 
 [The prepared catalogue](specs/starter-corpus/catalogue-evidence.json) records
