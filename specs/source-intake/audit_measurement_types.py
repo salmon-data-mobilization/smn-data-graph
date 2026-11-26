@@ -1,0 +1,193 @@
+"""Audit the declared types of native SDP measurements and explicit numeric views."""
+
+import argparse
+import csv
+import json
+import re
+import sys
+from collections import Counter
+from decimal import Decimal
+from pathlib import Path
+from urllib.parse import urlsplit
+
+NUMERIC = {"integer", "number"}
+VALUE_TYPES = NUMERIC | {"string", "boolean", "date", "datetime"}
+SEMANTICS = ("term_iri", "property_iri", "entity_iri", "unit_iri", "constraint_iri", "statistical_modifier_iri")
+DECIMAL = re.compile(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?")
+INTEGER = re.compile(r"[+-]?[0-9]+")
+
+
+def unique_index(records, keys):
+    result = {}
+    for record in records:
+        key = tuple(record[name] for name in keys)
+        if not all(key) or key in result:
+            raise ValueError(f"empty or repeated identifier in {', '.join(keys)}")
+        result[key] = record
+    return result
+
+
+def read_csv(path):
+    with path.open(encoding="utf-8-sig", newline="") as stream:
+        reader = csv.DictReader(stream, strict=True)
+        header = reader.fieldnames or []
+        if not header or len(header) != len(set(header)):
+            raise ValueError(f"missing or duplicate CSV headers in {path.name}")
+        for row in reader:
+            if None in row or None in row.values():
+                raise ValueError(f"wrong field count in {path.name} at line {reader.line_num}")
+            yield row
+
+
+def metadata(package):
+    resources = unique_index(json.loads((package / "datapackage.json").read_text())["resources"], ["path"])
+    tables = unique_index(read_csv(package / "metadata/tables.csv"), ["dataset_id", "table_id"])
+    schemas = {}
+    for key, table in tables.items():
+        path = (package / table["file_name"]).resolve()
+        if not path.is_relative_to(package.resolve()):
+            raise ValueError("data resource must be a local package file")
+        schema = resources[(table["file_name"],)]["schema"]
+        fields = unique_index(schema["fields"], ["name"])
+        schemas[key] = (path, schema, fields, table["primary_key"])
+
+    columns = unique_index(read_csv(package / "metadata/column_dictionary.csv"), ["dataset_id", "table_id", "column_name"])
+    measurements = {key: row for key, row in columns.items() if row["column_role"] == "measurement"}
+    for key, row in measurements.items():
+        value_type = row["value_type"]
+        field = schemas[key[:2]][2][(key[2],)]
+        if value_type not in VALUE_TYPES or field.get("type") != value_type:
+            raise ValueError(f"invalid or inconsistent native measurement type for {key}")
+        for name in SEMANTICS:
+            if name in field and field[name] != row.get(name, ""):
+                raise ValueError(f"inconsistent {name} for {key}")
+    return measurements, schemas
+
+
+def decision_key(value):
+    if not isinstance(value, list) or len(value) != 3 or not all(isinstance(item, str) and item for item in value):
+        raise ValueError("field identifiers must be [dataset_id, table_id, column_name]")
+    return tuple(value)
+
+
+def read_decisions(path, measurements):
+    if path is None:
+        return {}
+    records = json.loads(path.read_text())
+    if not isinstance(records, list):
+        raise ValueError("decisions must be a JSON array")
+    decisions = {}
+    for record in records:
+        if not isinstance(record, dict) or set(record) not in ({"source", "view"}, {"source", "unresolved"}):
+            raise ValueError("each decision needs a source and either a view or an unresolved reason")
+        source = decision_key(record["source"])
+        if source in decisions or source not in measurements or measurements[source]["value_type"] in NUMERIC:
+            raise ValueError(f"unknown, already numeric or repeated decision source {source}")
+        if "unresolved" in record:
+            if not isinstance(record["unresolved"], str) or not record["unresolved"].strip():
+                raise ValueError("unresolved decisions need a nonempty reason")
+        else:
+            decision_key(record["view"])
+        decisions[source] = record
+    return decisions
+
+
+def keyed_values(key, schema_info, value_type):
+    path, schema, fields, table_key = schema_info
+    keys = [name.strip() for name in table_key.split(",")]
+    resource_key = schema.get("primaryKey")
+    if isinstance(resource_key, str):
+        resource_key = [resource_key]
+    if not all(keys) or resource_key != keys or any((name,) not in fields for name in keys):
+        raise ValueError("table and data resource must declare matching primary keys")
+    missing = schema.get("missingValues", [""])
+    if not isinstance(missing, list) or not all(isinstance(item, str) for item in missing):
+        raise ValueError("resource missingValues must be an array of strings")
+    values = {}
+    for row in read_csv(path):
+        identity = tuple(row[name] for name in keys)
+        if any(part in missing or part == "" for part in identity) or identity in values:
+            raise ValueError("empty or repeated row key")
+        token = row[key[2]]
+        if token in missing:
+            values[identity] = None
+        else:
+            pattern = INTEGER if value_type == "integer" else DECIMAL
+            if not pattern.fullmatch(token):
+                raise ValueError("a nonmissing cell cannot be read as the declared numeric type")
+            values[identity] = Decimal(token)
+    return keys, values
+
+
+def verify_view(source, view, measurements, schemas):
+    if view not in measurements or measurements[view]["value_type"] not in NUMERIC:
+        raise ValueError("view must identify a native numeric measurement")
+    if source[0] != view[0] or measurements[source]["value_type"] != "string":
+        raise ValueError("direct views require a string measurement in the same dataset")
+    source_column = measurements[source]
+    view_column = measurements[view]
+    term = source_column.get("term_iri", "")
+    if not urlsplit(term).scheme or term.upper().startswith("REVIEW:"):
+        raise ValueError("source needs a resolved variable IRI")
+    attributes = SEMANTICS if source_column.get("unit_iri") else (*SEMANTICS, "unit_label")
+    if any(source_column.get(name, "") != view_column.get(name, "") for name in attributes):
+        raise ValueError("source and view declare different variable, unit or I-ADOPT roles")
+    source_keys, original = keyed_values(source, schemas[source[:2]], "number")
+    view_keys, typed = keyed_values(view, schemas[view[:2]], measurements[view]["value_type"])
+    if source_keys != view_keys or original.keys() != typed.keys():
+        raise ValueError("source and view must cover the same row keys")
+    if original != typed:
+        raise ValueError("source and view differ in values or missingness")
+    observed = sum(value is not None for value in typed.values())
+    if observed == 0:
+        raise ValueError("no paired nonmissing numeric values")
+    return {"rows": len(typed), "nonmissing": observed}
+
+
+def audit(package, decisions_path):
+    measurements, schemas = metadata(package)
+    decisions = read_decisions(decisions_path, measurements)
+    fields = []
+    for key, row in sorted(measurements.items()):
+        item = {"field": list(key), "value_type": row["value_type"]}
+        decision = decisions.get(key, {})
+        if row["value_type"] in NUMERIC:
+            item["status"] = "declared_numeric"
+        elif "unresolved" in decision:
+            item.update(status="explicitly_unresolved", reason=decision["unresolved"])
+        elif "view" in decision:
+            view = decision_key(decision["view"])
+            item["view"] = list(view)
+            try:
+                item.update(verify_view(key, view, measurements, schemas), status="verified_view")
+            except ValueError as error:
+                item.update(status="invalid_view", reason=str(error))
+        else:
+            item["status"] = "undeclared"
+        fields.append(item)
+    counts = Counter(item["status"] for item in fields)
+    return {
+        "measurement_slots": len(fields),
+        "text_measurement_slots": sum(item["value_type"] == "string" for item in fields),
+        "by_status": {status: counts[status] for status in ("declared_numeric", "verified_view", "explicitly_unresolved", "undeclared", "invalid_view")},
+        "fields": fields,
+        "accounted": bool(fields) and not (counts["undeclared"] or counts["invalid_view"]),
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("package", type=Path, help="native SDP directory")
+    parser.add_argument("--decisions", type=Path, help="reviewer's JSON array of explicit field decisions")
+    parser.add_argument("--require-accounted", action="store_true", help="fail for unreviewed slots, invalid views or no measurements")
+    args = parser.parse_args()
+    try:
+        report = audit(args.package, args.decisions)
+    except (OSError, KeyError, TypeError, ValueError, csv.Error, ArithmeticError) as error:
+        parser.exit(2, f"cannot audit package: {error}\n")
+    print(json.dumps(report, indent=2))
+    return int(args.require_accounted and not report["accounted"])
+
+
+if __name__ == "__main__":
+    sys.exit(main())

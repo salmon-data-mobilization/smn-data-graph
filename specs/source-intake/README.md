@@ -81,3 +81,20 @@ PY
 ## Check a proposed join
 
 Run `python3 specs/source-intake/audit_join.py LEFT.csv RIGHT.csv --left-key COLUMN [COLUMN ...]` on the exact UTF-8 CSV views you intend to join. Supply `--right-key` for different column names and repeat `--null-token` for publisher-defined missing values. The command matches exact lexical tuples and reports both whole-file key repetition and matches on the overlapping keys. Use `--require-single-match` when attaching exactly one lookup row to every row on the left. The JSON gives the number of expanded inner-join rows even on a cardinality failure. Link the source definitions for both keys to explain why the records represent comparable entities or events.
+
+## Audit native measurement types for numeric analysis
+
+Run `python3 specs/source-intake/audit_measurement_types.py PACKAGE` to list each native measurement field and its declared type. The audit compares `metadata/column_dictionary.csv` with the Frictionless data resource schema in `datapackage.json`. The JSON report counts text measurement slots, declared numeric slots, verified direct numeric views, explicit unresolved decisions and fields awaiting a decision. A numeric field can itself be the target of a verified view, so several listed fields can represent one scientific variable.
+
+To review a text measurement, pass `--decisions decisions.json`. Each field identifier contains the dataset ID, table ID and column name. Use a direct view when the source has a numeric interpretation and a reason when a decision is unresolved.
+
+```json
+[
+  {"source": ["example", "samples", "reading"], "view": ["example", "numeric_samples", "reading_numeric"]},
+  {"source": ["example", "samples", "condition"], "unresolved": "The survey records qualitative categories."}
+]
+```
+
+A direct view must have a matching resolved variable IRI, matching unit and I-ADOPT fields, a native integer or number type, identical named primary keys, and the same rows, numerical values and missingness. The audit matches keys across CSVs, compares finite decimal values, and uses each resource schema's declared missing tokens (the default is an empty field). At least one nonmissing pair must exist. A conversion, subset, estimate or aggregation needs its own scientific review. The audit checks the reviewer's stated link and preserves unresolved fields in its report. The reviewer determines whether the sampling design and variable support the intended analysis.
+
+Use `--require-accounted` for a gate. It exits with status 1 for an unreviewed nonnumeric field, a failed view check, or a package with no declared measurements. An explicit unresolved decision satisfies this gate and contributes zero verified views. An input or schema error exits with status 2.
