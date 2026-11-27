@@ -42,3 +42,41 @@ class JoinAudit(unittest.TestCase):
             with self.subTest(left=left, extra=extra):
                 result = self.run_case(left, "x\n1\n", "--left-key", "x", *extra)
                 self.assertEqual(result.returncode, 2)
+
+    def test_collection_separates_equal_payload_and_conflicts_with_source_records(self):
+        with tempfile.TemporaryDirectory() as directory:
+            a, b = Path(directory) / "a.csv", Path(directory) / "b.csv"
+            a.write_text("site,year,count,note\nA,1,3,x\nA,1,3,y\nA,2,7,x\nNA,2,0,z\n")
+            b.write_text("site,year,count,note\nA,1,5,x\nA,2,7,z\n")
+            args = [sys.executable, str(AUDIT), "--files", str(a), str(b), "--key", "site", "year",
+                    "--null-token", "NA", "--payload", "count", "--expect-unique"]
+            result = subprocess.run(args, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 1, result.stderr)
+            report = json.loads(result.stdout)
+            self.assertEqual([report[k] for k in ("rows", "repeated_complete_keys", "within_file_repeated_keys",
+                             "across_file_repeated_keys", "consistent_repeated_keys", "discordant_repeated_keys")], [6, 2, 1, 2, 1, 1])
+            self.assertEqual(report["repeats"][0]["repeated_payload_rows_beyond_first"], 1)
+            self.assertEqual(report["repeats"][0]["rows"][-1], {"file": str(b), "record": 1, "payload": ["5"]})
+            self.assertEqual(report["missing_keys"], [{"file": str(a), "record": 4, "key": ["NA", "2"]}])
+            a.write_text("site,year,count,note\nB,2,0,z\n")
+            self.assertEqual(subprocess.run(args, capture_output=True).returncode, 0)
+            args[4] = str(a)
+            self.assertEqual(subprocess.run(args, capture_output=True).returncode, 2)
+
+    def test_proposed_cardinality_checks_both_sides_and_optional_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            a, b, c = [Path(directory) / name for name in ("a.csv", "b.csv", "c.csv")]
+            a.write_text("x\n1\n1\n")
+            b.write_text("x\n1\n")
+            c.write_text("x\n1\n")
+            cmd = [sys.executable, str(AUDIT), str(a), str(b), "--left-key", "x", "--expect-cardinality"]
+            for proposal, extra, code, fanouts in [("one-to-one", [], 1, 0), ("many-to-one", [], 0, 0),
+                     ("many-to-one", ["--right-extra", str(c)], 1, 1), ("many-to-many", ["--right-extra", str(c)], 0, 1)]:
+                with self.subTest(proposal=proposal, extra=extra):
+                    res = subprocess.run([*cmd, proposal, *extra], capture_output=True, text=True)
+                    self.assertEqual(res.returncode, code, res.stderr)
+                    self.assertEqual(json.loads(res.stdout)["many_to_many_keys"], fanouts)
+            a.write_text('x\n""\n1\n', encoding="utf-8")
+            self.assertEqual(subprocess.run([*cmd, "many-to-one"], capture_output=True).returncode, 1)
+            a.write_text("x\n2\n", encoding="utf-8")
+            self.assertEqual(subprocess.run([*cmd, "one-to-one"], capture_output=True).returncode, 1)

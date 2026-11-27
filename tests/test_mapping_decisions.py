@@ -1,5 +1,9 @@
 import importlib.util
+import json
 from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 
 from rdflib import Graph
@@ -50,3 +54,40 @@ class DecisionAudit(unittest.TestCase):
         failures = audit.foreign_labels(graph, ["urn:local:"])
         self.assertEqual(len(failures), 1)
         self.assertEqual(failures[0]["subject"], "http://qudt.org/vocab/unit/NUM")
+
+    def test_independent_scope_contract_catches_omission_leakage_and_wrong_literal_type(self):
+        graph = Graph().parse(data='''
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            <urn:subset> <urn:coverage> <urn:adults> ; <urn:year> "2014"^^xsd:gYear .
+            <urn:neighbor> <urn:region> <urn:area> .
+        ''', format="turtle")
+        age = dict(id="restricted", expect="required", subject="urn:subset", predicate="urn:coverage", object="urn:adults", only_subject=True)
+        year = dict(id="year", expect="required", subject="urn:subset", predicate="urn:year", only_object=True,
+                    object={"value": "2014", "datatype": "http://www.w3.org/2001/XMLSchema#gYear"})
+        neighbor = dict(id="neighbor", expect="forbidden", subject="urn:neighbor", predicate="urn:coverage", object="urn:adults")
+        rules = [age, year, neighbor]
+        self.assertTrue(audit.check_scope(graph, rules)["matches_export"])
+        self.assertFalse(audit.check_scope(graph, [dict(neighbor, subject="urn:missing")])["matches_export"])
+        self.assertFalse(audit.check_scope(graph, [dict(age, object="urn:other")])["matches_export"])
+        graph.parse(data='<urn:neighbor> <urn:coverage> <urn:adults> . <urn:subset> <urn:year> "2014" .', format="turtle")
+        checks = audit.check_scope(graph, rules)["checked"]
+        self.assertTrue(all(not check["matches_export"] for check in checks))
+        self.assertEqual(checks[0]["unexpected_subjects"], ["<urn:neighbor>"])
+        self.assertEqual(checks[1]["unexpected_objects"], ['"2014"'])
+        for invalid in [[dict(age, only_subject="yes")], [dict(neighbor, only_object=True)], [dict(year, object={"value": "2014"})], [age, age]]:
+            with self.assertRaises(ValueError):
+                audit.check_scope(graph, invalid)
+
+    def test_scope_only_cli_checks_required_proposition_even_without_mapping_register(self):
+        with tempfile.TemporaryDirectory() as folder:
+            profile = Path(folder) / "profile.ttl"
+            contract = Path(folder) / "contract.json"
+            profile.write_text("<urn:site> <urn:type> <urn:station> .")
+            rule = dict(id="age-coverage", expect="required", subject="urn:site", predicate="urn:coverage", object="urn:adults")
+            contract.write_text(json.dumps([rule]))
+            cmd = [sys.executable, str(MODULE), str(profile), "--scope-propositions", str(contract), "--dataset", "sample"]
+            missing = subprocess.run(cmd, capture_output=True, text=True)
+            self.assertEqual(missing.returncode, 1, missing.stderr)
+            self.assertFalse(json.loads(missing.stdout)["scope"]["checked"][0]["triple_present"])
+            profile.write_text("<urn:site> <urn:coverage> <urn:adults> .")
+            self.assertEqual(subprocess.run(cmd, capture_output=True).returncode, 0)

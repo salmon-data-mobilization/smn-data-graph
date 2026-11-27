@@ -82,6 +82,10 @@ PY
 
 Run `python3 specs/source-intake/audit_join.py LEFT.csv RIGHT.csv --left-key COLUMN [COLUMN ...]` on the exact UTF-8 CSV views you intend to join. Supply `--right-key` for different column names and repeat `--null-token` for publisher-defined missing values. The command matches exact lexical tuples and reports both whole-file key repetition and matches on the overlapping keys. Use `--require-single-match` when attaching exactly one lookup row to every row on the left. The JSON gives the number of expanded inner-join rows even on a cardinality failure. Link the source definitions for both keys to explain why the records represent comparable entities or events.
 
+To check a proposed cardinality, add `--expect-cardinality one-to-one`, `one-to-many`, `many-to-one` or `many-to-many`. Each “one” requires unique complete keys across that whole side. The check also requires at least one shared key and zero missing keys on either side. For multiple files on a side, repeat `--left-extra FILE` or `--right-extra FILE`. The report counts shared keys with multiple rows on both sides and gives the expanded inner-join size. Add `--require-single-match` when every left record must match once. Checks do not join or deduplicate the source data.
+
+To inspect a proposed key across a collection, run `python3 specs/source-intake/audit_join.py --files FILE1.csv FILE2.csv --key SITE YEAR --payload ESTIMATE FRACTION --expect-unique`. The JSON lists each repeated key, file paths, 1-based data record numbers and the selected payload values. A key can repeat both within and across files. Matching payloads refer only to the fields you selected. Include all remaining columns when testing equality across complete rows. `--expect-unique` requires at least one record, complete keys and no repeated keys in the collection. Omit that option for a descriptive report. Both commands compare text exactly and interpret `--null-token` as a missing key component. Each gate exits 1 on failure and writes the report.
+
 ## Audit native measurement types for numeric analysis
 
 Run `python3 specs/source-intake/audit_measurement_types.py PACKAGE` to list each native measurement field and its declared type. The audit compares `metadata/column_dictionary.csv` with the Frictionless data resource schema in `datapackage.json`. The JSON report counts text measurement slots, declared numeric slots, verified direct numeric views, explicit unresolved decisions and fields awaiting a decision. A numeric field can itself be the target of a verified view, so several listed fields can represent one scientific variable.
@@ -118,6 +122,20 @@ Use `--require-accounted` for a gate. It exits with status 1 for an unreviewed n
 ## Check export decisions and sample them for review
 
 Run `python3 specs/source-intake/audit_mapping_decisions.py PROFILE.ttl DECISIONS.json --dataset ID --seed SEED --per-status 2` with RDFLib installed. Supply one record per distinct proposed RDF triple with the fields `id`, `status` (`accepted` or `abstained`), `table`, `claim`, `source_url`, `locator`, `reason`, `subject`, `predicate` and `object`. This profile check handles IRI objects. It verifies the exact triple, requires evidence that the subject exists even for abstentions, and reports a seeded sample from both strata. The sample includes discrepancies so they remain available to a reviewer. A positive result describes what the explicit Turtle says. The native package, the biological interpretation, implied assertions and the evidence behind each decision require separate checks. To check labels during export, pass `--owned-namespace` for each project namespace, including its final delimiter. The command reports any labels the profile assigns to terms owned by another vocabulary.
+
+### Check coverage claims against an independent contract
+
+Run `python3 specs/source-intake/audit_mapping_decisions.py PROFILE.ttl --dataset ID --scope-propositions EXPECTATIONS.json`. Supply the exact source-backed propositions that a consumer should find or withhold in this dataset profile. The scope contract runs independently of the mapper’s decision register, so an omitted mapping can fail the check. It can also run alongside a register and its `--seed`. Each rule needs a unique `id`, `expect` (`required` or `forbidden`), and a `subject`, `predicate` and `object`. The subject of every rule must occur in the export. Use absolute IRIs or a typed literal object with `value` and `datatype`.
+
+```json
+[
+  {"id":"survey-year", "expect":"required", "subject":"urn:survey:subset", "predicate":"urn:survey:year", "object":{"value":"2010", "datatype":"http://www.w3.org/2001/XMLSchema#gYear"}, "only_object":true},
+  {"id":"restricted-coverage", "expect":"required", "subject":"urn:survey:subset", "predicate":"urn:survey:coverage", "object":"urn:survey:adults", "only_subject":true},
+  {"id":"other-stock", "expect":"forbidden", "subject":"urn:survey:neighbor", "predicate":"urn:survey:coverage", "object":"urn:survey:adults"}
+]
+```
+
+On a required rule, `only_subject` detects the same predicate and object attached to any additional subject in this profile. `only_object` detects any additional object for that subject and predicate, such as another population, year or age class. Apply these flags where evidence supports exclusive scope. This check evaluates explicit RDF in the supplied Turtle file. Reviewers still need to establish the scientific meaning, evidence and coverage of the propositions and select any other relevant predicates to check.
 
 ## Read a verified decimal field
 
