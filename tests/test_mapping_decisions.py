@@ -32,6 +32,22 @@ class DecisionAudit(unittest.TestCase):
         self.assertTrue(forward["matches_export"])
         self.assertEqual(forward["population"], {"accepted": 2, "abstained": 2})
 
+    def test_correct_rdf_action_can_have_wrong_evidentiary_reason(self):
+        reference = [dict(r, evidence_verdict="Supported" if r["status"] == "accepted" else "Unsupported",
+                          action="assert_scoped" if r["status"] == "accepted" else "withhold") for r in self.rows]
+        self.assertTrue(audit.check_judgments(reference, reference)["matches_reference"])
+        candidate = [dict(r) for r in reference]
+        candidate[-1]["evidence_verdict"] = "Insufficient evidence"
+        self.assertTrue(self.run_audit(candidate)["matches_export"])
+        result = audit.check_judgments(candidate, reference)
+        self.assertFalse(result["matches_reference"])
+        self.assertEqual(result["checked"][-1]["differences"], ["evidence_verdict"])
+        self.assertEqual(audit.check_judgments(candidate, reference[:-1])["ungraded_ids"], ["d"])
+        candidate[0]["claim"] = "Different proposition with the same identifier"
+        self.assertIn("claim", audit.check_judgments(candidate, reference)["checked"][0]["differences"])
+        with self.assertRaises(ValueError):
+            audit.check_judgments(candidate, [*reference, reference[-1]])
+
     def test_vacuous_absence_and_accidentally_asserted_rejection_fail(self):
         self.rows[3]["subject"] = "urn:missing"
         self.rows[1]["status"] = "abstained"

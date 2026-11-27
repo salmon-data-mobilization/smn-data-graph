@@ -109,6 +109,37 @@ def check_decisions(graph, records, dataset, seed, per_status):
             "checked": sorted(results, key=lambda r: r["id"]), "matches_export": all(r["matches_export"] for r in results)}
 
 
+def check_judgments(records, reference):
+    """Compare every registered proposition to an independent, source-located adjudication."""
+    verdicts = {"Supported", "Unsupported", "Insufficient evidence", "Needs narrower scope"}
+    actions = {"assert": "accepted", "assert_scoped": "accepted", "withhold": "abstained"}
+    if not isinstance(reference, list) or not reference:
+        raise ValueError("Supply a nonempty judgment reference")
+    indexed = {r["id"]: r for r in records}
+    seen = set()
+    findings = []
+    for expected in reference:
+        for key in ("id", "claim", "subject", "predicate", "object", "source_url", "locator", "reason", "evidence_verdict", "action"):
+            if not isinstance(expected.get(key), str) or not expected[key].strip():
+                raise ValueError(f"Missing judgment reference field {key}")
+        identifier = expected["id"]
+        if identifier in seen or identifier not in indexed:
+            raise ValueError(f"Repeated or unknown judgment id {identifier}")
+        seen.add(identifier)
+        if expected["evidence_verdict"] not in verdicts or expected["action"] not in actions:
+            raise ValueError(f"Unknown reference verdict or action for {identifier}")
+        reported = indexed[identifier]
+        differences = [k for k in ("claim", "subject", "predicate", "object", "evidence_verdict", "action") if expected[k] != reported.get(k)]
+        if actions[expected["action"]] != reported["status"]:
+            differences.append("status")
+        findings.append({"id": identifier, "differences": differences,
+                         "expected": {k: expected[k] for k in ("evidence_verdict", "action", "source_url", "locator", "reason")},
+                         "reported": {k: reported.get(k) for k in ("evidence_verdict", "action")}})
+    missing = sorted(set(indexed) - seen)
+    return {"matches_reference": not missing and not any(r["differences"] for r in findings),
+            "ungraded_ids": missing, "checked": sorted(findings, key=lambda r: r["id"])}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("profile", type=Path)
@@ -117,17 +148,23 @@ def main():
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--seed", help="Review sampling seed when a decision register is supplied")
     parser.add_argument("--per-status", type=int, default=2)
+    parser.add_argument("--judgment-reference", type=Path, help="independent scientific verdict and action for every registered proposition")
     parser.add_argument("--owned-namespace", action="append", help="Check for labels on external terms. Repeat for each namespace the profile owns.")
     args = parser.parse_args()
     if not args.register and not args.scope_propositions:
         parser.error("Supply a register, an independent scope contract, or both")
     if args.register and args.seed is None:
         parser.error("Supply --seed to sample a decision register")
+    if args.judgment_reference and not args.register:
+        parser.error("Supply a mapping register for an independent judgment check")
     graph = Graph().parse(args.profile, format="turtle")
     try:
         result = {"dataset": args.dataset, "matches_export": True}
         if args.register:
-            result = check_decisions(graph, json.loads(args.register.read_text()), args.dataset, args.seed, args.per_status)
+            records = json.loads(args.register.read_text())
+            result = check_decisions(graph, records, args.dataset, args.seed, args.per_status)
+            if args.judgment_reference:
+                result["judgments"] = check_judgments(records, json.loads(args.judgment_reference.read_text()))
         if args.scope_propositions:
             result["scope"] = check_scope(graph, json.loads(args.scope_propositions.read_text()))
             result["matches_export"] = result["matches_export"] and result["scope"]["matches_export"]
@@ -138,7 +175,7 @@ def main():
             parser.error("An owned namespace must end with /, # or : to delimit its terms")
         result["foreign_labels"] = foreign_labels(graph, args.owned_namespace)
     print(json.dumps(result, indent=2))
-    return int(not result["matches_export"] or bool(result.get("foreign_labels")))
+    return int(not result["matches_export"] or bool(result.get("foreign_labels")) or not result.get("judgments", {}).get("matches_reference", True))
 
 
 if __name__ == "__main__":
