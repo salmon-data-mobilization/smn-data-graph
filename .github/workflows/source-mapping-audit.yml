@@ -1,9 +1,9 @@
 name: Source mapping audit
 on:
   pull_request:
-    paths: ['specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', 'tests/test_study_gate.py', '.github/workflows/source-mapping-audit.yml']
+    paths: ['specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', 'tests/test_study_gate.py', 'tests/test_candidate_denominator.py', '.github/workflows/source-mapping-audit.yml']
   push:
-    paths: ['specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', 'tests/test_study_gate.py', '.github/workflows/source-mapping-audit.yml']
+    paths: ['specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', 'tests/test_study_gate.py', 'tests/test_candidate_denominator.py', '.github/workflows/source-mapping-audit.yml']
 permissions:
   contents: read
 jobs:
@@ -13,6 +13,8 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
+      - name: Check candidate denominator against outcome classes
+        run: python3 -m unittest discover -s tests -p test_candidate_denominator.py
       - name: Check blinded design receipts
         run: python3 -m unittest discover -s tests -p test_study_gate.py
       - name: Check CSV key collisions and join cardinality

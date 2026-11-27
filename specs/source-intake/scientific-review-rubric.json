@@ -1,5 +1,5 @@
 {
-  "version": "source-and-inference-v2",
+  "version": "source-and-inference-v3",
   "unit": "One point per binary criterion. Per dataset six shared and four independent source-reader criteria, maximum 10. The scientific analysis assessment is a separate four-test panel, not an extra mapping point.",
   "common": {
     "C1": "Verify original in-scope publisher resources by pinned hash and source cells, complete table/field coverage, row keys, original lexemes, missing codes and explicit zeros. Document any extract or reversible normalization.",
@@ -23,5 +23,6 @@
   ],
   "calibration": "NOAA Lower Gorge stock 2765 series 33 total excludes jacks; prevent transferring that exclusion to a neighbor. CATCH -99 is present but its meaning is undocumented. SERIES+NMFS_POPID+YEAR is not guaranteed unique across VRData. Treat contradiction of a claimed field definition separately from an unresolved biological fact.",
   "integration": "Before inspecting integrated results, specify a scientific question/hypothesis, target population, observational unit, time and spatial alignment, response/exposure, statistic and assumptions, exclusions/missingness, honest inference target and a rejection rule. Use actual exported native values AND RDF semantics. Compare supported analysis with publisher-based calculation and adverse controls, or report why inference is not identifiable. A correctly blocked unsupported analysis succeeds as a safeguard. Report descriptive, associational and causal claims separately. Do not treat joinability as scientific validity; require explicit eligibility independently of the resulting association.",
+  "candidateDenominator": "For assigned-event counts, enumerate the candidate roster independently of successful events. Compare the preregistered eligibility rule to the roster by identity, target stratum and zero, positive or missing outcome. Record any differential loss and test a within-stratum reassignment that preserves totals. When the planned filter removes a required outcome class or the prespecified threshold fails, withhold the confirmatory contrast. A definition repaired after seeing the records is a separate diagnostic until prospectively replicated.",
   "blinding": "Source reader uses primary data/study; case-specific probes and adjudication remain invisible to mappers until all three initial seals. A separate grader scores the actual exports. Preserve first submissions and initial scores, and label post-feedback retests."
 }
