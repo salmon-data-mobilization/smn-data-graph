@@ -78,3 +78,16 @@ Report rates with intervals only after 20 or more cases drawn from the frame.
 Run an ablation every few rounds that compares the lean source-led workflow
 with the full checker stack on the same new cases. Keep a check only if it
 catches material errors on cases it was not built for.
+
+## 6. Lessons from the first v2 round (2026-11-27)
+
+See `data/intake/crossmodel-blind-20261127/REPORT.md` (local data, not in git).
+
+- **Hide model identity before grading.** Rename mapper folders to neutral
+  labels. In the first round, the Anthropic grader scored the Anthropic mapper
+  0.98 and the OpenAI grader scored it 0.69. Graders matched on only 56% of
+  criteria.
+- **Use at least three families when possible, so no grader shares a family
+  with a mapper it grades.** When only two families are available, say so in
+  the report.
+- **Use the human key to judge the graders as well as the mappers.**
