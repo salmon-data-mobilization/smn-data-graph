@@ -176,3 +176,26 @@ Use the [scientific review rubric](scientific-review-rubric.json) when testing a
 For an outcome count, build a candidate roster from an enumeration that does not require a detected event. Give `audit_candidate_denominator.py` that CSV and a second CSV of the fish admitted by the proposed filter. Repeat `--key` for the full fish identity and `--stratum` for every design stratum. Set `--outcome` to the roster’s nonnegative integer count and declare any additional missing codes with `--missing-code`. The JSON reports retained and excluded counts by stratum for zero, positive and missing outcomes. Exit 2 identifies loss of an entire observed outcome class or an empty observed selection. Exit 1 identifies invalid inputs or unmatched identities. Partial selection and single-class rosters still require scientific review. Compare individual counts to an independent reference, since a within-stratum reassignment can preserve every rate.
 
 The independent reader can check a proposed table with `python3 specs/source-intake/audit_schema_projection.py publisher-header.csv metadata/column_dictionary.csv --source SOURCE_DATASET SOURCE_TABLE --native SDP_DATASET SDP_TABLE --require FIELD --output private-receipt.json`. Supply an exact header-only CSV from one publisher table. Repeat `--require` for each analysis field and `--alias SOURCE_NAME NATIVE_NAME` for documented renames in that table. Exact name matching applies otherwise. The private receipt distinguishes a field absent from the supplied source header from a publisher field lost in the projection. Exit 0 means all requested names are declared, 2 means some are missing, and 1 means the inputs or output path are invalid. Keep requirements, aliases and the receipt from mappers during a scored round. Field presence establishes neither semantic equivalence nor usable values.
+
+## Look up stream roles for a return year
+
+Run `python3 specs/source-intake/audit_scoped_roles.py claims.json queries.json` to check which documented roles apply to a stream in a specific estimate. Both files use version 1 of the JSON interface. The claim register is curated by the analyst. Use stable identifiers from the relevant evidence for the stream, signal, target series, edition and estimation method. Qualify ambiguous names in those identifiers. Use the same five identifiers in each query. Matching is literal and case-sensitive.
+
+In this fictional example, a survey recorded fish in Alder during 2001–2003. An estimator used those counts in 2002. For a standalone subset, enter a separate assertion specifying whether the stream qualifies for that subset in the scoped product. Each assertion needs a traceable evidence locator. The lookup evaluates the supplied assertions and does not authenticate their sources.
+
+```json
+{"version": 1, "claims": [
+  {"stream": "Alder", "signal": "adult count", "series": "Coast index", "edition": "first", "method": "reach expansion", "first_year": 2001, "last_year": 2003, "role": "monitoring", "assertion": "include", "evidence": "Example survey log, table 4"},
+  {"stream": "Alder", "signal": "adult count", "series": "Coast index", "edition": "first", "method": "reach expansion", "first_year": 2002, "last_year": 2002, "role": "estimator_input", "assertion": "include", "evidence": "Example methods, table 9, 2002 inputs"}
+]}
+```
+
+```json
+{"version": 1, "queries": [
+  {"stream": "Alder", "signal": "adult count", "series": "Coast index", "edition": "first", "method": "reach expansion", "return_year": 2002}
+]}
+```
+
+Supply integer years. Both endpoints of a claim interval are included. Enter a separate record for each uninterrupted interval and each role. Each query asks about a single return year. The JSON output echoes queries in order and gives independent decisions for `monitoring`, `estimator_input`, and `standalone_subset`. Each decision contains `status`, `include_evidence`, and `exclude_evidence`. Only `supported` licenses membership. A matching `exclude` assertion alone yields `excluded`. A gap or absence of matching assertions yields `abstain`. Conflicting assertions within the same scope and role yield `contradiction` with the locators from both sides. The example returns supported monitoring and estimator use, and abstains on standalone membership.
+
+The CLI prints its report to standard output and exits 0 for any valid lookup, including an abstention or contradiction. Consumers must read the required role's status. Invalid input exits 1 with no report.
