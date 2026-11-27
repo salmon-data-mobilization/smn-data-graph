@@ -46,8 +46,9 @@ def read_verified_decimals(package, decisions_path, source, source_sha256):
         schemas[source[:2]] = source_schema
         # Use the same scientific identity, unit, key, value and missingness
         # checks as the audit. Return the matched source's decimal precision.
-        verify_view(source, view, measurements, schemas, extra_missing)
-        key_names, values, _ = keyed_values(source, source_schema, "number", extra_missing)
+        grouped = "source_number_format" in decision
+        verify_view(source, view, measurements, schemas, extra_missing, grouped=grouped)
+        key_names, values, _ = keyed_values(source, source_schema, "number", extra_missing, grouped=grouped)
     return key_names, values
 
 

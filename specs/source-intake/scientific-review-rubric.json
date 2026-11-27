@@ -1,0 +1,27 @@
+{
+  "version": "source-and-inference-v2",
+  "unit": "One point per binary criterion. Per dataset six shared and four independent source-reader criteria, maximum 10. The scientific analysis assessment is a separate four-test panel, not an extra mapping point.",
+  "common": {
+    "C1": "Verify original in-scope publisher resources by pinned hash and source cells, complete table/field coverage, row keys, original lexemes, missing codes and explicit zeros. Document any extract or reversible normalization.",
+    "C2": "Verify numerical usability at the source's precision, units, denominator/statistic and eligibility for focal measurement(s). Verify exact keyed numeric views or declared native numeric cells independent of mapper claims. Parse documented grouping separators explicitly; retain counterexamples and unknowns. Report exact-value preservation and typed consumption separately.",
+    "C3": "Run pinned native SDK draft and strict validation/readback on the actual package. Award for zero draft structural issues; report strict issues, optional missing semantics, precision conversions and fallback separately.",
+    "C4": "Verify source-supported observation unit and key for every source table. For each focal quantitative variable, match native dictionary with exported RDF variable, I-ADOPT property and entity, and applicable scope, unit, statistical modifier or explicitly evidenced uncertainty.",
+    "C5": "Test proposed keys across the full relevant data, specify sides, row grains, cardinality, nulls, duplicate and discordant payloads, coverage and unmatched keys. For a stand-alone series test one tempting false join/key. A valid abstention records what is unsupported, why, and the failed probe. Any population qualifier stays constrained to the justified source/series/subgroup.",
+    "C6": "Audit all registered mappings against exact triples on existing subjects (at least four accepted and four withheld per dataset). Independently judge the proposition's evidence and action separately; record source locator, grounded reason/correction and biological uncertainty. Check against contrary assertions elsewhere in the native and RDF exports. Check RDF labels remain in project scope."
+  },
+  "sourceQuestions": "A distinct source reader commits exactly four evidence-derived criteria per dataset before mapping. Judge all twelve even for fields absent from the mappers' registers. Report omissions. A demonstrably false reader reference must be adjudicated transparently against source and original scores preserved.",
+  "judgments": {
+    "Supported": "The source supports the complete proposition including population, method, time and units.",
+    "Unsupported": "An identifiable source definition, value or relationship contradicts the proposition as worded. For a statement about a dictionary, test the actual bounded dictionary.",
+    "Insufficient evidence": "The source is silent, inaccessible or does not determine the underlying biological fact, code meaning or lineage.",
+    "Needs narrower scope": "Evidence supports the core proposition only for a narrower population, scope, method, scale or period. Record the corrected proposition."
+  },
+  "actions": [
+    "assert",
+    "assert_scoped",
+    "withhold"
+  ],
+  "calibration": "NOAA Lower Gorge stock 2765 series 33 total excludes jacks; prevent transferring that exclusion to a neighbor. CATCH -99 is present but its meaning is undocumented. SERIES+NMFS_POPID+YEAR is not guaranteed unique across VRData. Treat contradiction of a claimed field definition separately from an unresolved biological fact.",
+  "integration": "Before inspecting integrated results, specify a scientific question/hypothesis, target population, observational unit, time and spatial alignment, response/exposure, statistic and assumptions, exclusions/missingness, honest inference target and a rejection rule. Use actual exported native values AND RDF semantics. Compare supported analysis with publisher-based calculation and adverse controls, or report why inference is not identifiable. A correctly blocked unsupported analysis succeeds as a safeguard. Report descriptive, associational and causal claims separately. Do not treat joinability as scientific validity; require explicit eligibility independently of the resulting association.",
+  "blinding": "Source reader uses primary data/study; case-specific probes and adjudication remain invisible to mappers until all three initial seals. A separate grader scores the actual exports. Preserve first submissions and initial scores, and label post-feedback retests."
+}

@@ -90,6 +90,28 @@ class MeasurementTypeAudit(unittest.TestCase):
         self.assertTrue(report["accounted"])
         self.assertEqual((field["rows"], field["nonmissing"]), (3, 2))
 
+    def test_grouping_is_documented_field_local_and_preserves_exact_source_values(self):
+        self.original[1][1] = "1,234,567"
+        self.typed[1][1] = "1234567"
+        self.write_data()
+        plain = {"source": SOURCE, "view": VIEW}
+        reviewed = {**plain, "source_number_format": {"grouping": "comma_thousands", "locator": "source CSV B", "rationale": "The count uses three digit comma groups."}}
+        self.check_report([plain], 1, "invalid_view")
+        self.check_report([reviewed], 0, "verified_view")
+        pin = hashlib.sha256((self.package / "data/samples.csv").read_bytes()).hexdigest()
+        run = subprocess.run([sys.executable, str(SCRIPT.with_name("read_numeric_view.py")), str(self.package), str(self.package / "review.json"), "--source", *SOURCE, "--source-sha256", pin], check=True, capture_output=True, text=True)
+        self.assertEqual(json.loads(run.stdout)["rows"][1], [["B"], "1234567"])
+        for bad in ("1,23,4567", "1234,567", "1,2", "1,234,567 "):
+            with self.subTest(bad=bad):
+                self.original[1][1] = bad
+                self.write_data()
+                self.check_report([reviewed], 1, "invalid_view")
+        self.original[1][1] = self.typed[1][1] = "1,234,567"
+        self.write_data()
+        self.check_report([reviewed], 1, "invalid_view")
+        reviewed["source_number_format"]["locator"] = ""
+        self.assertEqual(self.run_audit([reviewed]).returncode, 2)
+
     def test_field_missing_token_isolated_from_sibling_measurement_keys_and_target(self):
         self.columns[2][4] = "string"
         self.columns.append(["example", "projection", "depth_numeric", "measurement", "number", "urn:example:depth", "urn:example:m"])

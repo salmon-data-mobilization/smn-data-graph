@@ -15,6 +15,7 @@ VALUE_TYPES = NUMERIC | {"string", "boolean", "date", "datetime"}
 SEMANTICS = ("term_iri", "property_iri", "entity_iri", "unit_iri", "constraint_iri", "statistical_modifier_iri")
 DECIMAL = re.compile(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?")
 INTEGER = re.compile(r"[+-]?[0-9]+")
+GROUPED_NUMBER = re.compile(r"[+-]?[0-9]{1,3}(?:,[0-9]{3})+(?:\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?")
 
 
 def unique_index(records, keys):
@@ -100,10 +101,17 @@ def read_decisions(path, measurements):
         raise ValueError("decisions must be a JSON array")
     decisions = {}
     for record in records:
-        if not isinstance(record, dict) or set(record) not in (
-            {"source", "view"}, {"source", "view", "source_missing_tokens", "source_missing_evidence"}, {"source", "unresolved"},
-        ):
+        if not isinstance(record, dict):
+            raise ValueError("each decision must be an object")
+        keys = set(record) - {"source_number_format"}
+        if keys not in ({"source", "view"}, {"source", "view", "source_missing_tokens", "source_missing_evidence"}, {"source", "unresolved"}):
             raise ValueError("each decision needs a source and either a view or an unresolved reason")
+        if "source_number_format" in record:
+            fmt = record["source_number_format"]
+            if "view" not in record or not isinstance(fmt, dict) or set(fmt) != {"grouping", "locator", "rationale"} or fmt["grouping"] != "comma_thousands":
+                raise ValueError("source_number_format requires a direct view, comma_thousands grouping, locator and rationale")
+            if not all(isinstance(fmt[k], str) and fmt[k].strip() for k in ("locator", "rationale")):
+                raise ValueError("source_number_format needs nonblank source evidence")
         source = decision_key(record["source"])
         if source in decisions or source not in measurements or measurements[source]["value_type"] in NUMERIC:
             raise ValueError(f"unknown, already numeric or repeated decision source {source}")
@@ -114,11 +122,13 @@ def read_decisions(path, measurements):
             decision_key(record["view"])
             if "source_missing_tokens" in record:
                 validate_missing_override(record)
+                if "source_number_format" in record and any(GROUPED_NUMBER.fullmatch(t) for t in record["source_missing_tokens"]):
+                    raise ValueError("a grouped number cannot be a field missing token")
         decisions[source] = record
     return decisions
 
 
-def keyed_values(key, schema_info, value_type, field_tokens=()):
+def keyed_values(key, schema_info, value_type, field_tokens=(), *, grouped=False):
     path, schema, fields, table_key = schema_info
     keys = [name.strip() for name in table_key.split(",")]
     resource_key = schema.get("primaryKey")
@@ -145,13 +155,15 @@ def keyed_values(key, schema_info, value_type, field_tokens=()):
             values[identity] = None
         else:
             pattern = INTEGER if value_type == "integer" else DECIMAL
+            if grouped and GROUPED_NUMBER.fullmatch(token):
+                token = token.replace(",", "")
             if not pattern.fullmatch(token):
                 raise ValueError("a nonmissing cell cannot be read as the declared numeric type")
             values[identity] = Decimal(token)
     return keys, values, token_counts
 
 
-def verify_view(source, view, measurements, schemas, field_tokens):
+def verify_view(source, view, measurements, schemas, field_tokens, *, grouped=False):
     if view not in measurements or measurements[view]["value_type"] not in NUMERIC:
         raise ValueError("view must identify a native numeric measurement")
     if source[0] != view[0] or measurements[source]["value_type"] != "string":
@@ -164,7 +176,7 @@ def verify_view(source, view, measurements, schemas, field_tokens):
     attributes = SEMANTICS if source_column.get("unit_iri") else (*SEMANTICS, "unit_label")
     if any(source_column.get(name, "") != view_column.get(name, "") for name in attributes):
         raise ValueError("source and view declare different variable, unit or I-ADOPT roles")
-    source_keys, original, token_counts = keyed_values(source, schemas[source[:2]], "number", field_tokens)
+    source_keys, original, token_counts = keyed_values(source, schemas[source[:2]], "number", field_tokens, grouped=grouped)
     view_keys, typed, _ = keyed_values(view, schemas[view[:2]], measurements[view]["value_type"])
     if source_keys != view_keys or original.keys() != typed.keys():
         raise ValueError("source and view must cover the same row keys")
@@ -229,7 +241,10 @@ def audit(package, decisions_path, *, check_numeric=False):
                 item["source_missing_tokens"] = field_tokens
                 item["source_missing_evidence"] = decision["source_missing_evidence"]
             try:
-                item.update(verify_view(key, view, measurements, schemas, field_tokens), status="verified_view")
+                grouped = "source_number_format" in decision
+                if grouped:
+                    item["source_number_format"] = decision["source_number_format"]
+                item.update(verify_view(key, view, measurements, schemas, field_tokens, grouped=grouped), status="verified_view")
             except ValueError as error:
                 item.update(status="invalid_view", reason=str(error))
         else:
