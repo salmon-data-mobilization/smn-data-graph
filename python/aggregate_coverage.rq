@@ -1,0 +1,30 @@
+PREFIX cov: <urn:smn:aggregate-audit:>
+
+# Enumerate individual atom support records in the two version-specific named
+# graphs. A missing amount does not erase a documented coverage match.
+# Distinct support rows avoid join multiplication if a source repeats an atom.
+SELECT DISTINCT ?graph ?component ?assertion ?atom ?role ?value ?version ?otherGraph
+WHERE {
+  GRAPH ?graph {
+    ?graph a cov:Source ;
+           cov:frame ?frame ; cov:species ?species ; cov:year ?year ;
+           cov:component ?component .
+    ?component cov:resolved true ; cov:support ?assertion .
+    ?assertion cov:atom ?atom ; cov:role ?role .
+    OPTIONAL { ?assertion cov:value ?value }
+    OPTIONAL { ?assertion cov:version ?version }
+  }
+  GRAPH cov:target {
+    ?frame cov:approvedAtom ?atom .
+  }
+  OPTIONAL {
+    GRAPH ?otherGraph {
+      ?otherGraph a cov:Source ;
+                  cov:frame ?frame ; cov:species ?species ; cov:year ?year ;
+                  cov:component ?otherComponent .
+      ?otherComponent cov:resolved true ; cov:support ?otherSupport .
+      ?otherSupport cov:atom ?atom .
+    }
+    FILTER (?otherGraph != ?graph)
+  }
+}

@@ -1,9 +1,9 @@
 name: Source mapping audit
 on:
   pull_request:
-    paths: ['specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', 'tests/test_study_gate.py', 'tests/test_candidate_denominator.py', 'tests/test_schema_projection.py', '.github/workflows/source-mapping-audit.yml']
+    paths: ['python/aggregate_coverage.py', 'python/aggregate_coverage.rq', 'tests/test_aggregate_coverage.py', 'specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', 'tests/test_study_gate.py', 'tests/test_candidate_denominator.py', 'tests/test_schema_projection.py', '.github/workflows/source-mapping-audit.yml']
   push:
-    paths: ['specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', 'tests/test_study_gate.py', 'tests/test_candidate_denominator.py', 'tests/test_schema_projection.py', '.github/workflows/source-mapping-audit.yml']
+    paths: ['python/aggregate_coverage.py', 'python/aggregate_coverage.rq', 'tests/test_aggregate_coverage.py', 'specs/source-intake/audit_*.py', 'specs/source-intake/read_numeric_view.py', 'tests/test_source_mapping_audit.py', 'tests/test_measurement_types.py', 'tests/test_mapping_decisions.py', 'tests/test_study_gate.py', 'tests/test_candidate_denominator.py', 'tests/test_schema_projection.py', '.github/workflows/source-mapping-audit.yml']
 permissions:
   contents: read
 jobs:
@@ -25,3 +25,5 @@ jobs:
       - run: python3 -m pip install --target "$RUNNER_TEMP/audit-libs" rdflib==7.6.0
       - name: Check decision registers and independent export scopes
         run: PYTHONPATH="$RUNNER_TEMP/audit-libs" python3 -m unittest discover -s tests -p test_mapping_decisions.py
+      - name: Check scoped aggregate coverage with RDFLib
+        run: PYTHONPATH="$RUNNER_TEMP/audit-libs" python3 -m unittest discover -s tests -p test_aggregate_coverage.py
