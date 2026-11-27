@@ -120,6 +120,10 @@ def build_dataset(payload, issues):
     scope.add((frame, COV.evidence, Literal(frame_evidence)))
     target_atoms = [iri(a) for a in array(target, "atoms")]
     need(len(set(target_atoms)) == len(target_atoms), "duplicate target atom")
+    complete_target = flag(target, "complete") if "complete" in target else True
+    scope.add((frame, COV.complete, Literal(complete_target)))
+    if not complete_target:
+        issues.append("target: incomplete atomic partition")
     if not target_atoms:
         issues.append("target: missing atomic roster")
     aliases = {iri(a): iri(b) for a, b in target.get("aliases", {}).items()}
@@ -158,6 +162,20 @@ def build_dataset(payload, issues):
         g.add((name, COV.complete, Literal(complete)))
         if not complete:
             issues.append(f"{name}: incomplete published roster")
+        # A missing row cannot prove that the publisher excluded a stream.
+        # Keep positively documented exclusions in the source's edition graph.
+        if "exclusions" in source:
+            for exclusion in array(source, "exclusions"):
+                original = iri(exclusion["id"])
+                atom = aliases.get(original, original)
+                need(atom in target_atoms and atom not in parents, "exclusion must identify a target atom")
+                proof = evidence(exclusion, f"{name}/exclusion/{atom}", issues)
+                if proof:
+                    assertion = BNode()
+                    g.add((name, COV.exclusion, assertion))
+                    g.add((assertion, COV.atom, atom))
+                    g.add((assertion, COV.sourceAtom, original))
+                    g.add((assertion, COV.evidence, Literal(proof)))
         if not array(source, "components"):
             issues.append(f"{name}: missing component roster")
         seen = set()
@@ -261,6 +279,28 @@ def assess(payload, trig=None):
                         "component_sum": display(subtotal) if complete else None,
                         "reconciled": bool(reconciled), "memberships": documented})
 
+    # Exclusivity needs both positive membership and the other source's
+    # independently documented exclusion. Preserve these witnesses even when
+    # additional streams or the amounts they contributed are unknown.
+    names = [iri(source["graph"]) for source in payload["sources"]]
+    excluded = {}
+    comparable = True
+    for name in names:
+        g = dataset.graph(name)
+        excluded[name] = {g.value(node, COV.atom) for node in g.objects(name, COV.exclusion)}
+        conflicts = excluded[name].intersection(by_graph[name])
+        if conflicts:
+            issues.append(f"{name}: inclusion contradicts exclusion for {', '.join(map(str, sorted(conflicts)))}")
+            comparable = False
+        comparable &= all(g.value(name, COV[k]) == scope.value(COV.target, COV[k])
+                          for k in ("year", "species", "frame"))
+        comparable &= bool(str(g.value(name, COV.evidence))) and str(g.value(name, COV.version)).lower() not in UNKNOWN
+    if not comparable:
+        shared.clear()
+        coverage_issues = True
+    exclusive = {str(name): sorted(map(str, excluded[other].intersection(by_graph[name]))) if comparable else []
+                 for name, other in ((names[0], names[1]), (names[1], names[0]))}
+
     if expected != observed:
         issues.append("target roster differs from covered union")
         coverage_issues = True
@@ -282,7 +322,9 @@ def assess(payload, trig=None):
         union_value = display(sum((Fraction(v[0][0]) for v in values.values()), Fraction()))
     status = "overlap_demonstrated" if shared else ("unresolved" if coverage_issues else "disjoint")
     return {"decision": decision, "coverage_status": status, "directly_addable": decision == "add_totals",
-            "union_value": union_value, "shared_atoms": sorted(map(str, shared)), "sources": reports,
+            "union_value": union_value, "shared_atoms": sorted(map(str, shared)),
+            "exclusive_witnesses": exclusive, "partial_overlap_proven": bool(shared and all(exclusive.values())),
+            "sources": reports,
             "issues": issues}
 
 

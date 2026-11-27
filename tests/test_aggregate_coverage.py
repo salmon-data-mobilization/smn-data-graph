@@ -127,6 +127,39 @@ class CoverageTests(unittest.TestCase):
         data["target"]["atoms"].append("urn:fish:d")
         self.assertIsNone(assess(data)["union_value"])
 
+    def test_partial_overlap_needs_two_positive_exclusions(self):
+        data = fixture()
+        data["target"].update(complete=False, aliases={"urn:alias:c": "urn:fish:c"})
+        first, second = data["sources"]
+        for src in (first, second):
+            src["complete"] = False
+        first["exclusions"] = [{"id": "urn:alias:c", "evidence": "South district, map 1, row C"}]
+        second["components"][1]["atoms"][0].update(role="represented", value=None)
+        self.assertFalse(assess(data)["partial_overlap_proven"])
+        second["exclusions"] = [{"id": "urn:fish:a", "evidence": "Annual report"}]
+        self.assertFalse(assess(data)["partial_overlap_proven"])
+        second["exclusions"][0]["locator"] = "Table 3, enhanced systems outside this series"
+        result = assess(data)
+        self.assertTrue(result["partial_overlap_proven"])
+        self.assertEqual(result["exclusive_witnesses"][first["graph"]], ["urn:fish:a"])
+        self.assertEqual(result["exclusive_witnesses"][second["graph"]], ["urn:fish:c"])
+        self.assertIsNone(result["union_value"])
+        second["exclusions"].append({"id": "urn:fish:b", "evidence": "Control table 1"})
+        result = assess(data)
+        self.assertFalse(result["partial_overlap_proven"])
+        self.assertEqual(result["coverage_status"], "unresolved")
+        self.assertTrue(any("contradicts" in issue for issue in result["issues"]))
+
+    def test_open_target_and_wrong_year(self):
+        data = fixture(False)
+        data["target"]["complete"] = False
+        self.assertEqual(assess(data)["decision"], "withhold")
+        data = fixture()
+        for src in data["sources"]:
+            src["year"] -= 1
+        self.assertEqual(assess(data)["shared_atoms"], [])
+        self.assertEqual(assess(data)["coverage_status"], "unresolved")
+
     def test_internal_duplication_graph_collision_and_precision(self):
         data = fixture()
         data["sources"][1]["components"][0]["atoms"] *= 2
