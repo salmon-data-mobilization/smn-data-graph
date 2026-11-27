@@ -154,6 +154,15 @@ A source field with documented thousands grouping can add `"source_number_format
 
 ## Test an inference from integrated packages
 
+For a blind run, the source reader sends the fingerprint of a private SHA-256 design manifest after specifying which fish or strata would have to match. Use the following commands to witness the plan before releasing any observation files for analysis. Include a byte-for-byte copy of the public receipt with each submitted export. The grader checks that copy against the original receipt and the digest received from the reader. This sequence records what was witnessed and when. The independence of the participants and observation access must also be documented.
+
+```sh
+python3 specs/source-intake/audit_study_gate.py witness reader/DESIGN.sha256 MAPPING_OPEN.json --expected-sha256 "$reader_digest"
+python3 specs/source-intake/audit_study_gate.py verify reader/DESIGN.sha256 MAPPING_OPEN.json --expected-sha256 "$reader_digest" --submission case/round1/study-gate.json
+```
+
+Repeat `--context LABEL SHA256` to bind a common rubric or vocabulary snapshot at both stages. Registration contents stay with the reader and grader. Give the export analyst the scientific design with the hidden mapping criteria removed.
+
 For a full independent review of a decision register, add `--judgment-reference reference.json` to `audit_mapping_decisions.py`. Supply an array with the original proposition (`id`, `claim`, `subject`, `predicate`, `object`) and the referee’s own `evidence_verdict`, `action`, `source_url`, `locator` and `reason`. The rubric defines the four verdicts and three actions. The check distinguishes a missing or asserted triple from a wrongly explained abstention. For example, a source that defines a field as the region of harvest contradicts a claim that it identifies natal origin. The individual fish’s actual origin remains unknown. Missing reference items and changed propositions fail the full review. Save disagreements before any repair.
 
 Use the [scientific review rubric](scientific-review-rubric.json) when testing an integrated dataset. Record the six common mapping scores and the four source-reader questions per dataset. Score the scientific analysis separately. Preserve the first export, references, judgments and later corrections under distinct hashes.
