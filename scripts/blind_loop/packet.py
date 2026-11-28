@@ -4,6 +4,7 @@
 Reads one or more librarian manifests (JSON lists of documents, each with a
 local "file" path), merges them by SHA-256, copies each document into
 <out>/docs/, and writes <out>/text/<doc_id>/page-NNN.txt for every PDF page.
+Any other document (CSV, HTML, XLSX, TXT) becomes a single page-001.txt.
 Pages whose text is much sparser than is usual for their document (usually
 scanned tables) are also rendered to <out>/pages/<doc_id>/page-NNN.png.
 Writes <out>/manifest.json and prints its SHA-256. The packet is meant to be
@@ -14,11 +15,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
+import zipfile
 
 FIELDS = ("title", "publisher", "year", "url", "rights", "collected_by", "relevance", "pages_of_interest")
 
@@ -31,6 +35,20 @@ def pdf_pages(path: Path) -> list[str]:
     out = subprocess.run(["pdftotext", "-layout", str(path), "-"], capture_output=True, text=True)
     pages = out.stdout.split("\f") if out.returncode == 0 else []
     return pages[:-1] if pages and not pages[-1].strip() else pages
+
+
+def other_text(path: Path) -> str:
+    """A non-PDF document as one page of text, extracted as check_citations.py does: HTML without tags, XLSX
+    cell text, anything else (CSV, TXT) as it is."""
+    suffix = path.suffix.lower()
+    if suffix == ".xlsx":
+        with zipfile.ZipFile(path) as z:
+            return re.sub(r"<[^>]+>", " ", " ".join(z.read(n).decode(errors="replace") for n in z.namelist()
+                                                     if n.endswith(".xml")))
+    text = path.read_text(errors="replace")
+    if suffix in (".html", ".htm"):
+        text = html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?is)<(script|style).*?</\1>", " ", text)))
+    return text
 
 
 def render(path: Path, page: int, dest: Path) -> None:
@@ -74,6 +92,11 @@ def build(manifests: list[Path], out: Path) -> dict:
                     sparse.append(n)
             d["n_pages"] = len(pages)
             d["image_only_pages"] = sparse
+        else:
+            tdir = out / "text" / d["doc_id"]
+            tdir.mkdir(parents=True, exist_ok=True)
+            (tdir / "page-001.txt").write_text(other_text(dest))
+            d["n_pages"], d["image_only_pages"] = 1, []
         d["found_by"] = sorted(set(d["found_by"]))
     manifest = {"documents": docs}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1, ensure_ascii=False))

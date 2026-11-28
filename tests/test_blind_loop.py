@@ -95,6 +95,26 @@ class CitationTest(unittest.TestCase):
             self.assertEqual(out["values"], {"exact_on_page": 1})
 
 
+packet = load("packet")
+
+
+class PacketTest(unittest.TestCase):
+    def test_non_pdf_documents_get_one_text_page(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "lib/files").mkdir(parents=True)
+            (d / "lib/files/a.csv").write_text("year,escapement\n2019,1234\n")
+            (d / "lib/files/b.html").write_text("<html><script>x()</script><p>Total &amp; 618,889</p></html>")
+            (d / "lib/m.json").write_text(json.dumps([{"file": "files/a.csv", "title": "A"},
+                                                       {"file": "files/b.html", "title": "B"}]))
+            m = packet.build([d / "lib/m.json"], d / "out")
+            self.assertEqual([x["n_pages"] for x in m["documents"]], [1, 1])
+            self.assertIn("2019,1234", (d / "out/text/D01/page-001.txt").read_text())
+            page = (d / "out/text/D02/page-001.txt").read_text()
+            self.assertIn("Total & 618,889", page)
+            self.assertNotIn("x()", page)
+
+
 pool = load("pool")
 
 
