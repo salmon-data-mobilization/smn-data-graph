@@ -6,7 +6,9 @@ local "file" path), merges them by SHA-256, copies each document into
 <out>/docs/, and writes <out>/text/<doc_id>/page-NNN.txt for every PDF page.
 Any other document (CSV, HTML, XLSX, TXT) becomes a single page-001.txt.
 Pages whose text is much sparser than is usual for their document (usually
-scanned tables) are also rendered to <out>/pages/<doc_id>/page-NNN.png.
+scanned tables), and pages of interest that carry a large embedded image (a
+table pasted in as a picture), are also rendered to
+<out>/pages/<doc_id>/page-NNN.png and listed in "rendered_pages".
 Writes <out>/manifest.json and prints its SHA-256. The packet is meant to be
 read without network access. Exit codes: 0 written, 2 missing or malformed input.
 """
@@ -22,6 +24,7 @@ import re
 import shutil
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 import zipfile
 
 FIELDS = ("title", "publisher", "year", "url", "rights", "collected_by", "relevance", "pages_of_interest")
@@ -37,14 +40,71 @@ def pdf_pages(path: Path) -> list[str]:
     return pages[:-1] if pages and not pages[-1].strip() else pages
 
 
+def image_pages(path: Path) -> set[int]:
+    """Pages with an embedded image of at least 300 by 150 pixels, such as a table pasted in as a picture."""
+    out = subprocess.run(["pdfimages", "-list", str(path)], capture_output=True, text=True)
+    pages = set()
+    for line in out.stdout.splitlines()[2:]:
+        f = line.split()
+        if len(f) > 4 and f[0].isdigit() and f[3].isdigit() and f[4].isdigit() \
+                and int(f[3]) >= 300 and int(f[4]) >= 150:
+            pages.add(int(f[0]))
+    return pages
+
+
+XL = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+REL_ID = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
+
+
+def column(ref: str) -> int:
+    n = 0
+    for ch in ref:
+        if not ch.isalpha():
+            break
+        n = n * 26 + ord(ch.upper()) - 64
+    return n
+
+
+def xlsx_text(path: Path) -> str:
+    """Each sheet as a "# sheet: NAME" line, then one tab-separated line per row, with shared strings
+    resolved and empty cells kept in place. Dates stay as Excel serial numbers."""
+    with zipfile.ZipFile(path) as z:
+        shared = []
+        if "xl/sharedStrings.xml" in z.namelist():
+            for si in ET.fromstring(z.read("xl/sharedStrings.xml")).iter(XL + "si"):
+                shared.append("".join(t.text or "" for t in si.iter(XL + "t")))
+        rels = {r.get("Id"): r.get("Target") for r in ET.fromstring(z.read("xl/_rels/workbook.xml.rels"))}
+        lines = []
+        for sheet in ET.fromstring(z.read("xl/workbook.xml")).iter(XL + "sheet"):
+            target = rels[sheet.get(REL_ID)].lstrip("/")
+            lines.append(f"# sheet: {sheet.get('name')}")
+            with z.open(target if target.startswith("xl/") else "xl/" + target) as f:
+                for _, row in ET.iterparse(f):
+                    if row.tag != XL + "row":
+                        continue
+                    cells: list[str] = []
+                    for c in row.iter(XL + "c"):
+                        v = c.find(XL + "v")
+                        if c.get("t") == "s" and v is not None:
+                            value = shared[int(v.text)]
+                        elif c.get("t") == "inlineStr":
+                            value = "".join(t.text or "" for t in c.iter(XL + "t"))
+                        else:
+                            value = v.text if v is not None and v.text else ""
+                        at = column(c.get("r", "")) - 1 if c.get("r") else len(cells)
+                        cells.extend([""] * (at - len(cells)))
+                        cells.append(value)
+                    lines.append("\t".join(cells))
+                    row.clear()
+    return "\n".join(lines) + "\n"
+
+
 def other_text(path: Path) -> str:
-    """A non-PDF document as one page of text, extracted as check_citations.py does: HTML without tags, XLSX
-    cell text, anything else (CSV, TXT) as it is."""
+    """A non-PDF document as one page of text: XLSX by sheet and row, HTML without tags, anything else
+    (CSV, TXT) as it is."""
     suffix = path.suffix.lower()
     if suffix == ".xlsx":
-        with zipfile.ZipFile(path) as z:
-            return re.sub(r"<[^>]+>", " ", " ".join(z.read(n).decode(errors="replace") for n in z.namelist()
-                                                     if n.endswith(".xml")))
+        return xlsx_text(path)
     text = path.read_text(errors="replace")
     if suffix in (".html", ".htm"):
         text = html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"(?is)<(script|style).*?</\1>", " ", text)))
@@ -82,16 +142,20 @@ def build(manifests: list[Path], out: Path) -> dict:
         if src.suffix.lower() == ".pdf":
             pages = pdf_pages(dest)
             usual = sorted(len(p) for p in pages)[len(pages) // 2] if pages else 0
-            sparse = []
+            sparse, rendered = [], []
+            pictured = image_pages(dest) & set(d.get("pages_of_interest") or [])
             for n, text in enumerate(pages, 1):
                 tdir = out / "text" / d["doc_id"]
                 tdir.mkdir(parents=True, exist_ok=True)
                 (tdir / f"page-{n:03d}.txt").write_text(text)
                 if len(text.strip()) < 0.25 * max(usual, 400):
-                    render(dest, n, out / "pages" / d["doc_id"] / f"page-{n:03d}.png")
                     sparse.append(n)
+                if n in sparse or n in pictured:
+                    render(dest, n, out / "pages" / d["doc_id"] / f"page-{n:03d}.png")
+                    rendered.append(n)
             d["n_pages"] = len(pages)
             d["image_only_pages"] = sparse
+            d["rendered_pages"] = rendered
         else:
             tdir = out / "text" / d["doc_id"]
             tdir.mkdir(parents=True, exist_ok=True)

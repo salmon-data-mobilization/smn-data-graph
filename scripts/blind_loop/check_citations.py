@@ -8,7 +8,10 @@ is on lower-cased alphanumeric tokens, so line breaks, hyphenation and
 punctuation do not matter; a near match (token similarity >= 0.85 around a
 shared four-word anchor) is reported separately. Figure values are checked the
 same way. This checks transcription, not meaning: a found quote can still be
-misread. Scanned pages without a text layer are reported as unchecked.
+misread. Scanned pages without a text layer are reported as unchecked. With
+--packet, pages are read from the packet's own text files, and a quote missing
+from a cited page that the packet rendered as an image is reported as
+"cited_page_rendered" (it needs a visual check, not a text match).
 Exit codes: 0 report written, 2 missing or malformed input.
 """
 
@@ -71,7 +74,7 @@ def find(quote: list[str], page: list[str]) -> str | None:
 
 
 RANK = ["exact_on_page", "near_on_page", "adjacent_page", "elsewhere_in_document",
-        "cited_page_has_no_text", "not_found", "no_text_layer"]
+        "cited_page_has_no_text", "cited_page_rendered", "not_found", "no_text_layer"]
 
 
 def locate_quote(text: str, pages: list[list[str]], cited: int | None) -> str:
@@ -156,8 +159,16 @@ def check(folder: Path, roots: list[Path], packet: Path | None = None) -> dict:
         if path is None:
             return None
         if doc_id not in cache:
-            cache[doc_id] = [tokens(p) for p in pages_of(path)]
+            text_dir = packet / "text" / str(doc_id) if packet is not None else None
+            if text_dir is not None and text_dir.is_dir():
+                # The packet's own page text, which is exactly what mappers and graders read.
+                cache[doc_id] = [tokens(p.read_text(errors="replace")) for p in sorted(text_dir.glob("page-*.txt"))]
+            else:
+                cache[doc_id] = [tokens(p) for p in pages_of(path)]
         return cache[doc_id]
+
+    def rendered(doc_id, page: int | None) -> bool:
+        return packet is not None and page is not None and (packet / "pages" / str(doc_id) / f"page-{page:03d}.png").is_file()
 
     quotes, values = [], []
     for c in claims.get("claims", []):
@@ -165,6 +176,8 @@ def check(folder: Path, roots: list[Path], packet: Path | None = None) -> dict:
             pages = doc_pages(ev.get("doc_id"))
             text = str(ev.get("quote", ""))
             status = "doc_missing" if pages is None else locate_quote(text, pages, cited_page(ev))
+            if status == "not_found" and rendered(ev.get("doc_id"), cited_page(ev)):
+                status = "cited_page_rendered"
             quotes.append({"claim_id": c.get("claim_id"), "doc_id": ev.get("doc_id"), "status": status})
     for f in claims.get("figures", []):
         pages = doc_pages(f.get("doc_id"))

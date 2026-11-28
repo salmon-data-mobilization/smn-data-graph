@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1] / "scripts/blind_loop"
 
@@ -113,6 +114,40 @@ class PacketTest(unittest.TestCase):
             page = (d / "out/text/D02/page-001.txt").read_text()
             self.assertIn("Total & 618,889", page)
             self.assertNotIn("x()", page)
+
+    def test_xlsx_rows_resolve_shared_strings_and_check_against_packet_text(self):
+        main = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"'
+        rel = 'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'
+        parts = {
+            "xl/workbook.xml": f'<workbook {main} {rel}><sheets><sheet name="WCVI Data" sheetId="1" r:id="rId1"/>'
+                               '</sheets></workbook>',
+            "xl/_rels/workbook.xml.rels": '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/'
+                                          'relationships"><Relationship Id="rId1" Target="worksheets/sheet1.xml"/>'
+                                          '</Relationships>',
+            "xl/sharedStrings.xml": f'<sst {main}><si><t>River</t></si><si><t>Sarita</t></si></sst>',
+            "xl/worksheets/sheet1.xml": f'<worksheet {main}><sheetData>'
+                                        '<row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1"><v>2019</v></c></row>'
+                                        '<row r="2"><c r="A2" t="s"><v>1</v></c><c r="C2"><v>1329</v></c></row>'
+                                        '</sheetData></worksheet>',
+        }
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "lib/files").mkdir(parents=True)
+            with zipfile.ZipFile(d / "lib/files/n.xlsx", "w") as z:
+                for name, xml in parts.items():
+                    z.writestr(name, xml)
+            (d / "lib/m.json").write_text(json.dumps([{"file": "files/n.xlsx", "title": "NuSEDS"}]))
+            packet.build([d / "lib/m.json"], d / "out")
+            self.assertEqual((d / "out/text/D01/page-001.txt").read_text(),
+                             "# sheet: WCVI Data\nRiver\t2019\nSarita\t\t1329\n")
+            (d / "out/pages/D01").mkdir(parents=True)
+            (d / "out/pages/D01/page-002.png").write_bytes(b"")
+            (d / "m").mkdir()
+            (d / "m/claims.json").write_text(json.dumps({"claims": [{"claim_id": "C1", "evidence": [
+                {"doc_id": "D01", "page": 1, "quote": "Sarita 1329"},
+                {"doc_id": "D01", "page": 2, "quote": "Table 1 (transcribed from image)"}]}]}))
+            out = cc.check(d / "m", [], d / "out")
+            self.assertEqual([r["status"] for r in out["quote_rows"]], ["exact_on_page", "cited_page_rendered"])
 
 
 pool = load("pool")
