@@ -1,93 +1,90 @@
-# Blind loop protocol, v2 (draft, 2026-11-27)
+# Blind loop protocol, v2.1 (2026-11-27)
 
-This replaces the single-model loop used in the November 2026 intake rounds
-under `data/intake/`. It responds to an outside review of those rounds by
-GPT-6.2 Sol and Fable 5.2. The review confirmed the arithmetic. It found that
-the rounds could not estimate an error rate or show that the added checks help
-on new data, and that no domain scientist or data custodian checked any claim.
+This protocol tests whether AI agents can read published salmon figures and tell a researcher which figure is fit for which use, with evidence. Integrating those figures naively produces wrong numbers. They come in competing editions, and they differ in how they treat jacks, effective females, origin, gross and net, expansions and overlapping aggregates.
 
-The aim is evidence a sceptical fisheries scientist would accept. A second AI
-model is a robustness check. It is not scientific sign-off.
+A second or third AI model is a robustness check. It is not scientific sign-off. Only data custodians and assessment scientists can confirm a critical claim.
 
-## 1. What changed from v1, and why
+Histories:
+- v1 was a single-model loop run in Codex, recorded in `data/intake/*-202611{26,27}`.
+- v2 round 1 is in `data/intake/crossmodel-blind-20261127/`.
+- The reviews behind this version are in `data/intake/loop-reviews/`. These folders are local and are not in git.
 
-| v1 weakness (found in review) | v2 rule |
+## 1. Why the design is what it is
+
+| Weakness found | Rule |
 |---|---|
-| Mapper and grader were the same model, so they shared blind spots. | Mapper and grader roles use at least two model families, and each grader comes from a family that did no mapping on that case. Disagreement between families sends a claim to a person. |
-| The coordinator chose each case after a non-blind search to show a known contrast. | Cases are drawn at random from a sampling frame built and hashed before any agent analyses a case. The frame scout lists every eligible case and does not screen for interest. |
-| The protocol named the expected structure of the answer ("at least one stream changes role"). | Mappers get one generic question, the same for every case. |
-| The coordinator wrote checker code before the mapper sealed. | No case-specific checker code exists before the mapper seals. Mappers work source-led, without earlier tooling. |
-| Repairs were graded on the same case and ended all-pass. | First-pass results are final for the round. A repair is only scored on new cases drawn from the frame. |
-| The rubric rewarded bookkeeping: none of the material omissions the reviewers found could fail a check. | The rubric scores materiality, competing or superseded editions, uncertainty quality, preservation of source caveats, and omissions found by other roles. |
-| Some loop agents read shared agent memory. | No role except the coordinator reads agent memory or earlier rounds. |
-| No domain person or data provider took part. | Every case ends with a claim sheet for the data custodian or an assessment scientist. Critical claims are not published until a person has answered it. |
-| Seals were local hashes in a gitignored folder. | Seals are recorded in `seals.md` with receipt times. Pushing hash-only seals to a public branch is optional and needs Brett's approval per round. |
+| **v1:** mapper and grader were the same model and shared blind spots | Mappers and graders come from at least two families, and at least one grader comes from a family that did not map |
+| **v1:** the coordinator picked each case to show a known contrast | Cases are drawn at random from a sealed sampling frame. The frame is stratified by jurisdiction and never reuses a document cluster |
+| **v1:** the protocol hinted at the answer | Every case uses the same generic question |
+| **v1:** checker code was written before the mapper sealed; repairs were graded on the same case | No case-specific checkers. First-pass results are final. A repair is scored only on new cases |
+| **v2r1:** holistic R1–R8 grades agreed at chance (κ = 0.12) | Graders label atomic claims as true, false or unsupported, and check the basis tag. Fitness decisions are graded as anonymous sets |
+| **v2r1:** graders could identify mappers. The Anthropic grader gave the Anthropic mapper 0.98, against 0.69 from the OpenAI grader | Claims from all mappers and planted items are pooled and shuffled, with identity and probabilities removed |
+| **v2r1:** retrieval was mixed up with reading. Mappers shared only a third of their documents, and one used 9 times the tokens of the other | Two librarians from different families build one frozen packet. Mappers read only the packet |
+| **v2r1:** no ground truth, and graders were only compared with each other | Planted items (true, and false of known mutation types) measure grader sensitivity and specificity. A known-answer bank comes next |
+| **v2r1:** confidence labels were degenerate, and overclaiming went unscored | Each claim carries a probability p (scored by Brier) and a basis tag: printed, computed or inferred |
+| **v2r1:** the coordinator's hand-written claim sheets anchored respondents and introduced errors | Person-queue items are generated from stable IDs and routed by the publisher of the cell. Questions are factual and forced-choice. Fitness questions go to an assessment scientist, not the custodian |
+| **v2r1:** Indigenous data authorities were invisible | The packet records `collected_by` and `rights`. Questions about data collected by Indigenous organisations go through an existing relationship, never a cold sheet |
 
 ## 2. Roles
 
-- **Coordinator** (not blind): builds the protocol, seals it, runs the draw,
-  hands out materials, assembles reports. Authors no answers and no reference
-  keys.
-- **Frame scout**: lists eligible cases from public sources against fixed
-  inclusion criteria. Does not analyse them.
-- **Mappers** (two or three, one per model family): answer the case question
-  independently. They see only the brief and case sources.
-- **Graders** (two, from different families): adjudicate every mapper's claims
-  against the sources using the sealed rubric, then compare with each other.
-- **Custodian or assessment scientist** (a person): answers the claim sheet.
-  Their answers become the human-sealed key.
+- **Coordinator** (not blind): seals the protocol, runs the draw, freezes the packets, writes the planted items, pools and scores. Writes no answers and no keys.
+- **Frame scout:** lists every eligible case against fixed criteria, without screening for interest, and records reported values.
+- **Librarians** (two, from different families): find and download documents. They don't interpret them.
+- **Mappers** (two or more families): write atomic claims and three fitness decisions per case from the packet alone.
+- **Graders** (three, one per family): first a sealed pre-key, then blind labels on the pooled items.
+- **Person** (custodian or assessment scientist): answers routed questions. Their answers become human keys, which are what judge mappers and graders.
 
 ## 3. Procedure for one round
 
-1. Write `protocol/design.md`, `protocol/mapper-brief.md` and
-   `grading/rubric.md`. Seal all three before the frame exists.
-2. The frame scout writes `frame/frame.json`. Seal it.
-3. Draw cases with a seed taken from the frame hash, and record the draw.
-4. Place each case's source list in `cases/<id>/case.md`, with the generic
-   question.
-5. Run the mappers in parallel. Seal each mapper's folder when it finishes.
-6. Run both graders over all sealed mapper outputs. Seal each grade.
-7. Compare the graders' results. Build one claim sheet per case.
-8. Write `REPORT.md`: per-case results by model family, agreement between
-   graders, omissions, cost and wall time. No aggregate accuracy claim until
-   enough cases have accumulated (§5).
-9. Send the claim sheets only with Brett's approval. Record the answers as
-   keys.
+1. Seal the design, briefs and tools.
+2. Seal the frame. Draw with `scripts/blind_loop/draw.py`.
+3. Run the librarians. Freeze each packet with `scripts/blind_loop/packet.py`, then seal.
+4. Run the mappers and the graders' pre-keys in parallel. Seal each when it finishes.
+5. Write and seal the planted items. Pool with `scripts/blind_loop/pool.py blind`, then seal.
+6. Run grader phase 2 and seal the labels.
+7. Run `pool.py score` and `scripts/blind_loop/check_citations.py`. Write the report and the person queue.
+8. Retrospective (§5).
 
-## 4. Claim sheet
+## 4. Measures
 
-One page per case, written for someone who knows the stock:
+**Graders**
+- Fleiss κ on item verdicts, overall and by case. AI labels count as a provisional reference only when κ ≥ 0.75.
+- Sensitivity and specificity on planted items.
+- Leniency toward their own family: true-rate relative to the other graders, same family against other family.
 
-- the figures in question, with locators;
-- each critical claim, and which families agree or disagree with it;
-- materiality: how much each open point would change the number a researcher
-  uses;
-- at most five yes/no or short-answer questions;
-- a line for the respondent's name, role and date.
+**Mappers**
+- Precision against the graders' majority.
+- False, unsupported and overclaim rates.
+- Brier score of p.
+- Recall of the graders' pre-key facts.
+- Fitness grades.
+- Scripted quote and value checks.
 
-## 5. Measuring over time
+**Other**
+- Discovery by each librarian.
+- Tokens and wall time per role.
+- Once human keys exist: agreement of mappers and graders with those keys. Only that agreement counts as accuracy.
 
-Keep a running ledger across rounds with these entries per case and model:
-- claims correct, wrong or unsupported;
-- material omissions;
-- false accepts (an unfit use called fit);
-- false abstentions;
-- agreement with the custodian key once it exists.
+Report rates as counts with denominators. Report intervals only once enough independent document clusters have accumulated (at least 20). Planted and known-answer rates are never pooled with natural rates.
 
-Report rates with intervals only after 20 or more cases drawn from the frame.
-Run an ablation every few rounds that compares the lean source-led workflow
-with the full checker stack on the same new cases. Keep a check only if it
-catches material errors on cases it was not built for.
+## 5. Retrospective procedure (from round 3)
 
-## 6. Lessons from the first v2 round (2026-11-27)
+1. One page, written within a day, from the scored outputs only.
+2. Check the preregistered predictions.
+3. Propose at most two changes. Each must name its evidence (a human key, a known-answer result or a planted-item result, never grader preference), the metric it should move and in which direction, and its cost.
+4. One in, one out: each new field, tool or criterion replaces an existing one. Keep at most five generic tools and no stock-specific checkers.
+5. Delete anything that has not contributed to a confirmed finding in two rounds.
+6. A reviewer from a family that did not coordinate the round signs the page.
+7. Keep the mapper brief to about one page.
 
-See `data/intake/crossmodel-blind-20261127/REPORT.md` (local data, not in git).
+Round 2 (v2.1) is a declared exception. It is a redesign, because the v2r1 measures could not detect change.
 
-- **Hide model identity before grading.** Rename mapper folders to neutral
-  labels. In the first round, the Anthropic grader scored the Anthropic mapper
-  0.98 and the OpenAI grader scored it 0.69. Graders matched on only 56% of
-  criteria.
-- **Use at least three families when possible, so no grader shares a family
-  with a mapper it grades.** When only two families are available, say so in
-  the report.
-- **Use the human key to judge the graders as well as the mappers.**
+## 6. Tools
+
+`scripts/blind_loop/`:
+- `draw.py`
+- `packet.py`
+- `pool.py` (`blind` and `score`)
+- `check_citations.py`
+
+Tests are in `tests/test_blind_loop.py`.
