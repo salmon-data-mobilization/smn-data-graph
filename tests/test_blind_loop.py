@@ -178,23 +178,50 @@ class PoolTest(unittest.TestCase):
                                            "answer_type": "choice", "choices": ["17,933", "17,993"]}]}.items():
             (self.r / "mappers" / m / "c1").mkdir(parents=True)
             (self.r / "mappers" / m / "c1" / "claims.json").write_text(json.dumps({"custodian_questions": qs}))
-        authority = {"route_by_publisher": {"Pacific Fishery Management Council": "U.S. v. Oregon TAC"}}
+        authority = {"route_by_publisher": {"Pacific Fishery Management Council": "Pacific Fishery Management Council"},
+                     "route_by_case": {"c1": "Deschutes estimators"}}
         out = json.loads(json.dumps(pool.score(self.r, self.GRADERS, authority), default=dict))
-        [d01] = out["custodian_questions_by_route"]["U.S. v. Oregon TAC"]
-        self.assertEqual((d01["asked_by"], d01["errata"], len(d01["questions"])), (2, True, 2))
+        self.assertEqual(list(out["custodian_questions_by_route"]), ["Deschutes estimators"])  # the case wins
+        d01, d02 = out["custodian_questions_by_route"]["Deschutes estimators"]
+        self.assertEqual((d01["asked_by"], sorted(q["errata"] for q in d01["questions"])), (2, [False, True]))
         self.assertEqual(d01["hold"], ["Confederated Tribes of the Warm Springs Reservation of Oregon"])
-        [d02] = out["custodian_questions_by_route"]["NOAA Fisheries"]
         self.assertEqual(d02["hold"], [])  # "National" is not "nation"
         paths = pool.sheets(out, self.r, self.r / "sheets", authority)
-        text = next(p for p in paths if "tac" in p.name).read_text()
+        sheet = self.r / "sheets/held/custodian-deschutes-estimators.md"  # no relationship named, so held
+        self.assertIn(sheet, paths)
+        text, cover = sheet.read_text(), sheet.with_suffix(".cover.md").read_text()
         self.assertIn("https://x/a.pdf#page=3", text)
-        self.assertIn("**Hold:**", text)
+        self.assertNotIn("Warm Springs Reservation of Oregon (relationship", text)  # the hold is internal
+        self.assertIn("relationship **none named**", cover)
+        self.assertLess(text.index("your own words"), text.index("Possible errors"))
         self.assertLess(text.index("Possible errors"), text.index("☐ 17,993"))
+        self.assertLess(text.index("☐ 17,993"), text.index("## Questions"))  # errata are flagged per question
+        self.assertEqual(text.count("Neither"), 1)
         self.assertIn("☐ every year in this series", text)
-        sci = (self.r / "sheets" / "assessment-scientist.md").read_text()
+        sci = (self.r / "sheets" / "assessment-scientist-c1.md").read_text()
         self.assertEqual(sci.count("Evidence cited"), 4)  # 2 contested + 2 audited, shuffled together
+        self.assertIn("☐ Partly (which part?)", sci)
         for leak in ("verdict", "unsupported", "openai/astra", "anthropic/fable"):
             self.assertNotIn(leak, sci)
+        relationship = {**authority, "relationship": {
+            "Confederated Tribes of the Warm Springs Reservation of Oregon": "(named person, programme)"}}
+        paths = pool.sheets(out, self.r, self.r / "sheets2", relationship)
+        self.assertIn(self.r / "sheets2/custodian-deschutes-estimators.md", paths)
+
+    def test_edits_and_cap(self):
+        q = [{"id": f"Q{i}", "question": f"Question {i}?", "answer_type": "yes_no", "choices": [], "errata": False}
+             for i in range(8)]
+        cells = [{"case_id": "c1", "doc_id": "D01", "page": 1, "title": "T", "url": "", "collected_by": [],
+                  "hold": [], "asked_by": 1, "questions": q}]
+        edits = {"Q0": {"id": "Q0", "action": "drop", "reason": "duplicate", "by": "steward"},
+                 "Q7": {"id": "Q7", "action": "replace", "question": "Neutral question?", "priority": 0,
+                        "reason": "leading", "by": "steward"}}
+        sheet, cover, held = pool.custodian_sheet("X", cells, {}, edits)
+        self.assertFalse(held)
+        self.assertEqual(sheet.count("☐ Yes"), pool.CAP)
+        self.assertLess(sheet.index("Neutral question?"), sheet.index("Question 1?"))
+        self.assertNotIn("Question 0?", sheet)
+        self.assertIn("2 held back for a follow-up, 1 dropped", cover)
 
     def test_holds(self):
         self.assertEqual(pool.holds(["National Marine Fisheries Service"], {}), [])

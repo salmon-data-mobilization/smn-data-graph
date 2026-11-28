@@ -9,16 +9,24 @@ coordinator-only key.json that maps neutral IDs back to their sources.
 score: read the keys, the graders' labels and pre-keys, and write metrics.
 Agreement (Fleiss kappa, raw agreement, Gwet's AC1 and specific agreement on
 'not true') is computed on natural items only. Planted items give each
-grader's sensitivity and specificity and are never pooled with natural items.
-Also: per-mapper precision, unsupported and overclaim rates and a Brier score
-against the graders' majority; each grader's leniency toward its own family,
-on contested items only; fitness grades collapsed to defensible or incorrect,
-and each mapper's fitness choice against the graders' sealed pre-key
-majority; and recall of each grader's pre-key facts. Two queues for people:
-contested critical items plus a seeded audit sample of unanimous accepts, for
-an assessment scientist; and the mappers' custodian questions, grouped by cell
-and routed through a hand-kept authority table to the organisation that holds
-the cell. With --sheets, score also writes the draft sheets.
+grader's sensitivity on negatives (false or unsupported), exact labels and
+specificity, also by mutation type, and are never pooled with natural items.
+Per mapper: precision, unsupported and overclaim rates, majority verdict by
+basis tag, and a Brier score and AUC of p against grader flags (descriptive:
+they compare p with AI votes, not with truth). Also each grader's leniency
+toward its own family, on contested items only; fitness grades collapsed to
+defensible or incorrect; each mapper's fitness choice against the graders'
+sealed pre-key majority; and recall of each grader's pre-key facts. Two
+queues for people: contested critical items plus a seeded audit sample of
+unanimous accepts, for an assessment scientist; and the mappers' custodian
+questions, grouped by cell and routed through a hand-kept authority table to
+whoever holds the cell.
+
+With --sheets, score also writes draft sheets: one per custodian route, capped
+at five questions, each with an internal cover note, and one per case for an
+assessment scientist. A route whose data involve an Indigenous organisation
+with no named relationship is written under held/. --edits applies a reviewed
+list of drops, replacements and priorities to custodian questions.
 Exit codes: 0 written, 2 missing or malformed input.
 """
 
@@ -133,8 +141,24 @@ def agency(publisher: str | None) -> str:
     return (publisher or "").split(" (")[0].split(",")[0].strip() or "unknown"
 
 
-def route(doc: dict, authority: dict) -> str:
-    return authority.get("route_by_publisher", {}).get(doc.get("publisher")) or agency(doc.get("publisher"))
+def route(case: str, doc: dict, authority: dict) -> str:
+    """Who holds a cell: the case's estimators if the table names them, else the publisher's route, else its agency."""
+    return (authority.get("route_by_case", {}).get(case)
+            or authority.get("route_by_publisher", {}).get(doc.get("publisher"))
+            or agency(doc.get("publisher")))
+
+
+def qid(case: str, text: str) -> str:
+    """A stable ID for a custodian question, so that reviewed edits survive re-scoring."""
+    return "Q" + hashlib.sha256(f"{case}|{text}".encode()).hexdigest()[:6]
+
+
+def auc_low_p(pairs: list[tuple[float, bool]]) -> float | None:
+    """Chance that a flagged item has a lower p than an unflagged one; ties count half."""
+    pos, neg = [p for p, f in pairs if f], [p for p, f in pairs if not f]
+    if not pos or not neg:
+        return None
+    return round(sum((a < b) + 0.5 * (a == b) for a in pos for b in neg) / (len(pos) * len(neg)), 3)
 
 
 def holds(orgs, authority: dict) -> list[str]:
@@ -177,6 +201,8 @@ def score(round_dir: Path, graders: dict[str, str], authority: dict | None = Non
     by_mutation = defaultdict(Counter)
     mapper = defaultdict(Counter)
     brier = defaultdict(list)
+    p_flags = defaultdict(list)
+    by_basis = defaultdict(Counter)
     lean = defaultdict(lambda: defaultdict(list))
     queue, unanimous = [], defaultdict(list)
     manifests = {c: {d["doc_id"]: d for d in json.loads((round_dir / "packet" / c / "manifest.json").read_text())["documents"]}
@@ -204,20 +230,23 @@ def score(round_dir: Path, graders: dict[str, str], authority: dict | None = Non
             rows.append(verdicts)
             case_rows[case].append(verdicts)
         m = src["model"]
+        item = items_by_case[case][iid]
         mapper[m]["items"] += 1
         mapper[m][f"majority_{maj or 'none'}"] += 1
+        by_basis[m][f"{maj or 'none'}|{item.get('basis')}"] += 1
         basis_votes = [by_g[g].get("basis_correct") for g in by_g if by_g[g].get("basis_correct") is not None]
         if basis_votes and majority([str(v) for v in basis_votes]) == "False":
             mapper[m]["overclaim"] += 1
-        if isinstance(src.get("p"), (int, float)) and maj:
-            brier[m].append((src["p"] - (1.0 if maj == "true" else 0.0)) ** 2)
         contested = len(set(verdicts)) > 1
+        if isinstance(src.get("p"), (int, float)):
+            # an item with no majority counts as not true
+            brier[m].append((src["p"] - (1.0 if maj == "true" else 0.0)) ** 2)
+            p_flags[m].append((src["p"], any(v != "true" for v in verdicts)))
         if contested:
             for g, lab in by_g.items():
                 others = [by_g[o]["verdict"] == "true" for o in by_g if o != g]
                 if others:
                     lean[g][family(m) == family(graders[g])].append((lab["verdict"] == "true") - sum(others) / len(others))
-        item = items_by_case[case][iid]
         if not (item.get("critical") or any(by_g[g].get("critical") for g in by_g)):
             continue
         docs = [manifests.get(case, {}).get(e.get("doc_id"), {}) for e in item.get("evidence") or []]
@@ -248,7 +277,10 @@ def score(round_dir: Path, graders: dict[str, str], authority: dict | None = Non
                            "majority_unsupported": rate(c["majority_unsupported"], c["items"]),
                            "no_majority": rate(c["majority_none"], c["items"]),
                            "overclaim": rate(c["overclaim"], c["items"]),
-                           "brier": round(sum(brier[m]) / len(brier[m]), 3) if brier[m] else None}
+                           "majority_by_basis": dict(sorted(by_basis[m].items())),
+                           "brier": round(sum(brier[m]) / len(brier[m]), 3) if brier[m] else None,
+                           "p_vs_any_flag": {"flagged": sum(f for _, f in p_flags[m]), "of": len(p_flags[m]),
+                                             "auc_low_p": auc_low_p(p_flags[m])}}
                        for m, c in mapper.items()},
            "leniency_on_contested_items": {g: {"same_family": mean(v[True]), "other_family": mean(v[False])}
                                            for g, v in ((g, lean[g]) for g in graders)},
@@ -292,20 +324,20 @@ def score(round_dir: Path, graders: dict[str, str], authority: dict | None = Non
         if case not in keys:
             continue
         for q in json.loads(claims.read_text()).get("custodian_questions", []):
+            text = q.get("question") or ""
             cell = cells[(case, q.get("doc_id"), q.get("page"))]
-            cell["questions"].append({k: q.get(k) for k in ("question", "answer_type", "choices")})
+            cell["questions"].append({"id": qid(case, text), "question": text, "answer_type": q.get("answer_type"),
+                                      "choices": q.get("choices") or [], "errata": bool(ERRATA.search(text))})
             cell["asked_by"].add(claims.parent.parent.name)
     by_route = defaultdict(list)
     for (case, doc_id, page), cell in cells.items():
         doc = manifests.get(case, {}).get(doc_id, {})
         orgs = doc.get("collected_by") or []
-        by_route[route(doc, authority)].append({
+        by_route[route(case, doc, authority)].append({
             "case_id": case, "doc_id": doc_id, "page": page, "title": doc.get("title"), "url": doc.get("url"),
-            "collected_by": orgs, "hold": holds(orgs, authority), "asked_by": len(cell["asked_by"]),
-            "errata": any(ERRATA.search(q["question"] or "") for q in cell["questions"]),
-            "questions": cell["questions"]})
-    out["custodian_questions_by_route"] = {r: sorted(v, key=lambda c: (not c["errata"], -c["asked_by"], c["case_id"],
-                                                                       str(c["doc_id"]), c["page"] or 0))
+            "publisher": doc.get("publisher"), "collected_by": orgs, "hold": holds(orgs, authority),
+            "asked_by": len(cell["asked_by"]), "questions": cell["questions"]})
+    out["custodian_questions_by_route"] = {r: sorted(v, key=lambda c: (c["case_id"], str(c["doc_id"]), c["page"] or 0))
                                            for r, v in sorted(by_route.items())}
     recall = defaultdict(lambda: defaultdict(lambda: [0, 0]))
     for g in graders:
@@ -323,82 +355,155 @@ def score(round_dir: Path, graders: dict[str, str], authority: dict | None = Non
     return out
 
 
+SENDER = "(sender: name, role and organisation)"
+INTRO = ("We are {sender}. We are compiling published salmon figures so that researchers use each one as its "
+         "producers intend. AI readers drafted these questions from the reports that publish these figures, and a "
+         "person checked them before sending. Each question is about a specific table cell or passage, with its page. "
+         "Answer only what you can: \"Can't say\" is a useful answer.\n\n"
+         "We will keep your answers as dated notes beside each cell, attributed to your organisation. We will name "
+         "you only if you tick the consent box. We will send you the notes we keep for these cells.")
+DECISIONS = ["Who sends this, from which organisation, and by when a reply is wanted.",
+             "Whether an answer given without consent may be kept under the organisation's name, as the sheet says.",
+             "What the recipient gets back. The sheet promises the notes kept for these cells.",
+             "Whether to offer payment or acknowledgement."]
+CAP = 5
+
+
 def answer_lines(q: dict) -> list[str]:
     if q.get("answer_type") == "yes_no":
-        return ["   ☐ Yes  ☐ No  ☐ Can't say"]
+        return ["   ☐ Yes  ☐ No  ☐ Can't say", "   If no: ______________________"]
     if q.get("answer_type") == "choice" and q.get("choices"):
-        return ["   " + "  ".join(f"☐ {c}" for c in q["choices"]) + "  ☐ Neither  ☐ Can't say"]
+        extra = [] if any(re.search(r"\b(neither|other)\b", c, re.I) for c in q["choices"]) else ["Neither"]
+        return ["   " + "  ".join(f"☐ {c}" for c in [*q["choices"], *extra, "Can't say"])]
     return ["   Answer: ______________________"]
 
 
-def sheets(scores: dict, round_dir: Path, out: Path, authority: dict | None = None, per_sheet: int = 8) -> list[Path]:
-    """Write draft sheets: one per custodian route, from the mappers' custodian questions, and one for an
-    assessment scientist, from the contested items and the audit sample. No AI verdict appears on any sheet."""
-    authority = authority or {}
-    out.mkdir(parents=True, exist_ok=True)
-    written = []
-    for target, cells in scores["custodian_questions_by_route"].items():
-        lines = [f"# Draft questions for {target}", "",
-                 "**DRAFT, NOT SENT.** Sender: (named person). Reply by: (date).", "",
-                 "We are compiling published salmon figures so that researchers use each one as its producers "
-                 "intend. These questions are about cells in your published reports. Your answers will be recorded "
-                 "as a dated note beside each cell, cited to you only if you tick the consent line.", ""]
-        held = sorted({o for c in cells for o in c["hold"]})
-        if held:
-            rel = {o: authority.get("relationship", {}).get(o) or "none named" for o in held}
-            lines += ["**Hold:** these figures were collected by or with "
-                      + "; ".join(f"{o} (relationship: {r})" for o, r in rel.items())
-                      + ". Send only through that relationship, and first ask whether and how the organisation "
-                        "wants its figures and caveats represented.", ""]
-        if not authority.get("route_by_publisher"):
-            lines += ["**Route not confirmed:** no authority table was given, so this sheet is addressed to the "
-                      "publisher's agency. A person must confirm who holds these cells.", ""]
-        n = 0
-        for i, c in enumerate(cells):
-            if i == 0 and c["errata"]:
-                lines += ["## Possible errors we noticed", ""]
-            if not c["errata"] and (i == 0 or cells[i - 1]["errata"]):
-                lines += ["## Questions", ""]
-            if i == per_sheet:
-                lines += ["## If you have time", ""]
+def slug(text: str) -> str:
+    return re.sub(r"-+", "-", "".join(ch if ch.isalnum() else "-" for ch in text)).strip("-").lower()[:80]
+
+
+def custodian_sheet(target: str, cells: list[dict], authority: dict, edits: dict) -> tuple[str, str, bool]:
+    """One route's sheet and its internal cover note. Returns (sheet, cover, held)."""
+    ranked, dropped = [], []
+    for ci, c in enumerate(cells):
+        for q in c["questions"]:
+            e = edits.get(q["id"], {})
+            if e.get("action") == "drop":
+                dropped.append((q, e))
+                continue
+            if e.get("action") == "replace":
+                q = {**q, **{k: e[k] for k in ("question", "answer_type", "choices", "errata") if k in e}}
+            default = 0 if q["errata"] else 1 if c["asked_by"] > 1 else 3 if e.get("action") == "optional" else 2
+            ranked.append((e.get("priority", default), ci, q, e))
+    ranked.sort(key=lambda t: (t[0], t[1]))
+    kept, later = ranked[:CAP], ranked[CAP:]
+    lines = [f"# Questions for {target}", "", "**DRAFT, NOT SENT.**", "", INTRO.format(sender=SENDER), "",
+             "## First, in your own words", "",
+             "Is there anything a user of these figures should know about them? ______________________", ""]
+    n = 0
+    for title, errata in (("Possible errors we noticed", True), ("Questions", False)):
+        part = [t for t in kept if t[2]["errata"] == errata]
+        if part:
+            lines += [f"## {title}", ""]
+        for ci in dict.fromkeys(t[1] for t in part):
+            c = cells[ci]
             n += 1
             lines += [f"### {n}. {c['title'] or c['doc_id']}, PDF page {c['page']}", "",
                       f"Source: {c['url']}#page={c['page']}" if c["url"] else "Source: (no URL)",
                       f"Data collected by: {', '.join(c['collected_by']) or 'not stated'}", ""]
-            for j, q in enumerate(c["questions"], 1):
-                lines += [f"{j}. {q['question']}", *answer_lines(q)]
+            for j, (_, _, q, e) in enumerate((t for t in part if t[1] == ci), 1):
+                lines += [f"{j}. {q['question']}{' (optional)' if e.get('action') == 'optional' else ''}",
+                          *answer_lines(q)]
             lines += ["", "Does your answer apply to: ☐ this cell only  ☐ every year in this series  ☐ the method", ""]
-        lines += ["## Anything else", "", "Is there anything else a user of these figures should know? "
-                  "______________________", "", "☐ You may cite my name and role with these answers.", "",
-                  "Name, role, date: ______________________", ""]
-        path = out / f"custodian-{''.join(ch if ch.isalnum() else '-' for ch in target).strip('-').lower()}.md"
-        path.write_text("\n".join(lines))
-        written.append(path)
+    lines += ["## Consent", "", "☐ You may name me, with my role, beside these answers.", "",
+              "Name, role, organisation, date: ______________________", ""]
+    held_orgs = sorted({o for c in cells for o in c["hold"]})
+    rel = {o: authority.get("relationship", {}).get(o) for o in held_orgs}
+    held = any(not r for r in rel.values())
+    cover = [f"# Cover note for {target}", "", "Internal. Not for the recipient. **Do not send** until Brett approves "
+             "the recipient and the wording.", ""]
+    if held_orgs:
+        cover += ["## Hold", "", "These figures were collected by or with:", "",
+                  *[f"- {o}: relationship {r or '**none named**'}" for o, r in rel.items()], "",
+                  "Send only through an existing relationship with each organisation, and first ask whether and how "
+                  "it wants its figures and caveats represented." + (" This sheet is held until a person names each "
+                                                                      "relationship in the authority table." if held else ""), ""]
+    cover += ["## Decisions for Brett", "", *[f"- {d}" for d in DECISIONS],
+              f"- Confirm the route ({target}) in data/intake/authority.json.", "",
+              f"## Questions: {len(kept)} on the sheet, {len(later)} held back for a follow-up, {len(dropped)} dropped", ""]
+    cover += [f"- Held back: {q['id']} {q['question']}" for _, _, q, _ in later]
+    cover += [f"- Dropped: {q['id']} {q['question']} ({e.get('reason')}; {e.get('by')})" for q, e in dropped]
+    cover += [f"- Edited ({e['action']}): {q['id']} ({e.get('reason')}; {e.get('by')})" for _, _, q, e in ranked
+              if e.get("action") in ("replace", "optional") or "priority" in e]
+    return "\n".join(lines), "\n".join(cover + [""]), held
+
+
+SCIENTIST_INTRO = ("We are {sender}. We are testing whether AI readers can tell a researcher which published salmon "
+                   "figure is fit for which use. Your judgements become the reference that the AI readers are scored "
+                   "against. This sheet covers one case. With the documents listed below, it should take about two to "
+                   "four hours.")
+
+
+def scientist_sheet(case: str, items: list[dict], round_dir: Path) -> str:
+    entry_p, man_p = round_dir / "cases" / case / "frame-entry.json", round_dir / "packet" / case / "manifest.json"
+    entry = json.loads(entry_p.read_text()) if entry_p.exists() else {}
+    docs = json.loads(man_p.read_text())["documents"] if man_p.exists() else []
+    lines = [f"# Key sheet for an assessment scientist: {entry.get('stock', case)}, {entry.get('return_year', '')}", "",
+             "**DRAFT, NOT SENT.**", "", SCIENTIST_INTRO.format(sender=SENDER), "", "## The case", "",
+             f"{entry.get('stock', case)} ({entry.get('species', '')}), return year {entry.get('return_year', '')}, "
+             f"{entry.get('jurisdiction', '')}. A researcher wants to use published spawning abundance for this stock "
+             "and year in a multi-stock analysis. The starting documents are:", "",
+             *[f"- {d.get('title')} ({d.get('publisher')}, {d.get('year')}): {d.get('locator', '')}"
+               for d in entry.get("documents", [])], "", "## The documents", "",
+             "Work from these documents only. Part 2 refers to them by ID and PDF page.", "",
+             *[f"- **{d['doc_id']}** {d.get('title')} ({d.get('publisher')}, {d.get('year') or 'n.d.'}). "
+               f"{d.get('url') or ''}" for d in docs], "", "## Part 1: your own decisions, before you read Part 2", "",
+             "For each use, give fit / fit with adjustment / unfit / abstain, the figure (document, PDF page, value) and "
+             "the conditions:", "", "- **trend** across years;",
+             "- **stock_recruit:** judge the figure as the spawner value S for its brood year. Say separately whether "
+             "matching recruits can be assembled, and what is missing (harvest, age allocation, cohort coverage);",
+             "- **regional_sum** with neighbouring stocks.", "",
+             "Then list up to five things a researcher must know before using this figure.", "",
+             "## Part 2: statements to judge", "",
+             "AI readers wrote these statements, and some are wrong. You will not see how the AI graders judged them.", ""]
+    for it in items:
+        lines += [f"**{it['item_id']}.** {it['statement']}", "", f"Evidence cited: {'; '.join(it['evidence'])}", "",
+                  "☐ True  ☐ False  ☐ Partly (which part?)  ☐ Not established by the documents  ☐ Can't say", "",
+                  "Note, with document and page: ______________________", ""]
+    return "\n".join(lines)
+
+
+def sheets(scores: dict, round_dir: Path, out: Path, authority: dict | None = None,
+           edits: dict | None = None) -> list[Path]:
+    """Write the draft sheets for people. No AI verdict appears on any of them. A held route goes under held/."""
+    authority, edits = authority or {}, {e["id"]: e for e in (edits or {}).get("edits", [])}
+    written = []
+    for target, cells in scores["custodian_questions_by_route"].items():
+        sheet, cover, held = custodian_sheet(target, cells, authority, edits)
+        folder = out / "held" if held else out
+        folder.mkdir(parents=True, exist_ok=True)
+        for name, text in ((f"custodian-{slug(target)}.md", sheet), (f"custodian-{slug(target)}.cover.md", cover)):
+            (folder / name).write_text(text)
+            written.append(folder / name)
     items = scores["scientist_queue"] + scores["audit_sample"]
-    random.Random(int(hashlib.sha256(json.dumps(sorted(i["item_id"] for i in items)).encode()).hexdigest()[:16],
-                      16)).shuffle(items)
-    lines = ["# Draft key sheet for an assessment scientist", "",
-             "**DRAFT, NOT SENT.** Reviewer: (named person). Packet: (location).", "",
-             "Work from the documents in the packet. Do Part 1 for a case before you read its Part 2. The statements "
-             "in Part 2 come from AI readers, and some are wrong. You will not see how the AI graders judged them.", "",
-             "## Part 1: your own decisions", "",
-             "For each case, from the packet alone:", "",
-             "- **trend, stock_recruit, regional_sum:** fit / fit with adjustment / unfit / abstain, the figure "
-             "(document, PDF page, value) and the conditions. For stock_recruit, judge the figure as the spawner "
-             "value S for its brood year, and note separately whether matching recruits can be assembled.",
-             "- **Must-know facts:** up to five things a researcher must know before using this figure.", ""]
-    lines += [f"- {case}" for case in sorted({i["case_id"] for i in items} | {s["case_id"] for s in scores.get(
-        "prekey_fitness_splits", [])})]
-    lines += ["", "## Part 2: statements to judge", ""]
+    cover = ["# Cover note for the assessment-scientist sheets", "",
+             "Internal. Not for the recipient. **Do not send** until Brett approves the recipient.", "",
+             "## Decisions for Brett", "", "- Who sends these, and to whom: one case per scientist, matched by region.",
+             "- Whether to offer payment or acknowledgement for two to four hours of work.",
+             "- How the scientist receives the documents (the frozen packet folder for the case).", "",
+             "## Items per case (internal: the scientist must not see which are contested)", ""]
+    out.mkdir(parents=True, exist_ok=True)
     for case in sorted({i["case_id"] for i in items}):
-        lines += [f"### {case}", ""]
-        for it in (i for i in items if i["case_id"] == case):
-            lines += [f"**{it['item_id']}.** {it['statement']}", "", f"Evidence cited: {'; '.join(it['evidence'])}", "",
-                      "☐ True  ☐ False  ☐ Not established by the documents  ☐ Can't say", "",
-                      "Note (document and page): ______________________", ""]
-    path = out / "assessment-scientist.md"
-    path.write_text("\n".join(lines))
-    written.append(path)
+        mine = [i for i in items if i["case_id"] == case]
+        random.Random(int(hashlib.sha256(f"sheet:{case}".encode()).hexdigest()[:16], 16)).shuffle(mine)
+        path = out / f"assessment-scientist-{case}.md"
+        path.write_text(scientist_sheet(case, mine, round_dir))
+        written.append(path)
+        flagged = {i["item_id"] for i in scores["scientist_queue"]}
+        cover += [f"- {case}: {sum(i['item_id'] in flagged for i in mine)} flagged by a grader, "
+                  f"{sum(i['item_id'] not in flagged for i in mine)} drawn from unanimous accepts"]
+    (out / "assessment-scientist.cover.md").write_text("\n".join(cover + [""]))
+    written.append(out / "assessment-scientist.cover.md")
     return written
 
 
@@ -415,6 +520,7 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--grader", action="append", required=True, metavar="LABEL=MODEL")
     s.add_argument("--authority", type=Path, help="hand-kept authority table (routes, Indigenous organisations)")
     s.add_argument("--sheets", type=Path, help="also write the draft sheets here")
+    s.add_argument("--edits", type=Path, help="reviewed edits to custodian questions (drop, replace, optional, priority)")
     a = p.parse_args(argv)
     try:
         if a.cmd == "blind":
@@ -425,7 +531,8 @@ def main(argv: list[str] | None = None) -> int:
             authority = json.loads(a.authority.read_text()) if a.authority else {}
             scores = json.loads(json.dumps(score(a.round_dir, graders, authority), default=dict))
             if a.sheets:
-                sheets(scores, a.round_dir, a.sheets, authority)
+                edits = json.loads(a.edits.read_text()) if a.edits else None
+                sheets(scores, a.round_dir, a.sheets, authority, edits)
             print(json.dumps(scores, indent=1, ensure_ascii=False))
     except (OSError, json.JSONDecodeError, KeyError) as e:
         print(f"input error: {e!r}", file=sys.stderr)
