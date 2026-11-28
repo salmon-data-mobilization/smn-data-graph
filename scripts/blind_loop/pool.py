@@ -174,6 +174,7 @@ def score(round_dir: Path, graders: dict[str, str], authority: dict | None = Non
                 fit_grades[(case, fg["set_id"], fg["use"])][g] = fg["grade"]
     rows, case_rows = [], defaultdict(list)
     planted = {g: Counter() for g in graders}
+    by_mutation = defaultdict(Counter)
     mapper = defaultdict(Counter)
     brier = defaultdict(list)
     lean = defaultdict(lambda: defaultdict(list))
@@ -187,13 +188,17 @@ def score(round_dir: Path, graders: dict[str, str], authority: dict | None = Non
         verdicts = [by_g[g]["verdict"] for g in graders if g in by_g]
         maj = majority(verdicts)
         if src["source"] == "planted":
+            negative = src["truth"] != "true"  # false or unsupported
             for g, lab in by_g.items():
                 caught = lab["verdict"] != "true"
-                planted[g]["false_items" if src["truth"] == "false" else "true_items"] += 1
-                if src["truth"] == "false" and caught:
-                    planted[g]["false_caught"] += 1
-                if src["truth"] == "true" and not caught:
-                    planted[g]["true_accepted"] += 1
+                planted[g]["negative_items" if negative else "true_items"] += 1
+                if negative:
+                    planted[g]["negative_caught"] += caught
+                    planted[g]["negative_exact"] += lab["verdict"] == src["truth"]
+                    by_mutation[src.get("mutation") or "unstated"]["labels"] += 1
+                    by_mutation[src.get("mutation") or "unstated"]["caught"] += caught
+                else:
+                    planted[g]["true_accepted"] += not caught
             continue
         if len(verdicts) == len(graders):
             rows.append(verdicts)
@@ -232,9 +237,11 @@ def score(round_dir: Path, graders: dict[str, str], authority: dict | None = Non
     out = {"graders": graders,
            "agreement_natural": agreement(rows),
            "agreement_natural_by_case": {c: agreement(r) for c, r in sorted(case_rows.items())},
-           "planted": {g: {"sensitivity": rate(c["false_caught"], c["false_items"]),
+           "planted": {g: {"sensitivity": rate(c["negative_caught"], c["negative_items"]),
+                           "exact_on_negatives": rate(c["negative_exact"], c["negative_items"]),
                            "specificity": rate(c["true_accepted"], c["true_items"])}
                        for g, c in planted.items()},
+           "planted_by_mutation": {m: rate(c["caught"], c["labels"]) for m, c in sorted(by_mutation.items())},
            "mappers": {m: {"items": c["items"],
                            "precision_majority_true": rate(c["majority_true"], c["items"]),
                            "majority_false": rate(c["majority_false"], c["items"]),

@@ -110,7 +110,9 @@ class PoolTest(unittest.TestCase):
         for tag in ("openai", "anthropic"):
             (self.r / f"{tag}.json").write_text(json.dumps(claims(tag)))
         (self.r / "planted.json").write_text(json.dumps([
-            {"statement": "planted true", "truth": "true"}, {"statement": "planted false", "truth": "false"}]))
+            {"statement": "planted true", "truth": "true"},
+            {"statement": "planted false", "truth": "false", "mutation": "wrong column", "reason": "r"},
+            {"statement": "planted bare", "truth": "unsupported", "mutation": "scope transfer"}]))
         (self.r / "packet/c1").mkdir(parents=True)
         (self.r / "packet/c1/manifest.json").write_text(json.dumps({"documents": [{"doc_id": "D01", "publisher": "ADF&G"}]}))
         pool.blind("c1", {"openai/astra": self.r / "openai.json", "anthropic/fable": self.r / "anthropic.json"},
@@ -123,9 +125,10 @@ class PoolTest(unittest.TestCase):
 
     def test_blind_strips_identity_and_probability(self):
         text = (self.r / "pool/c1/items.json").read_text() + (self.r / "pool/c1/fitness.json").read_text()
-        self.assertEqual(len(self.items), 6)
-        for leak in ("astra", "fable", "claim_id", '"p"', "planted", "truth"):
-            self.assertNotIn(leak, text.replace("planted true", "").replace("planted false", ""))
+        self.assertEqual(len(self.items), 7)
+        for leak in ("astra", "fable", "claim_id", '"p"', "planted", "truth", "mutation", "reason"):
+            self.assertNotIn(leak, text.replace("planted true", "").replace("planted false", "").replace(
+                "planted bare", ""))
 
     GRADERS = {"a": "openai/sol", "b": "google/gemini", "c": "anthropic/opus"}
 
@@ -136,7 +139,7 @@ class PoolTest(unittest.TestCase):
         (self.r / "grading" / g / "c1.labels.json").write_text(json.dumps({"items": items}))
 
     def label_all(self):
-        honest = lambda src, it: "false" if src.get("truth") == "false" else "true"
+        honest = lambda src, it: src.get("truth", "true")
         self.label("a", honest)
         self.label("b", honest)
         self.label("c", lambda src, it: "unsupported" if src.get("model") == "openai/astra" else honest(src, it))
@@ -144,8 +147,10 @@ class PoolTest(unittest.TestCase):
     def test_score_planted_leniency_and_queues(self):
         self.label_all()
         out = pool.score(self.r, self.GRADERS)
-        self.assertEqual(out["planted"]["a"]["sensitivity"]["rate"], 1.0)
+        self.assertEqual(out["planted"]["a"]["sensitivity"], {"n": 2, "of": 2, "rate": 1.0})  # false + unsupported
+        self.assertEqual(out["planted"]["a"]["exact_on_negatives"]["n"], 2)
         self.assertEqual(out["planted"]["c"]["specificity"]["rate"], 1.0)
+        self.assertEqual(out["planted_by_mutation"]["scope transfer"], {"n": 3, "of": 3, "rate": 1.0})
         self.assertEqual(out["agreement_natural"]["items"], 4)  # planted items are never pooled in
         self.assertLess(out["agreement_natural"]["fleiss_kappa"], 1)
         self.assertEqual(out["mappers"]["openai/astra"]["precision_majority_true"]["rate"], 1.0)
