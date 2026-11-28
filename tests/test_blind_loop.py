@@ -137,6 +137,18 @@ class PoolTest(unittest.TestCase):
         self.assertEqual(len(out["person_queue_by_publisher"]["ADF&G"]), 2)
         self.assertLess(out["fleiss_kappa_all"], 1)
 
+    def test_sheets_route_by_publisher_and_hold_indigenous_data(self):
+        manifest = {"documents": [{"doc_id": "D01", "publisher": "ADF&G", "url": "https://x/a.pdf",
+                                   "collected_by": ["Confederated Tribes of Warm Springs"]}]}
+        (self.r / "packet/c1/manifest.json").write_text(json.dumps(manifest))
+        scores = {"person_queue_by_publisher": {"ADF&G": [
+            {"case_id": "c1", "doc_id": "D01", "page": 3, "statement": "s", "verdicts": {"a": "true", "b": "false"}}]}}
+        [path] = pool.sheets(scores, self.r, self.r / "sheets")
+        text = path.read_text()
+        self.assertIn("https://x/a.pdf#page=3", text)
+        self.assertIn("**Hold:**", text)
+        self.assertNotIn("verdict", text)
+
     def test_fleiss_perfect_and_chance(self):
         self.assertEqual(pool.fleiss([["true"] * 3, ["false"] * 3]), 1.0)
 

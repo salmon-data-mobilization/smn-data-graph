@@ -107,8 +107,9 @@ def locate(quote: list[str], pages: list[list[str]], cited: int | None) -> str:
 
 
 def cited_page(item: dict) -> int | None:
-    if isinstance(item.get("pdf_page"), int):
-        return item["pdf_page"]
+    for field in ("pdf_page", "page"):
+        if isinstance(item.get(field), int):
+            return item[field]
     m = PAGE.search(str(item.get("locator", "")))
     return int(m.group(1)) if m else None
 
@@ -131,11 +132,15 @@ def by_hash(dirs: list[Path]) -> dict[str, Path]:
     return index
 
 
-def check(folder: Path, roots: list[Path]) -> dict:
+def check(folder: Path, roots: list[Path], packet: Path | None = None) -> dict:
     claims = json.loads((folder / "claims.json").read_text())
     files: dict[str, Path | None] = {}
     hashes: dict[str, Path] | None = None
-    for doc in claims.get("documents", []):
+    documents = claims.get("documents", [])
+    if packet is not None:
+        documents = json.loads((packet / "manifest.json").read_text())["documents"]
+        roots = [packet, *roots]
+    for doc in documents:
         rel = doc.get("file")
         cands = [r / rel for r in [folder, *roots] if rel] if rel else []
         path = next((c for c in cands if c.is_file()), None)
@@ -189,9 +194,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("folder", type=Path, help="mapper case folder containing claims.json")
     p.add_argument("--root", type=Path, action="append", default=[],
                    help="extra folder that document 'file' paths may be relative to (repeatable)")
+    p.add_argument("--packet", type=Path, help="frozen case packet whose manifest.json lists the documents")
     a = p.parse_args(argv)
     try:
-        print(json.dumps(check(a.folder, a.root), indent=1))
+        print(json.dumps(check(a.folder, a.root, a.packet), indent=1))
     except (OSError, json.JSONDecodeError) as e:
         print(f"input error: {e}", file=sys.stderr)
         return 2

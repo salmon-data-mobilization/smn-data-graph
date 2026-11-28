@@ -13,6 +13,8 @@ Brier score against the graders' majority; leniency of each grader toward
 mappers of its own family; fitness grades; recall of each grader's pre-key
 facts; and the queue of items that need a person, grouped by the publisher of
 the cited document. Planted-item rates are reported apart from natural ones.
+With --sheets, score also writes one short draft claim sheet per publisher,
+holding any sheet that concerns data collected by an Indigenous organisation.
 Exit codes: 0 written, 2 missing or malformed input.
 """
 
@@ -204,6 +206,47 @@ def score(round_dir: Path, graders: dict[str, str]) -> dict:
     return out
 
 
+INDIGENOUS = ("tribe", "tribal", "nation", "first nation", "indian", "band", "inter-tribal", "intertribal",
+              "critfc", "nwifc", "lisims", "gitanyow", "gitksan", "confederated", "native")
+
+
+def sheets(scores: dict, round_dir: Path, out: Path, per_sheet: int = 5) -> list[Path]:
+    """Write one short draft claim sheet per publisher from the scored person queue."""
+    out.mkdir(parents=True, exist_ok=True)
+    written = []
+    manifests = {}
+    for publisher, queue in sorted(scores["person_queue_by_publisher"].items()):
+        rows = sorted(queue, key=lambda q: (len(set(q["verdicts"].values())) == 1, q["case_id"]))[:per_sheet]
+        lines = [f"# Draft questions for {publisher}", "",
+                 "**DRAFT, NOT SENT.** Sender: (named person). Reply by: (date). "
+                 "Your answers will be recorded as a dated, citable key next to the source cell; "
+                 "tick the consent line if we may cite your name and role.", ""]
+        relationship = False
+        for n, q in enumerate(rows, 1):
+            m = manifests.setdefault(q["case_id"], {d["doc_id"]: d for d in json.loads(
+                (round_dir / "packet" / q["case_id"] / "manifest.json").read_text())["documents"]})
+            doc = m.get(q["doc_id"], {})
+            collected = ", ".join(doc.get("collected_by") or []) or "not stated"
+            if any(k in collected.lower() for k in INDIGENOUS):
+                relationship = True
+            url = doc.get("url", "")
+            lines += [f"## {n}. {doc.get('title', q['doc_id'])}, PDF page {q['page']}", "",
+                      f"Source: {url}#page={q['page']}" if url else "Source: (no URL)",
+                      f"Data collected by: {collected}", "",
+                      f"> {q['statement']}", "",
+                      "Is this statement correct as written?  ☐ Yes  ☐ No  ☐ Partly  ☐ Can't say", "",
+                      "If no or partly, what is correct? ______________________", ""]
+        if relationship:
+            lines.insert(4, "**Hold:** at least one item concerns data collected by an Indigenous organisation. "
+                            "Route through an existing relationship with that organisation, not as a cold request.\n")
+        lines += ["☐ You may cite my name and role with these answers.", "",
+                  "Name, role, date: ______________________", ""]
+        path = out / f"{''.join(c if c.isalnum() else '-' for c in publisher).strip('-').lower()}.md"
+        path.write_text("\n".join(lines))
+        written.append(path)
+    return written
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -215,6 +258,7 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("score")
     s.add_argument("round_dir", type=Path)
     s.add_argument("--grader", action="append", required=True, metavar="LABEL=MODEL")
+    s.add_argument("--sheets", type=Path, help="also write draft claim sheets, one per publisher, here")
     a = p.parse_args(argv)
     try:
         if a.cmd == "blind":
@@ -222,7 +266,10 @@ def main(argv: list[str] | None = None) -> int:
             blind(a.case, mappers, a.planted, a.round_dir / "pool" / a.case, a.round_dir / "coordinator/keys")
         else:
             graders = dict(g.split("=", 1) for g in a.grader)
-            print(json.dumps(score(a.round_dir, graders), indent=1, default=dict))
+            scores = json.loads(json.dumps(score(a.round_dir, graders), default=dict))
+            if a.sheets:
+                sheets(scores, a.round_dir, a.sheets)
+            print(json.dumps(scores, indent=1))
     except (OSError, json.JSONDecodeError, KeyError) as e:
         print(f"input error: {e!r}", file=sys.stderr)
         return 2
