@@ -1,4 +1,4 @@
-# Blind loop protocol, v2.2 (2026-11-27)
+# Blind loop protocol, v2.3 (2026-11-27)
 
 This protocol tests whether AI agents can read published salmon figures and tell a researcher which figure is fit for which use, with evidence. Integrating those figures naively produces wrong numbers. They come in competing editions, and they differ in how they treat jacks, effective females, origin, gross and net, expansions and overlapping aggregates.
 
@@ -30,6 +30,7 @@ These folders are local and are not in git.
 | **v2r2:** every planted false item could be refuted from its own page, and plants were shorter than real items | Plants are near misses that need page context or a second document. Their lengths follow the distribution of natural items. A verifier from another family checks every label |
 | **v2r2:** graders split on whether an inference counts as true (specific agreement on "not true" 0.39) | Graders judge the whole item: false if the packet contradicts a substantive clause, otherwise unsupported if a substantive clause is not established. A warranted inference from packet evidence can be true |
 | **v2r2:** stock_recruit was ambiguous, and fitness grades agreed at chance | stock_recruit judges the spawner value S, with the recruit status and any missing harvest, age allocation or cohort coverage stated. Grades are defensible or incorrect |
+| **v2r3:** planted sensitivity and the fitness choice were at their ceiling for a second round | Plants become an operational check with positive controls. Fitness becomes a stated estimate (estimand, value, units, cited inputs, a scriptable adjustment, or a bound), which graders compute on their own in the pre-key |
 | **v2r2:** sheets asked custodians to endorse AI inferences, and routed by the first document's publisher | Custodian sheets come from the mappers' factual questions, at most five per sheet. They are routed through a hand-kept authority table, by case where the table says so, with a series-level answer option. A separate sheet, one case each, goes to an assessment scientist |
 
 ## 2. Roles
@@ -45,7 +46,7 @@ These folders are local and are not in git.
   - *custodians* answer factual questions about their cells;
   - an *assessment scientist* records their own decisions on one case, then judges the flagged items and a random sample of unanimous accepts.
 
-  Their answers become the human keys, which are what judge mappers and graders.
+  Their answers are attached to graph nodes as context. No step waits for them, and they are not an answer key (v2.3).
 
 ## 3. Procedure for one round
 
@@ -84,7 +85,7 @@ All rates are counts with denominators.
 **Other:**
 - discovery by each librarian;
 - tokens and wall time per role, including the coordinator's;
-- once human keys exist, agreement of mappers and graders with those keys. Only that agreement counts as accuracy.
+- the outside-reference tests of section 7. Agreement between models is never reported as accuracy.
 
 Report intervals only once there are 20 or more independent document clusters. Planted and known-answer rates are never pooled with natural rates.
 
@@ -93,11 +94,11 @@ Report intervals only once there are 20 or more independent document clusters. P
 1. One page, written within a day, from the scored outputs only. The coordinator seals a draft before reading any review.
 2. Check the preregistered predictions.
 3. Propose at most two changes. Each must name:
-   - its evidence: a human key, a known-answer result, a planted-item result, or a reliability failure under rule 8. Grader preference never counts;
+   - its evidence: an outside-reference result (section 7), a known-answer result, a planted-item result, or a reliability failure under rule 8. Grader preference never counts;
    - the metric it should move, and in which direction;
    - its cost.
 4. One in, one out: each new field, tool or criterion replaces an existing one. Keep at most five generic tools and no stock-specific checkers.
-5. Delete anything that has not contributed to a confirmed finding in two rounds. Until human keys exist, "contributed" means changed a reported number, a routing decision or a person-queue item.
+5. Delete anything that has not contributed to a confirmed finding in two rounds. "Contributed" means changed a reported number, a routing decision or a person-queue item.
 6. A reviewer from a family that did not coordinate the round signs the page.
 7. Keep the mapper brief to about one page.
 8. A reliability failure on sealed outputs may justify repairing a measurement: clarifying a definition, or removing a measure. A reliability failure means κ below 0.40, specific agreement on "not true" below 0.50, or a measure at its ceiling or floor. The repair needs a bridge: the old and new versions reported on the same sealed cases. It never justifies:
@@ -121,40 +122,42 @@ Rules 8–10 were accepted, with the amendments above, by the round 2 signer (op
 
 Tests are in `tests/test_blind_loop.py`. The authority table, `data/intake/authority.json`, is kept by a person. Each round's edits to custodian questions are in its `coordinator/sheet-edits.json`.
 
-## 7. Graduation gate for the IYS High Seas Expeditions graph (proposed; Brett decides)
+## 7. Graduation gate: outside references, no human key (v2.3)
 
-The project intends to apply this method to a data graph for the International Year of the Salmon High Seas Expeditions (2019, 2020 and 2022), aimed at the program's main hypotheses. It moves there when, against human keys on at least 20 independent document clusters:
+Brett set the design principle on 2026-11-27: no human in the loop and no human answer key. People are fallible too, and the loop exists to gather evidence that sits outside anyone's memory. This gate replaces the human-key gate of v2.2. It was reviewed in round 3 by openai/gpt-6.2-sol (signed with amendments) and google-gemini-4-carbon, and their amendments are applied.
 
-- **Mappers:**
-  - precision on critical claims is at least 0.95, with a one-sided 95% lower bound of at least 0.90;
-  - recall of the assessment scientist's must-know facts is at least 0.85;
-  - no decision-changing error goes unflagged. This is tested on blinded, analyst-keyed outputs (an assembled trend series, a brood pairing and a regional subtotal), not inferred from item accuracy.
-- **Graders:**
-  - the majority agrees with the keys on at least 0.85 of items;
-  - sensitivity on realistic plants is at least 0.80;
-  - at least 0.90 of the items the humans judged false or unfit were flagged or queued.
-- **Providers:**
-  - custodians from at least three organisations have answered;
-  - median time per sheet is 15 minutes or less;
-  - no objection to wording is unresolved.
+### Principle
 
-  Indigenous organisations take part only through their own processes, and the gate sets no response quota for them.
+Agreement between models cannot find an error that every model shares, for example a wrong figure that every source repeats. So each test below uses a reference that comes from outside the models but needs no person in the loop: planted mutations, published results, later revisions, raw data and arithmetic.
 
-Then a keyed IYS pilot, across all three expedition years and the main data types, must reproduce at least two hypothesis-facing results within tolerances set by an analyst.
+### Tests
 
-**What transfers:**
-- frozen packets and seals;
-- atomic claims with exact locators;
-- scripted quote and value checks;
-- edition handling;
-- holds;
-- the split between custodian and scientist routing.
+| ID | Test | Reference | Pass |
+|---|---|---|---|
+| G1 | Plant check (operational, not a graduation criterion) | Verified negative plants and verified true plants (positive controls) | Any miss marks the grader broken; specificity is reported with sensitivity |
+| G2 | Reproduce published results | Derived results that the sources publish (totals, trends, CPUE, stock proportions). The targets and their duplicates are sealed away from the mappers, and scripts recompute them from versioned raw records | ≥ 0.80 reproduced within a tolerance based on rounding or on the effect on decisions, or the difference explained with a citation. Cited discrepancies are counted separately. 0 silent mismatches. Matching a publication can reproduce its error |
+| G3 | Hidden revisions | Documents from before a known erratum, revision or supersession, with the later document withheld, plus matched controls that were never revised. Revisions with no earlier warning sign are excluded | ≥ 0.70 of the later-corrected issues flagged as contested, superseded or unfit, with the false-flag rate on controls reported |
+| G4 | Citation integrity | Scripted check against the packet's own text, plus a visual check of table cells and rendered image pages | 100% of quotes resolved at the cited page. Unresolved and fabricated are reported separately. 0 fabricated documents |
+| G5 | Stability | A second independent run (other librarian and mapper families, another packet build, another seed) | ≥ 0.85 same estimand and value per cell, within tolerance; every difference flagged. This test detects instability, never a stable error |
+| G7 | Scripted invariants | Rules that hold whatever any model says: no join fan-out on cruise, station, event and specimen keys; every zero-catch haul kept; specimen counts no greater than catch; stock probabilities summing to 1; effort and swept area positive; positions, depths, temperatures and salinities inside physical bounds | 0 violations, or each one explained with a citation |
+| G6 | Defect escape | A fixed, independent audit of critical outputs, omissions and unanimous accepts, with its search effort sealed in advance | 0 errors that change a headline result. Zero finds without stated search effort means nothing |
 
-**What does not transfer:** stock-year framing and the three escapement uses. Expedition data turn on:
-- cruise, station, event and specimen keys;
-- standardising gear, effort and catchability;
-- subsampling expansions;
-- genetic stock identification baselines and probabilistic assignments;
-- oceanographic and plankton joins.
+Before the gate certifies any graph output, it seals the denominators, the minimum coverage by independent cluster, the tolerances, and hard stops for any silent critical failure. Thresholds are never met by abstaining or by flagging everything.
 
-The CARE principles still apply, because genetic stock identification assigns fish to the rivers of Indigenous nations.
+### What the gate cannot show
+
+- Errors that all sources share and that no published result, revision or raw data exposes.
+- Facts that exist only in a person's memory. The graph records these as "not established by the documents" and attaches the open question to the node. Nobody waits for an answer.
+
+### What stays
+
+- CARE and Indigenous data holds. These concern rights, not accuracy, so the hold rule stays unchanged.
+- Custodian questions as an output attached to graph nodes, not as a gate.
+
+### What goes
+
+- The assessment-scientist sheets and the human-key thresholds in v2.2 §7.
+
+### Route to the IYS High Seas Expeditions graph
+
+Round 3 (spawner abundance) is the last escapement round. Round 4 is an IYS pilot that uses the same machinery on the 2019, 2020 and 2022 expeditions. G2 uses the published expedition results as the outside reference. The hypotheses come from the expedition plans and reports, not from model memory.
