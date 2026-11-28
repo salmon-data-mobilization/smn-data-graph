@@ -50,6 +50,16 @@ class DrawTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             draw.draw(frame, "r2", ["a-1"], 2)
 
+    def test_case_file_hides_reported_values(self):
+        case = {"case_id": "x-1", "stock": "X coho", "species": "Coho salmon", "return_year": 2021,
+                "jurisdiction": "Oregon", "documents": [{"title": "T", "publisher": "P", "year": 2022, "url": "u",
+                                                         "locator": "Table 6.", "reported_value": 6354,
+                                                         "reported_label": "wild"}]}
+        text = draw.case_file(case) + json.dumps(draw.shown(case))
+        self.assertNotIn("6354", text)
+        self.assertNotIn("wild", text)
+        self.assertIn("The figure appears at: Table 6.\n", draw.case_file(case))
+
 
 class CitationTest(unittest.TestCase):
     PAGES = [cc.tokens("Title page"), cc.tokens("The escapement of 1,234 large fish was\n"
@@ -117,37 +127,75 @@ class PoolTest(unittest.TestCase):
         for leak in ("astra", "fable", "claim_id", '"p"', "planted", "truth"):
             self.assertNotIn(leak, text.replace("planted true", "").replace("planted false", ""))
 
-    def test_score_planted_leniency_and_queue(self):
-        def label(g, verdict_for):
-            items = [{"item_id": i["item_id"], "verdict": verdict_for(self.key["items"][i["item_id"]], i)}
-                     for i in self.items]
-            (self.r / "grading" / g).mkdir(parents=True, exist_ok=True)
-            (self.r / "grading" / g / "c1.labels.json").write_text(json.dumps({"items": items}))
+    GRADERS = {"a": "openai/sol", "b": "google/gemini", "c": "anthropic/opus"}
 
+    def label(self, g, verdict_for):
+        items = [{"item_id": i["item_id"], "verdict": verdict_for(self.key["items"][i["item_id"]], i)}
+                 for i in self.items]
+        (self.r / "grading" / g).mkdir(parents=True, exist_ok=True)
+        (self.r / "grading" / g / "c1.labels.json").write_text(json.dumps({"items": items}))
+
+    def label_all(self):
         honest = lambda src, it: "false" if src.get("truth") == "false" else "true"
-        label("a", honest)
-        label("b", honest)
-        label("c", lambda src, it: "unsupported" if src.get("model") == "openai/astra" else honest(src, it))
-        out = pool.score(self.r, {"a": "openai/sol", "b": "google/gemini", "c": "anthropic/opus"})
+        self.label("a", honest)
+        self.label("b", honest)
+        self.label("c", lambda src, it: "unsupported" if src.get("model") == "openai/astra" else honest(src, it))
+
+    def test_score_planted_leniency_and_queues(self):
+        self.label_all()
+        out = pool.score(self.r, self.GRADERS)
         self.assertEqual(out["planted"]["a"]["sensitivity"]["rate"], 1.0)
         self.assertEqual(out["planted"]["c"]["specificity"]["rate"], 1.0)
+        self.assertEqual(out["agreement_natural"]["items"], 4)  # planted items are never pooled in
+        self.assertLess(out["agreement_natural"]["fleiss_kappa"], 1)
         self.assertEqual(out["mappers"]["openai/astra"]["precision_majority_true"]["rate"], 1.0)
-        self.assertLess(out["leniency_true_rate_minus_other_graders"]["c"]["other_family"], 0)
-        self.assertEqual(out["leniency_true_rate_minus_other_graders"]["c"]["same_family"], 0)
-        self.assertEqual(len(out["person_queue_by_publisher"]["ADF&G"]), 2)
-        self.assertLess(out["fleiss_kappa_all"], 1)
+        lean = out["leniency_on_contested_items"]
+        self.assertLess(lean["c"]["other_family"]["mean"], 0)
+        self.assertEqual(lean["c"]["same_family"], {"items": 0, "mean": None})  # not estimable, not zero
+        self.assertEqual(lean["a"]["same_family"]["mean"], 0.5)
+        self.assertEqual(len(out["scientist_queue"]), 2)
+        self.assertEqual(len(out["audit_sample"]), 2)
 
-    def test_sheets_route_by_publisher_and_hold_indigenous_data(self):
-        manifest = {"documents": [{"doc_id": "D01", "publisher": "ADF&G", "url": "https://x/a.pdf",
-                                   "collected_by": ["Confederated Tribes of Warm Springs"]}]}
+    def test_custodian_questions_routed_held_and_sheeted(self):
+        self.label_all()
+        manifest = {"documents": [
+            {"doc_id": "D01", "publisher": "Pacific Fishery Management Council", "url": "https://x/a.pdf",
+             "title": "Review", "collected_by": ["Oregon Department of Fish and Wildlife",
+                                                 "Confederated Tribes of the Warm Springs Reservation of Oregon"]},
+            {"doc_id": "D02", "publisher": "NOAA Fisheries, Northwest Region",
+             "collected_by": ["National Marine Fisheries Service"]}]}
         (self.r / "packet/c1/manifest.json").write_text(json.dumps(manifest))
-        scores = {"person_queue_by_publisher": {"ADF&G": [
-            {"case_id": "c1", "doc_id": "D01", "page": 3, "statement": "s", "verdicts": {"a": "true", "b": "false"}}]}}
-        [path] = pool.sheets(scores, self.r, self.r / "sheets")
-        text = path.read_text()
+        for m, qs in {"openai-astra": [{"doc_id": "D01", "page": 3, "question": "Is 4,553 final?",
+                                        "answer_type": "yes_no"},
+                                       {"doc_id": "D02", "page": 5, "question": "How many fish?",
+                                        "answer_type": "number"}],
+                      "anthropic-fable": [{"doc_id": "D01", "page": 3, "question": "Is 17,933 as printed right?",
+                                           "answer_type": "choice", "choices": ["17,933", "17,993"]}]}.items():
+            (self.r / "mappers" / m / "c1").mkdir(parents=True)
+            (self.r / "mappers" / m / "c1" / "claims.json").write_text(json.dumps({"custodian_questions": qs}))
+        authority = {"route_by_publisher": {"Pacific Fishery Management Council": "U.S. v. Oregon TAC"}}
+        out = json.loads(json.dumps(pool.score(self.r, self.GRADERS, authority), default=dict))
+        [d01] = out["custodian_questions_by_route"]["U.S. v. Oregon TAC"]
+        self.assertEqual((d01["asked_by"], d01["errata"], len(d01["questions"])), (2, True, 2))
+        self.assertEqual(d01["hold"], ["Confederated Tribes of the Warm Springs Reservation of Oregon"])
+        [d02] = out["custodian_questions_by_route"]["NOAA Fisheries"]
+        self.assertEqual(d02["hold"], [])  # "National" is not "nation"
+        paths = pool.sheets(out, self.r, self.r / "sheets", authority)
+        text = next(p for p in paths if "tac" in p.name).read_text()
         self.assertIn("https://x/a.pdf#page=3", text)
         self.assertIn("**Hold:**", text)
-        self.assertNotIn("verdict", text)
+        self.assertLess(text.index("Possible errors"), text.index("☐ 17,993"))
+        self.assertIn("☐ every year in this series", text)
+        sci = (self.r / "sheets" / "assessment-scientist.md").read_text()
+        self.assertEqual(sci.count("Evidence cited"), 4)  # 2 contested + 2 audited, shuffled together
+        for leak in ("verdict", "unsupported", "openai/astra", "anthropic/fable"):
+            self.assertNotIn(leak, sci)
+
+    def test_holds(self):
+        self.assertEqual(pool.holds(["National Marine Fisheries Service"], {}), [])
+        self.assertEqual(pool.holds(["Kuskokwim Native Association"], {}), ["Kuskokwim Native Association"])
+        tac = "U.S. v. Oregon Technical Advisory Committee"
+        self.assertEqual(pool.holds([tac], {"includes_indigenous_members": [tac]}), [tac])
 
     def test_fleiss_perfect_and_chance(self):
         self.assertEqual(pool.fleiss([["true"] * 3, ["false"] * 3]), 1.0)

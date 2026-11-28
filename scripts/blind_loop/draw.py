@@ -68,16 +68,52 @@ def draw(frame_bytes: bytes, label: str, drawn: list[str], k: int) -> dict:
     }
 
 
+QUESTION = """A researcher wants to use published spawning abundance for this stock and
+return year in a multi-stock analysis. Explain what each published figure is,
+whether the figures describe the same quantity, whether any is superseded or
+has a competing version you can find, and which figure, if any, is fit for
+(a) a cross-year trend, (b) a stock–recruit analysis, and (c) summing with
+neighbouring stocks into a regional total. Tell the researcher everything they
+would need, with page and table locators."""
+
+
+HIDDEN = ("reported_value", "reported_label")
+
+
+def shown(case: dict) -> dict:
+    """The frame entry without the scout's reported values, which no role may see."""
+    return {**case, "documents": [{k: v for k, v in d.items() if k not in HIDDEN} for d in case.get("documents", [])]}
+
+
+def case_file(case: dict) -> str:
+    """The case.md every role reads: the stock-year, the starting documents and the same generic question.
+    Reported values stay in the frame; they are not shown."""
+    docs = [f"- {d['title']} ({d['publisher']}, {d['year']}). {d['url']}. "
+            f"The figure appears at: {d.get('locator', 'not stated').rstrip('.')}." for d in case.get("documents", [])]
+    return "\n".join([f"# Case {case['case_id']}", "",
+                      f"Stock: {case['stock']} ({case['species']}). Return year: {case['return_year']}. "
+                      f"Jurisdiction: {case['jurisdiction']}.", "", "## Starting documents", "", *docs, "",
+                      "Other documents may exist.", "", "## Question", "", QUESTION, ""])
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("frame", type=Path)
     p.add_argument("--label", required=True, help="round label, e.g. crossmodel-r2")
     p.add_argument("--drawn", default="", help="comma-separated case IDs drawn in earlier rounds")
     p.add_argument("-k", type=int, default=3)
+    p.add_argument("--cases", type=Path, help="also write <dir>/<case_id>/case.md and frame-entry.json")
     a = p.parse_args(argv)
     try:
         frame_bytes = a.frame.read_bytes()
         result = draw(frame_bytes, a.label, [d for d in a.drawn.split(",") if d], a.k)
+        if a.cases:
+            by_id = {c["case_id"]: c for c in json.loads(frame_bytes)["cases"]}
+            for cid in result["drawn"]:
+                d = a.cases / cid
+                d.mkdir(parents=True, exist_ok=True)
+                (d / "case.md").write_text(case_file(by_id[cid]))
+                (d / "frame-entry.json").write_text(json.dumps(shown(by_id[cid]), indent=2, ensure_ascii=False))
     except (OSError, json.JSONDecodeError, KeyError) as e:
         print(f"input error: {e}", file=sys.stderr)
         return 2
